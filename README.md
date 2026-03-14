@@ -112,6 +112,7 @@ Core entities include:
    git clone https://github.com/Bahaa204/TAB.git
    cd TAB
    ```
+
 2. **Install dependencies**
 
    ```bash
@@ -119,10 +120,11 @@ Core entities include:
    # or
    yarn install
    ```
-3. **Environment configuration**
 
+3. **Environment configuration**
    - Create a `.env` file in the root directory.
    - Add required environment variables such as database connection strings and authentication secrets.
+
 4. **Run the development server**
 
    ```bash
@@ -130,10 +132,12 @@ Core entities include:
    # or
    yarn dev
    ```
-5. **Open the application**
 
+5. **Open the application**
    - Navigate to the link shown or press `o` then `enter` to open the website inside your browser.
+
+---
 
 ## License
 
-This project is for educational purposes. Licensing details can be added later if the project evolves further.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
