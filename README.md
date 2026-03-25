@@ -1,6 +1,6 @@
 # TAB – Trusted Apartment Bridge
 
-Branch: Ali Youssef
+Branch: Thalia Anka
 
 TAB (Trusted Apartment Bridge) is a web-based real estate platform designed to bridge the gap between real estate agencies/builders and customers. It provides a centralized, trusted space for discovering apartment and building projects globally, while offering agencies and admins powerful tools to manage projects, statistics, finances, and employees.
 
