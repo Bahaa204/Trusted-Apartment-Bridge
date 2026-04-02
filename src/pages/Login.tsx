@@ -149,6 +149,7 @@ export default function Login() {
 
               <div className="text-sm">
                 <button
+                  type="button"
                   className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer disabled:cursor-not-allowed"
                   onClick={handleForgot}
                   disabled={AuthLoading}
@@ -187,6 +188,7 @@ export default function Login() {
             <div className="mt-6 grid grid-cols-2 gap-3">
               <div>
                 <button
+                  type="button"
                   className="w-full inline-flex justify-center py-2 px-4 border border-slate-600 rounded-md shadow-sm bg-[#334155] text-sm font-medium text-white hover:bg-slate-600 transition-colors cursor-pointer disabled:cursor-not-allowed"
                   onClick={() => {
                     handleOAuth("google");
@@ -222,6 +224,7 @@ export default function Login() {
 
               <div>
                 <button
+                  type="button"
                   className="w-full inline-flex justify-center py-2 px-4 border border-slate-600 rounded-md shadow-sm bg-[#334155] text-sm font-medium text-white hover:bg-slate-600 transition-colors cursor-pointer disabled:cursor-not-allowed"
                   onClick={() => {
                     handleOAuth("github");
@@ -251,6 +254,7 @@ export default function Login() {
         <p className="mt-8 text-center text-sm text-slate-400">
           Not a member?{" "}
           <button
+            type="button"
             className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer disabled:cursor-not-allowed"
             onClick={() => {
               setMode(Mode === "SignIn" ? "SignUp" : "SignIn");
