@@ -3,7 +3,7 @@ import type { Project } from "../types/types";
 type BuildingData = {
   buildings_name: string;
   buildings_block: string;
-  buildings_images_url: string[];
+  buildings_images: FileList | null;
   buildings_project_id: number | undefined;
 };
 
@@ -17,7 +17,6 @@ export default function BuildingForm({
   loading,
   buildings_name,
   buildings_block,
-  buildings_images_url,
   buildings_project_id,
   updateFields,
   Options,
@@ -66,6 +65,11 @@ export default function BuildingForm({
           id="images"
           className="border border-black rounded cursor-pointer disabled:cursor-not-allowed"
           required
+          onChange={(event) => {
+            if (event.target.files && event.target.files.length > 0) {
+              updateFields({ buildings_images: event.target.files });
+            }
+          }}
           disabled={loading}
         />
       </div>

@@ -91,7 +91,7 @@ export function useHouses() {
     resetStates();
 
     const { error: InsertError } = await supabaseClient
-      .from("projects")
+      .from("houses")
       .insert(new_house)
       .single();
 
@@ -108,7 +108,7 @@ export function useHouses() {
     resetStates();
 
     const { error: UpdateError } = await supabaseClient
-      .from("projects")
+      .from("houses")
       .update(updated_house)
       .eq("id", houseId);
 
@@ -125,7 +125,7 @@ export function useHouses() {
     resetStates();
 
     const { error: DeleteError } = await supabaseClient
-      .from("projects")
+      .from("houses")
       .delete()
       .eq("id", houseId);
 

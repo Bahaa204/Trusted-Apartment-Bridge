@@ -2,7 +2,7 @@ type ProjectsData = {
   project_name: string;
   project_description: string;
   project_location: string;
-  project_images_url: string[];
+  project_images: FileList | null;
   project_starting_price: number;
 };
 
@@ -15,7 +15,6 @@ export default function ProjectForm({
   loading,
   project_name,
   project_description,
-  project_images_url,
   project_location,
   project_starting_price,
   updateFields,
@@ -75,10 +74,16 @@ export default function ProjectForm({
         <label htmlFor="images">Images</label>
         <input
           type="file"
+          accept="images/*"
           multiple
           id="images"
           className="border border-black rounded cursor-pointer disabled:cursor-not-allowed"
           required
+          onChange={(event) => {
+            if (event.target.files && event.target.files.length > 0) {
+              updateFields({ project_images: event.target.files });
+            }
+          }}
           disabled={loading}
         />
       </div>

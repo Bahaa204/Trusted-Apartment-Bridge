@@ -32,11 +32,11 @@ export type FormData = {
   project_name: string;
   project_description: string;
   project_location: string;
-  project_images_url: string[];
+  project_images: FileList | null;
   project_starting_price: number;
   buildings_name: string;
   buildings_block: string;
-  buildings_images_url: string[];
+  buildings_images: FileList | null;
   buildings_project_id: Project["id"]; // Same Type as the project id
   house_floor: number;
   house_nb_bedrooms: number;
