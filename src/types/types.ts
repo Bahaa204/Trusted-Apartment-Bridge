@@ -43,3 +43,11 @@ export type FormData = {
   house_nb_bathrooms: number;
   house_building_id: Building["id"]; // Same Type as the building id
 };
+
+export type ProjectsInput = Omit<Project, "images_url"> & {
+  images: FileList | null;
+};
+
+export type BuildingInput = Omit<Building, "images_url"> & {
+  images: FileList | null;
+};

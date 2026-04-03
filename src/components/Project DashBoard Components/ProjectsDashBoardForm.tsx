@@ -1,10 +1,10 @@
 import { useState, type SubmitEvent } from "react";
 import type { Building, FormData, House, Project } from "../../types/types";
 import { useMultistepForm } from "../../hooks/useMultistepForm";
-import ProjectForm from "../ProjectForm";
-import BuildingForm from "../BuildingForm";
-import HouseForm from "../HouseForm";
-import { supabaseClient } from "../../lib/supabaseClient";
+import ProjectForm from "./ProjectForm";
+import BuildingForm from "../Project DashBoard Components/BuildingForm";
+import HouseForm from "../Project DashBoard Components/HouseForm";
+import { UploadImage } from "../../services/imageServices";
 
 const InitialData: FormData = {
   project_name: "",
@@ -59,25 +59,6 @@ export default function ProjectsDashBoardForm({
 
   function updateFields(fields: Partial<FormData>) {
     setFormData((prev) => ({ ...prev, ...fields }));
-  }
-
-  async function UploadImage(file: File): Promise<string | null> {
-    const path = `${file.name} - ${crypto.randomUUID()}`;
-
-    const { error: UploadError } = await supabaseClient.storage
-      .from("projects_images")
-      .upload(path, file);
-
-    if (UploadError) {
-      console.error("Error Uploading Image: ", UploadError.message);
-      return null;
-    }
-
-    const { data } = supabaseClient.storage
-      .from("projects_images")
-      .getPublicUrl(path);
-
-    return data.publicUrl;
   }
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {

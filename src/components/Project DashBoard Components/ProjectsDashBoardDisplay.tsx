@@ -1,5 +1,11 @@
 import { useState } from "react";
-import type { Building, House, Project } from "../../types/types";
+import type {
+  Building,
+  BuildingInput,
+  House,
+  Project,
+} from "../../types/types";
+import ProjectCard from "./ProjectCard";
 // import Modal from "./Modal";
 
 type ProjectsDashBoardDisplayProps = {
@@ -19,6 +25,13 @@ export default function ProjectsDashBoardDisplay({
   const [HouseBuildingID, setHouseBuildingID] =
     useState<Building["id"]>(undefined);
 
+  const [BuildingsInput, setBuildingsInput] = useState<BuildingInput>({
+    name: "",
+    block: "",
+    project_id: NaN,
+    images: null,
+  });
+
   function ToggleBuildingShow(projectId: Project["id"]) {
     if (BuildingProjectID) {
       setHouseBuildingID(undefined);
@@ -34,49 +47,11 @@ export default function ProjectsDashBoardDisplay({
         <h3>View Current Projects:</h3>
         <div className="grid grid-cols-5 grid-rows-5 justify-center items-center gap-4">
           {Projects.map((project) => (
-            <div
+            <ProjectCard
               key={project.id}
-              className="bg-white text-black flex flex-col justify-center items-center gap-2.5 text-center p-4 rounded-2xl"
-            >
-              <div className="size-full flex flex-wrap justify-center items-center italic">
-                <img
-                  src={project.images_url[0]}
-                  alt="Project Image"
-                  className="size-9/12 rounded-lg"
-                />
-              </div>
-              <div className="flex flex-col flex-wrap justify-center items-center gap-2.5">
-                <p>
-                  <strong>Project Name:</strong> {project.name}
-                </p>
-                <p>
-                  <strong>Project Description:</strong> {project.description}
-                </p>
-                <p>
-                  <strong>Project Location:</strong> {project.location}
-                </p>
-                <p>
-                  <strong>Project Visits:</strong> {project.nb_visits}
-                </p>
-                <p>
-                  <strong>Project Starting Price:</strong> $
-                  {project.starting_price}
-                </p>
-                <p>
-                  <strong>Project added at:</strong>{" "}
-                  {project.added_at?.split("T")[0]}
-                </p>
-                <button
-                  type="button"
-                  className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
-                  onClick={() => {
-                    ToggleBuildingShow(project.id);
-                  }}
-                >
-                  See Buildings
-                </button>
-              </div>
-            </div>
+              ToggleBuildingShow={ToggleBuildingShow}
+              project={project}
+            />
           ))}
           {BuildingProjectID && (
             <>
