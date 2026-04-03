@@ -24,7 +24,7 @@ export default function ProjectCard({
   const [ProjectsInput, setProjectsInput] =
     useState<ProjectsInput>(InitialValue);
 
-  const { UpdateProject } = useProjects();
+  const { UpdateProject, RemoveProject } = useProjects();
 
   async function handleEdit(projectId: Project["id"]) {
     const images = ProjectsInput.images;
@@ -47,6 +47,12 @@ export default function ProjectCard({
     const ok = await UpdateProject(updatedProject, projectId);
 
     if (ok) setEditMode(false);
+  }
+
+  async function handleDelete(projectId: Project["id"]) {
+    const ok = await RemoveProject(projectId);
+
+    if (ok) return alert("Project has been deleted");
   }
 
   return (
@@ -180,6 +186,15 @@ export default function ProjectCard({
           }}
         >
           {EditMode ? "Submit Edits" : "Edit Project"}
+        </button>
+        <button
+          type="button"
+          className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
+          onClick={() => {
+            handleDelete(project.id)
+          }}
+        >
+          Delete Project
         </button>
       </div>
     </div>

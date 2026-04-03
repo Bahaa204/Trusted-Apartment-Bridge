@@ -8,7 +8,7 @@ type HouseCardsProps = {
 };
 
 export default function HouseCard({ Buildings, house }: HouseCardsProps) {
-  const { UpdateHouse } = useHouses();
+  const { UpdateHouse, RemoveHouse } = useHouses();
 
   const InitialValue: House = {
     nb_bedrooms: house.nb_bedrooms || NaN,
@@ -32,6 +32,12 @@ export default function HouseCard({ Buildings, house }: HouseCardsProps) {
 
     if (ok) setEditMode(false);
   }
+
+  async function handleDelete(houseId: House["id"]) {
+      const ok = await RemoveHouse(houseId);
+  
+      if (ok) return alert("Building has been deleted");
+    }
 
   return (
     <div
@@ -139,6 +145,15 @@ export default function HouseCard({ Buildings, house }: HouseCardsProps) {
         }}
       >
         {EditMode ? "Submit Edits" : "Edit House"}
+      </button>
+      <button
+        type="button"
+        className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
+        onClick={() => {
+          handleDelete(house.id);
+        }}
+      >
+        Delete House
       </button>
     </div>
   );

@@ -26,7 +26,7 @@ export default function BuildingsCard({
     images: null,
   };
 
-  const { UpdateBuilding } = useBuildings();
+  const { UpdateBuilding, RemoveBuilding } = useBuildings();
 
   const [BuildingsInput, setBuildingsInput] =
     useState<BuildingInput>(InitialValue);
@@ -53,6 +53,12 @@ export default function BuildingsCard({
     const ok = await UpdateBuilding(updatedBuilding, buildingId);
 
     if (ok) setEditMode(false);
+  }
+
+  async function handleDelete(buildingId: Building["id"]) {
+    const ok = await RemoveBuilding(buildingId);
+
+    if (ok) return alert("Building has been deleted");
   }
 
   return (
@@ -176,6 +182,15 @@ export default function BuildingsCard({
           }}
         >
           {EditMode ? "Submit Edits" : "Edit Building"}
+        </button>
+        <button
+          type="button"
+          className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
+          onClick={() => {
+            handleDelete(Building.id);
+          }}
+        >
+          Delete Building
         </button>
       </div>
     </div>
