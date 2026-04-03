@@ -1,3 +1,8 @@
+import type { Dispatch, SetStateAction } from "react";
+
+// Updater Function Type of the useState hook
+export type UpdaterFunction<T> = Dispatch<SetStateAction<T>>;
+
 // Supabase automatically generates them
 // so no need to put place when submitting the form
 type Common = {

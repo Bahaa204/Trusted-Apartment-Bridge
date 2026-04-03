@@ -30,13 +30,12 @@ export default function ProjectCard({
     const images = ProjectsInput.images;
     const images_url: string[] = [];
 
-    if (!images) return;
-
-    for (const image of images) {
-      const imageUrl = await UploadImage(image);
-      if (imageUrl) images_url.push(imageUrl);
+    if (images) {
+      for (const image of images) {
+        const imageUrl = await UploadImage(image);
+        if (imageUrl) images_url.push(imageUrl);
+      }
     }
-
     const updatedProject: Project = {
       name: ProjectsInput.name,
       description: ProjectsInput.description,
@@ -47,7 +46,7 @@ export default function ProjectCard({
 
     const ok = await UpdateProject(updatedProject, projectId);
 
-    if (ok) alert("Edited Successful");
+    if (ok) setEditMode(false);
   }
 
   return (
@@ -172,25 +171,16 @@ export default function ProjectCard({
         >
           See Buildings
         </button>
-        {EditMode ? (
-          <button
-            type="button"
-            className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
-            onClick={() => handleEdit(project.id)}
-          >
-            Submit Edits
-          </button>
-        ) : (
-          <button
-            type="button"
-            className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
-            onClick={() => {
-              setEditMode((prev) => !prev);
-            }}
-          >
-            Edit Project
-          </button>
-        )}
+        <button
+          type="button"
+          className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
+          onClick={() => {
+            if (EditMode) return handleEdit(project.id);
+            return setEditMode((prev) => !prev);
+          }}
+        >
+          {EditMode ? "Submit Edits" : "Edit Project"}
+        </button>
       </div>
     </div>
   );
