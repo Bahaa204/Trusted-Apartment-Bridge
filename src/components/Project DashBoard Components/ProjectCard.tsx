@@ -1,10 +1,11 @@
 import { useState } from "react";
-import type { Image, Project, ProjectsInput } from "../../types/types";
+import type { Country, Image, Project, ProjectsInput } from "../../types/types";
 import { UploadImage } from "../../services/imageServices";
 import Modal from "./Modal";
 
 type ProjectCardsProps = {
   project: Project;
+  Countries: Country[];
   ToggleBuildingShow: (projectId: Project["id"]) => void;
   UpdateProject: (
     updated_project: Project,
@@ -16,6 +17,7 @@ type ProjectCardsProps = {
 export default function ProjectCard({
   ToggleBuildingShow,
   project,
+  Countries,
   RemoveProject,
   UpdateProject,
 }: ProjectCardsProps) {
@@ -129,6 +131,39 @@ export default function ProjectCard({
               project.location
             )}
           </p>
+
+          <p>
+            {EditMode ? (
+              <>
+                <strong>Select a Country: </strong>
+                <select
+                  value={ProjectsInput.country_id}
+                  className="border border-black rounded cursor-pointer disabled:cursor-not-allowed size-full"
+                  onChange={(event) => {
+                    setProjectsInput((prev) => ({
+                      ...prev,
+                      country_id: parseInt(event.target.value),
+                    }));
+                  }}
+                >
+                  {Countries.map((country) => (
+                    <option value={country.id} key={country.id}>
+                      {country.name}
+                    </option>
+                  ))}
+                </select>
+              </>
+            ) : (
+              <>
+                <strong>Project Name: </strong>
+                {
+                  Countries.find((country) => country.id === project.country_id)
+                    ?.name
+                }
+              </>
+            )}
+          </p>
+
           <p>
             {EditMode ? (
               <>

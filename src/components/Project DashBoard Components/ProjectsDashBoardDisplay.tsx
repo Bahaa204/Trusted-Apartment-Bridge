@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Building, House, Project } from "../../types/types";
+import type { Building, Country, House, Project } from "../../types/types";
 import ProjectCard from "./ProjectCard";
 import BuildingsCard from "./BuildingsCard";
 import HouseCard from "./HouseCard";
@@ -20,6 +20,7 @@ type Functions = {
 };
 
 type ProjectsDashBoardDisplayProps = {
+  Countries: Country[];
   Projects: Project[];
   Buildings: Building[];
   Houses: House[];
@@ -30,6 +31,7 @@ export default function ProjectsDashBoardDisplay({
   Buildings,
   Houses,
   Projects,
+  Countries,
   RemoveBuilding,
   RemoveHouse,
   RemoveProject,
@@ -65,6 +67,7 @@ export default function ProjectsDashBoardDisplay({
                   key={project.id}
                   ToggleBuildingShow={ToggleBuildingShow}
                   project={project}
+                  Countries={Countries}
                   RemoveProject={RemoveProject}
                   UpdateProject={UpdateProject}
                 />

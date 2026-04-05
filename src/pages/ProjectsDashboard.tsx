@@ -93,6 +93,7 @@ export default function ProjectsDashboard() {
       <ProjectsDashBoardDisplay
         Buildings={Buildings}
         Projects={Projects}
+        Countries={Countries}
         Houses={Houses}
         UpdateProject={UpdateProject}
         RemoveProject={RemoveProject}
