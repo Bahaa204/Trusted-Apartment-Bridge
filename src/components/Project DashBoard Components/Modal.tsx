@@ -11,7 +11,7 @@ type ModalProps = {
   Open: boolean;
   setopen: UpdaterFunction<boolean>;
   text: string;
-  handleDelete: (id: Common["id"]) => Promise<void>;
+  handleDelete: () => Promise<void>;
   id: Common["id"];
 };
 
@@ -20,7 +20,6 @@ export default function Modal({
   setopen,
   text,
   handleDelete,
-  id,
 }: ModalProps) {
   return (
     <Dialog open={Open} onClose={setopen} className="relative z-10">
@@ -63,7 +62,7 @@ export default function Modal({
               <button
                 type="button"
                 onClick={() => {
-                  handleDelete(id);
+                  handleDelete();
                   setopen(false);
                 }}
                 className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto dark:bg-red-500 dark:shadow-none dark:hover:bg-red-400"

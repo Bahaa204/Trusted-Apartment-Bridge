@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Country, Image, Project, ProjectsInput } from "../../types/types";
-import { UploadImage } from "../../services/imageServices";
+import { DeleteImages, UploadImage } from "../../services/imageServices";
 import Modal from "./Modal";
 
 type ProjectCardsProps = {
@@ -34,7 +34,7 @@ export default function ProjectCard({
     useState<ProjectsInput>(InitialValue);
   const [IsOpen, setIsOpen] = useState<boolean>(false);
 
-  async function handleEdit(projectId: Project["id"]) {
+  async function handleEdit() {
     const images = ProjectsInput.images;
     const project_images: Image[] = [];
 
@@ -52,13 +52,24 @@ export default function ProjectCard({
       images: project_images || project.images,
     };
 
-    const ok = await UpdateProject(updatedProject, projectId);
+    const ok = await UpdateProject(updatedProject, project.id);
 
     if (ok) setEditMode(false);
   }
 
-  async function handleDelete(projectId: Project["id"]) {
-    const ok = await RemoveProject(projectId);
+  async function handleDelete() {
+    const paths: string[] = [];
+
+    project.images.forEach((image) => paths.push(image.path));
+
+    const ImagesOk = await DeleteImages(paths, "projects_images");
+
+    if (!ImagesOk)
+      return alert(
+        `Something went wrong while deleting images of ${project.name}.`,
+      );
+
+    const ok = await RemoveProject(project.id);
 
     if (ok) return alert("Project has been deleted");
   }
@@ -206,7 +217,7 @@ export default function ProjectCard({
             type="button"
             className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
             onClick={() => {
-              if (EditMode) return handleEdit(project.id);
+              if (EditMode) return handleEdit();
               return setEditMode((prev) => !prev);
             }}
           >

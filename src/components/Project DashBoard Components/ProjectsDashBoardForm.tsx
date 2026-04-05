@@ -92,6 +92,7 @@ export default function ProjectsDashBoardForm({
             if (imageObj) project_images.push(imageObj);
           }
           const newProject: Project = {
+            id: Math.floor(Math.random() * 1000), // for some reason supabase identity broke
             name: FormData.project_name,
             description: FormData.project_description,
             location: FormData.project_location,

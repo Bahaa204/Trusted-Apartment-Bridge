@@ -6,7 +6,7 @@ import type {
   Project,
   UpdaterFunction,
 } from "../../types/types";
-import { UploadImage } from "../../services/imageServices";
+import { DeleteImages, UploadImage } from "../../services/imageServices";
 import Modal from "./Modal";
 
 type BuildingsCardProps = {
@@ -41,7 +41,7 @@ export default function BuildingsCard({
 
   const [IsOpen, setIsOpen] = useState<boolean>(false);
 
-  async function handleEdit(buildingId: Project["id"]) {
+  async function handleEdit() {
     const images = BuildingsInput.images;
     const building_images: Image[] = [];
 
@@ -58,13 +58,24 @@ export default function BuildingsCard({
       project_id: BuildingsInput.project_id || Building.project_id,
     };
 
-    const ok = await UpdateBuilding(updatedBuilding, buildingId);
+    const ok = await UpdateBuilding(updatedBuilding, Building.id);
 
     if (ok) setEditMode(false);
   }
 
-  async function handleDelete(buildingId: Building["id"]) {
-    const ok = await RemoveBuilding(buildingId);
+  async function handleDelete() {
+    const paths: string[] = [];
+
+    Building.images.forEach((image) => paths.push(image.path));
+
+    const ImagesOk = await DeleteImages(paths, "buildings_images");
+
+    if (!ImagesOk)
+      return alert(
+        `Something went wrong while deleting images of ${Building.name}.`,
+      );
+
+    const ok = await RemoveBuilding(Building.id);
 
     if (ok) return alert("Building has been deleted");
   }
@@ -186,7 +197,7 @@ export default function BuildingsCard({
             type="button"
             className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
             onClick={() => {
-              if (EditMode) return handleEdit(Building.id);
+              if (EditMode) return handleEdit();
               return setEditMode((prev) => !prev);
             }}
           >

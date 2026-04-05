@@ -20,3 +20,19 @@ export async function UploadImage(
 
   return { url: data.publicUrl, path: path };
 }
+
+export async function DeleteImages(
+  paths: string[],
+  bucket: "projects_images" | "buildings_images",
+) {
+  const { error: DeleteError } = await supabaseClient.storage
+    .from(bucket)
+    .remove(paths);
+
+  if (DeleteError) {
+    console.error("Error Uploading Image: ", DeleteError.message);
+    return false;
+  }
+
+  return true;
+}
