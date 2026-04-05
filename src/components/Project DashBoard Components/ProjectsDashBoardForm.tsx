@@ -72,7 +72,7 @@ export default function ProjectsDashBoardForm({
         const images = FormData.project_images;
         if (images) {
           for (const file of images) {
-            const url = await UploadImage(file);
+            const url = await UploadImage(file, "projects_images");
 
             if (url) images_url.push(url);
           }
@@ -96,7 +96,7 @@ export default function ProjectsDashBoardForm({
         const images = FormData.project_images;
         if (images) {
           for (const file of images) {
-            const url = await UploadImage(file);
+            const url = await UploadImage(file, "buildings_images");
 
             if (url) images_url.push(url);
           }

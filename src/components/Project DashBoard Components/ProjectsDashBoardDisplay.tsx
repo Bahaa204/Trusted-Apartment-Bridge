@@ -36,39 +36,43 @@ export default function ProjectsDashBoardDisplay({
       <div className="flex flex-col flex-wrap justify-center items-center gap-4 bg-gray-900 text-white">
         <h3>View Current Projects:</h3>
         <div className="grid grid-cols-5 grid-rows-5 justify-center items-center gap-4">
-          {Projects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              ToggleBuildingShow={ToggleBuildingShow}
-              project={project}
-            />
-          ))}
-
-          {BuildingProjectID &&
-            Buildings.map((building) => {
-              if (building.project_id !== BuildingProjectID) return;
-              return (
-                <BuildingsCard
-                  key={building.id}
-                  Building={building}
-                  Projects={Projects}
-                  setHouseBuildingID={setHouseBuildingID}
-                />
-              );
-            })}
-
-          {HouseBuildingID && (
+          {Projects.length === 0 ? (
+            <div>We currently have to no projects :(</div>
+          ) : (
             <>
-              {Houses.map((house) => {
-                if (house.building_id !== HouseBuildingID) return;
-                return (
-                  <HouseCard
-                    Buildings={Buildings}
-                    house={house}
-                    key={house.id}
-                  />
-                );
-              })}
+              {Projects.map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  ToggleBuildingShow={ToggleBuildingShow}
+                  project={project}
+                />
+              ))}
+              {BuildingProjectID &&
+                Buildings.map((building) => {
+                  if (building.project_id !== BuildingProjectID) return;
+                  return (
+                    <BuildingsCard
+                      key={building.id}
+                      Building={building}
+                      Projects={Projects}
+                      setHouseBuildingID={setHouseBuildingID}
+                    />
+                  );
+                })}
+              {HouseBuildingID && (
+                <>
+                  {Houses.map((house) => {
+                    if (house.building_id !== HouseBuildingID) return;
+                    return (
+                      <HouseCard
+                        Buildings={Buildings}
+                        house={house}
+                        key={house.id}
+                      />
+                    );
+                  })}
+                </>
+              )}
             </>
           )}
         </div>

@@ -5,7 +5,7 @@ export type UpdaterFunction<T> = Dispatch<SetStateAction<T>>;
 
 // Supabase automatically generates them
 // so no need to put place when submitting the form
-type Common = {
+export type Common = {
   id?: number;
   added_at?: string;
 };

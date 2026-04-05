@@ -1,10 +1,13 @@
 import { supabaseClient } from "../lib/supabaseClient";
 
-export async function UploadImage(file: File): Promise<string | null> {
+export async function UploadImage(
+  file: File,
+  bucket: "projects_images" | "buildings_images",
+): Promise<string | null> {
   const path = `${file.name} - ${crypto.randomUUID()}`;
 
   const { error: UploadError } = await supabaseClient.storage
-    .from("projects_images")
+    .from(bucket)
     .upload(path, file);
 
   if (UploadError) {
@@ -12,9 +15,7 @@ export async function UploadImage(file: File): Promise<string | null> {
     return null;
   }
 
-  const { data } = supabaseClient.storage
-    .from("projects_images")
-    .getPublicUrl(path);
+  const { data } = supabaseClient.storage.from(bucket).getPublicUrl(path);
 
   return data.publicUrl;
 }
