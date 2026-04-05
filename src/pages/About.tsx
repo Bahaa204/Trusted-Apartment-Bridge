@@ -197,7 +197,7 @@ export default function GlobeHero() {
                 premium residential and commercial projects across the Middle East
                 and Europe. With developments spanning Egypt, the United Arab
                 Emirates, and the United Kingdom, we bring world-class living
-                experiences to some of the most sought-after locations on the globe.
+                experiences to some of the most professional locations on the globe.
               </p>
               <p
                 style={{
