@@ -1,24 +1,30 @@
 import { useState } from "react";
-import type { Project, ProjectsInput } from "../../types/types";
-import { useProjects } from "../../hooks/useProjects";
+import type { Image, Project, ProjectsInput } from "../../types/types";
 import { UploadImage } from "../../services/imageServices";
 import Modal from "./Modal";
 
 type ProjectCardsProps = {
   project: Project;
   ToggleBuildingShow: (projectId: Project["id"]) => void;
+  UpdateProject: (
+    updated_project: Project,
+    projectId: Project["id"],
+  ) => Promise<boolean>;
+  RemoveProject: (projectId: Project["id"]) => Promise<boolean>;
 };
 
 export default function ProjectCard({
   ToggleBuildingShow,
   project,
+  RemoveProject,
+  UpdateProject,
 }: ProjectCardsProps) {
   const InitialValue: ProjectsInput = {
     name: project.name || "",
     description: project.description || "",
     location: project.location || "",
+    country_id: project.country_id || NaN,
     images: null,
-    starting_price: project.starting_price || NaN,
   };
 
   const [EditMode, setEditMode] = useState<boolean>(false);
@@ -26,24 +32,22 @@ export default function ProjectCard({
     useState<ProjectsInput>(InitialValue);
   const [IsOpen, setIsOpen] = useState<boolean>(false);
 
-  const { UpdateProject, RemoveProject } = useProjects();
-
   async function handleEdit(projectId: Project["id"]) {
     const images = ProjectsInput.images;
-    const images_url: string[] = [];
+    const project_images: Image[] = [];
 
     if (images) {
       for (const image of images) {
-        const imageUrl = await UploadImage(image, "projects_images");
-        if (imageUrl) images_url.push(imageUrl);
+        const imageObj = await UploadImage(image, "projects_images");
+        if (imageObj) project_images.push(imageObj);
       }
     }
     const updatedProject: Project = {
       name: ProjectsInput.name,
       description: ProjectsInput.description,
       location: ProjectsInput.location,
-      images_url: images_url || project.images_url,
-      starting_price: ProjectsInput.starting_price,
+      country_id: ProjectsInput.country_id,
+      images: project_images || project.images,
     };
 
     const ok = await UpdateProject(updatedProject, projectId);
@@ -65,8 +69,8 @@ export default function ProjectCard({
       >
         <div className="size-full flex flex-wrap justify-center items-center italic">
           <img
-            src={project.images_url[0]}
-            alt="Project Image"
+            src={project.images[0].url || undefined}
+            alt={`${project.name} image`}
             className="size-9/12 rounded-lg"
           />
         </div>
@@ -148,27 +152,9 @@ export default function ProjectCard({
               </>
             )}
           </p>
-          <p>
-            <strong>Project Starting Price:</strong>
-            {EditMode ? (
-              <input
-                type="number"
-                className="border border-black rounded disabled:cursor-not-allowed size-full"
-                value={ProjectsInput.starting_price}
-                onChange={(event) => {
-                  setProjectsInput((prev) => ({
-                    ...prev,
-                    starting_price: parseInt(event.target.value.trim()) || NaN,
-                  }));
-                }}
-              />
-            ) : (
-              project.starting_price
-            )}
-          </p>
           {!EditMode && (
             <p>
-              <strong>Project added at:</strong>{" "}
+              <strong>Project added at:</strong>
               {project.added_at?.split("T")[0]}
             </p>
           )}

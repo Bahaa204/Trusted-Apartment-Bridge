@@ -1,14 +1,17 @@
+import type { Country } from "../../types/types";
+
 type ProjectsData = {
   project_name: string;
   project_description: string;
   project_location: string;
   project_images: FileList | null;
-  project_starting_price: number;
+  project_country_id: Country["id"];
 };
 
 type ProjectFormProps = ProjectsData & {
   loading: boolean;
   updateFields: (fields: Partial<ProjectsData>) => void;
+  Options: Country[];
 };
 
 export default function ProjectForm({
@@ -16,8 +19,9 @@ export default function ProjectForm({
   project_name,
   project_description,
   project_location,
-  project_starting_price,
+  project_country_id,
   updateFields,
+  Options,
 }: ProjectFormProps) {
   return (
     <div className="flex flex-wrap flex-col justify-center items-center gap-2.5">
@@ -89,20 +93,23 @@ export default function ProjectForm({
       </div>
 
       <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <label htmlFor="price">Starting Price</label>
-        <input
-          type="number"
-          id="price"
-          className="border border-black rounded disabled:cursor-not-allowed"
+        <label htmlFor="select">Select a country to add to the project</label>
+        <select
+          id="select"
+          className="border border-black rounded cursor-pointer disabled:cursor-not-allowed"
           required
-          value={String(project_starting_price)}
+          value={project_country_id}
           onChange={(event) =>
-            updateFields({
-              project_starting_price: parseInt(event.target.value) || NaN,
-            })
+            updateFields({ project_country_id: parseInt(event.target.value) })
           }
           disabled={loading}
-        />
+        >
+          {Options.map((option) => (
+            <option value={option.id} key={option.id}>
+              {option.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex flex-wrap flex-col justify-center items-center gap-1">

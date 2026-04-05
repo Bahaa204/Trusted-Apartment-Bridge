@@ -5,15 +5,24 @@ import { useHouses } from "../hooks/useHouses";
 import { useProjects } from "../hooks/useProjects";
 import ProjectsDashBoardForm from "../components/Project DashBoard Components/ProjectsDashBoardForm";
 import ProjectsDashBoardDisplay from "../components/Project DashBoard Components/ProjectsDashBoardDisplay";
+import useCountries from "../hooks/useCountries";
 
 export default function ProjectsDashboard() {
   const { Session, Loading: AuthLoading, Error: AuthError } = useAuth();
+
+  const {
+    Countries,
+    Loading: CountriesLoading,
+    Error: CountriesError,
+  } = useCountries();
 
   const {
     Projects,
     Loading: ProjectsLoading,
     Error: ProjectsError,
     AddProject,
+    RemoveProject,
+    UpdateProject,
   } = useProjects();
 
   const {
@@ -21,6 +30,8 @@ export default function ProjectsDashboard() {
     Loading: BuildingsLoading,
     Error: BuildingsError,
     AddBuilding,
+    RemoveBuilding,
+    UpdateBuilding,
   } = useBuildings();
 
   const {
@@ -28,13 +39,24 @@ export default function ProjectsDashboard() {
     Loading: HousesLoading,
     Error: HousesError,
     AddHouse,
+    RemoveHouse,
+    UpdateHouse,
   } = useHouses();
 
   // combining all the loading and error states into 1 variable
   const loading =
-    AuthLoading || ProjectsLoading || BuildingsLoading || HousesLoading;
+    AuthLoading ||
+    CountriesLoading ||
+    ProjectsLoading ||
+    BuildingsLoading ||
+    HousesLoading;
 
-  const error = AuthError || ProjectsError || BuildingsError || HousesError;
+  const error =
+    AuthError ||
+    CountriesError ||
+    ProjectsError ||
+    BuildingsError ||
+    HousesError;
 
   // Checking for any errors
   if (error) {
@@ -62,15 +84,22 @@ export default function ProjectsDashboard() {
         AddBuilding={AddBuilding}
         AddHouse={AddHouse}
         AddProject={AddProject}
-        Buildings={Buildings}
         Projects={Projects}
+        Buildings={Buildings}
         loading={loading}
+        Countries={Countries}
       />
 
       <ProjectsDashBoardDisplay
         Buildings={Buildings}
         Projects={Projects}
         Houses={Houses}
+        UpdateProject={UpdateProject}
+        RemoveProject={RemoveProject}
+        UpdateBuilding={UpdateBuilding}
+        RemoveBuilding={RemoveBuilding}
+        RemoveHouse={RemoveHouse}
+        UpdateHouse={UpdateHouse}
       />
     </>
   );

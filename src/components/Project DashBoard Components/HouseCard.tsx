@@ -1,21 +1,27 @@
 import { useState } from "react";
 import type { Building, House } from "../../types/types";
-import { useHouses } from "../../hooks/useHouses";
 import Modal from "./Modal";
 
 type HouseCardsProps = {
   house: House;
   Buildings: Building[];
+  UpdateHouse: (updated_house: House, houseId: House["id"]) => Promise<boolean>;
+  RemoveHouse: (houseId: House["id"]) => Promise<boolean>;
 };
 
-export default function HouseCard({ Buildings, house }: HouseCardsProps) {
-  const { UpdateHouse, RemoveHouse } = useHouses();
-
+export default function HouseCard({
+  Buildings,
+  house,
+  RemoveHouse,
+  UpdateHouse,
+}: HouseCardsProps) {
   const InitialValue: House = {
     nb_bedrooms: house.nb_bedrooms || NaN,
     nb_bathrooms: house.nb_bathrooms || NaN,
     floor: house.floor || NaN,
     building_id: house.building_id || NaN,
+    price: house.price || NaN,
+    is_sold: house.is_sold,
   };
 
   const [HouseInput, setHouseInput] = useState<House>(InitialValue);
@@ -28,6 +34,8 @@ export default function HouseCard({ Buildings, house }: HouseCardsProps) {
       nb_bathrooms: HouseInput.nb_bathrooms,
       floor: HouseInput.floor,
       building_id: HouseInput.building_id,
+      price: HouseInput.price,
+      is_sold: HouseInput.is_sold,
     };
 
     const ok = await UpdateHouse(updatedHouse, houseId);
@@ -105,7 +113,7 @@ export default function HouseCard({ Buildings, house }: HouseCardsProps) {
           <p>
             {EditMode ? (
               <>
-                <strong>Select a Project: </strong>
+                <strong>Select a Building: </strong>
                 <select
                   value={HouseInput.building_id}
                   className="border border-black rounded cursor-pointer disabled:cursor-not-allowed size-full"
@@ -133,6 +141,25 @@ export default function HouseCard({ Buildings, house }: HouseCardsProps) {
                 }
               </>
             )}
+          </p>
+          <p>
+            <strong>Price: </strong>
+            {EditMode ? (
+              <input
+                type="text"
+                className="border border-black rounded disabled:cursor-not-allowed size-full"
+                value={HouseInput.price}
+                onChange={(event) => {
+                  setHouseInput((prev) => ({
+                    ...prev,
+                    price: parseInt(event.target.value.trim()),
+                  }));
+                }}
+              />
+            ) : (
+              house.price
+            )}{" "}
+            $
           </p>
           {!EditMode && (
             <p>

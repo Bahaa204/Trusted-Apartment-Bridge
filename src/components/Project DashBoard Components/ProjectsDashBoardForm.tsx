@@ -1,5 +1,12 @@
 import { useState, type SubmitEvent } from "react";
-import type { Building, FormData, House, Project } from "../../types/types";
+import type {
+  Building,
+  Country,
+  FormData,
+  House,
+  Image,
+  Project,
+} from "../../types/types";
 import { useMultistepForm } from "../../hooks/useMultistepForm";
 import ProjectForm from "./ProjectForm";
 import BuildingForm from "../Project DashBoard Components/BuildingForm";
@@ -10,8 +17,8 @@ const InitialData: FormData = {
   project_name: "",
   project_description: "",
   project_location: "",
+  project_country_id: NaN,
   project_images: null,
-  project_starting_price: NaN,
   buildings_name: "",
   buildings_block: "",
   buildings_images: null,
@@ -20,9 +27,11 @@ const InitialData: FormData = {
   house_nb_bedrooms: NaN,
   house_nb_bathrooms: NaN,
   house_building_id: NaN,
+  house_price: NaN,
 };
 
 type ProjectsDashBoardFormProps = {
+  Countries: Country[];
   Projects: Project[];
   Buildings: Building[];
   loading: boolean;
@@ -38,11 +47,17 @@ export default function ProjectsDashBoardForm({
   AddProject,
   Buildings,
   Projects,
+  Countries,
 }: ProjectsDashBoardFormProps) {
   const [FormData, setFormData] = useState<FormData>(InitialData);
 
   const { CurrentStepIndex, steps, step, goTo, next } = useMultistepForm([
-    <ProjectForm {...FormData} loading={loading} updateFields={updateFields} />,
+    <ProjectForm
+      {...FormData}
+      loading={loading}
+      updateFields={updateFields}
+      Options={Countries}
+    />,
     <BuildingForm
       {...FormData}
       loading={loading}
@@ -64,25 +79,25 @@ export default function ProjectsDashBoardForm({
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const images_url: string[] = [];
     // 0 id for Projects, 1 is for buildings, 2 is for Houses
     switch (CurrentStepIndex) {
       // Projects
       case 0: {
         const images = FormData.project_images;
+        const project_images: Image[] = [];
         if (images) {
           for (const file of images) {
-            const url = await UploadImage(file, "projects_images");
+            const imageObj = await UploadImage(file, "projects_images");
 
-            if (url) images_url.push(url);
+            if (imageObj) project_images.push(imageObj);
           }
           const newProject: Project = {
             name: FormData.project_name,
             description: FormData.project_description,
             location: FormData.project_location,
-            images_url: images_url,
-            starting_price: FormData.project_starting_price,
             nb_visits: 0,
+            country_id: FormData.project_country_id,
+            images: project_images,
           };
 
           const ok = await AddProject(newProject);
@@ -95,15 +110,16 @@ export default function ProjectsDashBoardForm({
       case 1: {
         const images = FormData.project_images;
         if (images) {
+          const building_images: Image[] = [];
           for (const file of images) {
-            const url = await UploadImage(file, "buildings_images");
+            const imageObj = await UploadImage(file, "buildings_images");
 
-            if (url) images_url.push(url);
+            if (imageObj) building_images.push(imageObj);
           }
           const newBuilding: Building = {
             name: FormData.buildings_name,
             block: FormData.buildings_block,
-            images_url: images_url,
+            images: building_images,
             project_id: FormData.buildings_project_id,
           };
 
@@ -121,6 +137,7 @@ export default function ProjectsDashBoardForm({
           nb_bedrooms: FormData.house_nb_bedrooms,
           nb_bathrooms: FormData.house_nb_bathrooms,
           building_id: FormData.house_building_id,
+          price: FormData.house_price,
         };
 
         const ok = await AddHouse(newHouse);

@@ -2,23 +2,30 @@ import { useState } from "react";
 import type {
   Building,
   BuildingInput,
+  Image,
   Project,
   UpdaterFunction,
 } from "../../types/types";
 import { UploadImage } from "../../services/imageServices";
-import { useBuildings } from "../../hooks/useBuildings";
 import Modal from "./Modal";
 
 type BuildingsCardProps = {
   Building: Building;
   Projects: Project[];
   setHouseBuildingID: UpdaterFunction<Building["id"]>;
+  UpdateBuilding: (
+    updated_building: Building,
+    buildingId: Building["id"],
+  ) => Promise<boolean>;
+  RemoveBuilding: (buildingId: Building["id"]) => Promise<boolean>;
 };
 
 export default function BuildingsCard({
   Building,
   Projects,
   setHouseBuildingID,
+  RemoveBuilding,
+  UpdateBuilding,
 }: BuildingsCardProps) {
   const InitialValue: BuildingInput = {
     name: Building.name || "",
@@ -26,8 +33,6 @@ export default function BuildingsCard({
     project_id: Building.project_id || NaN,
     images: null,
   };
-
-  const { UpdateBuilding, RemoveBuilding } = useBuildings();
 
   const [BuildingsInput, setBuildingsInput] =
     useState<BuildingInput>(InitialValue);
@@ -38,18 +43,18 @@ export default function BuildingsCard({
 
   async function handleEdit(buildingId: Project["id"]) {
     const images = BuildingsInput.images;
-    const images_url: string[] = [];
+    const building_images: Image[] = [];
 
     if (images) {
       for (const image of images) {
-        const imageUrl = await UploadImage(image, "buildings_images");
-        if (imageUrl) images_url.push(imageUrl);
+        const imageObj = await UploadImage(image, "buildings_images");
+        if (imageObj) building_images.push(imageObj);
       }
     }
     const updatedBuilding: Building = {
       name: BuildingsInput.name,
       block: BuildingsInput.block,
-      images_url: images_url || Building.images_url,
+      images: building_images || Building.images,
       project_id: BuildingsInput.project_id || Building.project_id,
     };
 
@@ -72,7 +77,7 @@ export default function BuildingsCard({
       >
         <div className="size-full flex flex-wrap justify-center items-center italic">
           <img
-            src={Building.images_url[0]}
+            src={Building.images[0].url || undefined}
             alt="building Image"
             className="size-9/12 rounded-lg"
           />

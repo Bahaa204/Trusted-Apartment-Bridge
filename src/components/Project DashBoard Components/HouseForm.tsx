@@ -4,7 +4,8 @@ type HouseData = {
   house_floor: number;
   house_nb_bedrooms: number;
   house_nb_bathrooms: number;
-  house_building_id: number | undefined;
+  house_building_id: Building["id"];
+  house_price: number;
 };
 
 type HouseFormProps = HouseData & {
@@ -19,6 +20,7 @@ export default function HouseForm({
   house_floor,
   house_nb_bathrooms,
   house_nb_bedrooms,
+  house_price,
   updateFields,
   Options,
 }: HouseFormProps) {
@@ -66,6 +68,21 @@ export default function HouseForm({
           value={house_nb_bathrooms}
           onChange={(event) =>
             updateFields({ house_nb_bathrooms: parseInt(event.target.value) })
+          }
+          disabled={loading}
+        />
+      </div>
+
+      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
+        <label htmlFor="price">Price</label>
+        <input
+          type="number"
+          id="price"
+          className="border border-black rounded disabled:cursor-not-allowed"
+          required
+          value={house_price}
+          onChange={(event) =>
+            updateFields({ house_price: parseInt(event.target.value) })
           }
           disabled={loading}
         />

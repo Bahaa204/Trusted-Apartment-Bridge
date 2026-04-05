@@ -4,7 +4,7 @@ type BuildingData = {
   buildings_name: string;
   buildings_block: string;
   buildings_images: FileList | null;
-  buildings_project_id: number | undefined;
+  buildings_project_id: Project["id"];
 };
 
 type BuildingFormProps = BuildingData & {

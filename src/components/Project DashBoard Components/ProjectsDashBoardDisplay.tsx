@@ -3,19 +3,39 @@ import type { Building, House, Project } from "../../types/types";
 import ProjectCard from "./ProjectCard";
 import BuildingsCard from "./BuildingsCard";
 import HouseCard from "./HouseCard";
-// import Modal from "./Modal";
+
+type Functions = {
+  UpdateProject: (
+    updated_project: Project,
+    projectId: Project["id"],
+  ) => Promise<boolean>;
+  RemoveProject: (projectId: Project["id"]) => Promise<boolean>;
+  UpdateBuilding: (
+    updated_building: Building,
+    buildingId: Building["id"],
+  ) => Promise<boolean>;
+  RemoveBuilding: (buildingId: Building["id"]) => Promise<boolean>;
+  UpdateHouse: (updated_house: House, houseId: House["id"]) => Promise<boolean>;
+  RemoveHouse: (houseId: House["id"]) => Promise<boolean>;
+};
 
 type ProjectsDashBoardDisplayProps = {
   Projects: Project[];
   Buildings: Building[];
   Houses: House[];
-};
+} & Functions;
 
 // Temp Styling
 export default function ProjectsDashBoardDisplay({
   Buildings,
   Houses,
   Projects,
+  RemoveBuilding,
+  RemoveHouse,
+  RemoveProject,
+  UpdateBuilding,
+  UpdateHouse,
+  UpdateProject,
 }: ProjectsDashBoardDisplayProps) {
   const [BuildingProjectID, setBuildingProjectID] =
     useState<Project["id"]>(undefined);
@@ -45,6 +65,8 @@ export default function ProjectsDashBoardDisplay({
                   key={project.id}
                   ToggleBuildingShow={ToggleBuildingShow}
                   project={project}
+                  RemoveProject={RemoveProject}
+                  UpdateProject={UpdateProject}
                 />
               ))}
               {BuildingProjectID &&
@@ -56,6 +78,8 @@ export default function ProjectsDashBoardDisplay({
                       Building={building}
                       Projects={Projects}
                       setHouseBuildingID={setHouseBuildingID}
+                      RemoveBuilding={RemoveBuilding}
+                      UpdateBuilding={UpdateBuilding}
                     />
                   );
                 })}
@@ -68,6 +92,8 @@ export default function ProjectsDashBoardDisplay({
                         Buildings={Buildings}
                         house={house}
                         key={house.id}
+                        RemoveHouse={RemoveHouse}
+                        UpdateHouse={UpdateHouse}
                       />
                     );
                   })}
