@@ -21,7 +21,7 @@ export function useAuth() {
   // Helper function to set the error
   function SetError(error: PostgrestError | AuthError) {
     const msg = `Failed to fetch Session. Error message: ${error.message}`;
-    console.error(msg);
+    console.error(error);
     setError(msg);
     setLoading(false);
   }
@@ -117,6 +117,36 @@ export function useAuth() {
     return true;
   }
 
+  async function ResetPassword(email: string) {
+    resetSates();
+
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
+    if (error) {
+      SetError(error);
+      return false;
+    }
+
+    return true;
+  }
+
+  async function UpdatePassword(new_password: string) {
+    resetSates();
+
+    const { error } = await supabaseClient.auth.updateUser({
+      password: new_password,
+    });
+
+    if (error) {
+      SetError(error);
+      return false;
+    }
+
+    return true;
+  }
+
   return {
     Session,
     Error,
@@ -125,5 +155,7 @@ export function useAuth() {
     SignInWithOAuth,
     SignUp,
     SignOut,
+    ResetPassword,
+    UpdatePassword,
   };
 }

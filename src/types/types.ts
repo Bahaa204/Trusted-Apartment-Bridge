@@ -70,3 +70,5 @@ export type ProjectsInput = Omit<Project, "images"> & {
 export type BuildingInput = Omit<Building, "images"> & {
   images: FileList | null;
 };
+
+export type LoginMode = "SignIn" | "SignUp" | "ResetPassword";
