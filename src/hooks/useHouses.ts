@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import type { House } from "../types/types";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { supabaseClient } from "../lib/supabaseClient";
+import { GetMinMaxDate } from "../helpers/Date";
+import type { DateReturn, DateString } from "../types/date";
 
 export function useHouses() {
   const [Houses, setHouses] = useState<House[]>([]);
@@ -47,7 +49,7 @@ export function useHouses() {
     channel
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "projects" },
+        { event: "INSERT", schema: "public", table: "houses" },
         (payload) => {
           const newHouse = payload.new as House;
 
@@ -56,7 +58,7 @@ export function useHouses() {
       )
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "projects" },
+        { event: "UPDATE", schema: "public", table: "houses" },
         (payload) => {
           const updatedHouses = payload.new as House;
 
@@ -69,7 +71,7 @@ export function useHouses() {
       )
       .on(
         "postgres_changes",
-        { event: "DELETE", schema: "public", table: "projects" },
+        { event: "DELETE", schema: "public", table: "houses" },
         (payload) => {
           const deletedHouse = payload.old as House;
 
@@ -138,5 +140,55 @@ export function useHouses() {
     return true;
   }
 
-  return { Houses, Loading, Error, AddHouse, UpdateHouse, RemoveHouse };
+  function getDates(): DateReturn {
+    // Extracting the timestamps from the houses and filtering out any null or undefined values
+    const timestamps: string[] = Houses.map((house) => house.added_at).filter(
+      (timestamp): timestamp is string => Boolean(timestamp),
+    );
+
+    const { minInputDate, maxInputDate } = GetMinMaxDate(timestamps);
+
+    return { minInputDate, maxInputDate };
+  }
+
+  async function getHousesBetweenDates(
+    minDate: DateString,
+    maxDate: DateString,
+  ) {
+    // Start of minDate (inclusive)
+    const start = new Date(minDate);
+    start.setUTCHours(0, 0, 0, 0);
+
+    // Start of next day after maxDate (exclusive)
+    const end = new Date(maxDate);
+    end.setDate(end.getDate() + 1);
+    end.setUTCHours(0, 0, 0, 0);
+
+    const { data, error: FetchError } = (await supabaseClient
+      .from("houses")
+      .select("*")
+      .gte("added_at", start.toISOString())
+      .lt("added_at", end.toISOString())) as {
+      data: House[] | null;
+      error: PostgrestError | null;
+    };
+
+    if (FetchError) {
+      SetError(FetchError);
+      return [];
+    }
+
+    return data;
+  }
+
+  return {
+    Houses,
+    Loading,
+    Error,
+    AddHouse,
+    UpdateHouse,
+    RemoveHouse,
+    getDates,
+    getHousesBetweenDates,
+  };
 }

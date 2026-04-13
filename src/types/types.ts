@@ -72,3 +72,8 @@ export type BuildingInput = Omit<Building, "images"> & {
 };
 
 export type LoginMode = "SignIn" | "SignUp" | "ResetPassword";
+
+export type Employee = Common & {
+  email: string;
+  salary: number;
+};
