@@ -5,6 +5,9 @@ import { formatDate } from "../helpers/Date";
 import type { DateString } from "../types/date";
 import { useAuth } from "../hooks/useAuth";
 import { Navigate } from "react-router-dom";
+import ChartBarInteractive from "@/components/BarChart";
+import type { ChartConfig } from "@/components/ui/chart";
+import type { ChartData } from "@/types/chart";
 
 export default function Finances() {
   const { Session, Error: AuthError, Loading: AuthLoading } = useAuth();
@@ -25,6 +28,9 @@ export default function Finances() {
     null,
   );
   const [Income, setIncome] = useState<number>(0);
+  const [Calculating, setCalculating] = useState<boolean>(false);
+  const [ChartData, setChartData] = useState<ChartData[]>([]);
+
   const MinDate = SelectedMinDate ?? minInputDate;
   const MaxDate = SelectedMaxDate ?? maxInputDate;
 
@@ -45,13 +51,17 @@ export default function Finances() {
     return <div>Loading Data...</div>;
   }
 
-  if (!Session){
-    return <Navigate to="/" replace />
+  if (!Session) {
+    return <Navigate to="/" replace />;
   }
 
   async function handleClick() {
+    if (Calculating) return;
+
+    setCalculating(true);
     if (new Date(MinDate) > new Date(MaxDate)) {
       alert("Start date must be before end date.");
+      setCalculating(false);
       return;
     }
 
@@ -60,9 +70,12 @@ export default function Finances() {
 
     const houses = await getHousesBetweenDates(MinDate, MaxDate);
 
+    console.log("Houses between dates: ", houses);
+
     if (!houses || houses.length === 0) {
       setIncome(0);
       alert(`No Houses were added during ${MinDate} and ${MaxDate}`);
+      setCalculating(false);
       return;
     }
 
@@ -71,7 +84,14 @@ export default function Finances() {
       0,
     );
 
+    console.log("Income: ", income);
+
     setIncome(income);
+
+    const chartData = await ConstructChartData(MinDate, MaxDate);
+    setChartData(chartData);
+
+    setCalculating(false);
   }
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -83,6 +103,63 @@ export default function Finances() {
 
     if (name.includes("max")) setSelectedMaxDate(formattedDate);
     else setSelectedMinDate(formattedDate);
+  }
+
+  const chartConfig = {
+    views: {
+      label: "Finances",
+    },
+    profit: {
+      label: "Total Profit",
+      color: "var(--chart-1)",
+    },
+    income: {
+      label: "Total Income",
+      color: "var(--chart-2)",
+    },
+    expenses: {
+      label: "Total Expenses",
+      color: "var(--chart-3)",
+    },
+  } satisfies ChartConfig;
+
+  async function ConstructChartData(minDate: DateString, maxDate: DateString) {
+    const data: ChartData[] = [];
+
+    const currentDate = new Date(minDate);
+    const endDate = new Date(maxDate);
+    const expenses = getSalaries();
+
+    while (currentDate <= endDate) {
+      // console.log("Current Date: ", currentDate);
+
+      const formattedDate = formatDate(currentDate);
+
+      const houses = await getHousesBetweenDates(formattedDate, formattedDate);
+
+      console.log("House: ", houses);
+
+      const income = houses.reduce(
+      (sum, house) => (sum += house.is_sold ? house.price : 0),
+      0,
+    );
+
+      const part: ChartData = {
+        date: formattedDate,
+        profit: income - expenses,
+        income: income,
+        expenses: expenses,
+      };
+
+      console.log(part);
+
+      data.push(part);
+
+      currentDate.setDate(currentDate.getDate() + 1);
+      // console.log("Moved to the next Day");
+    }
+
+    return data;
   }
 
   return (
@@ -116,10 +193,17 @@ export default function Finances() {
         <p>Income: {Income}</p>
         <p>Expenses: {getSalaries()}</p>
         <p>Profit: {Income - getSalaries()}</p>
-        <button type="button" onClick={handleClick}>
-          Calculate Profits
+        <button type="button" onClick={handleClick} disabled={Calculating}>
+          {Calculating ? "Calculating..." : "Calculate Profits"}
         </button>
       </div>
+
+      <ChartBarInteractive
+        title="Finances"
+        description="showing finances between the selected time frames"
+        data={ChartData}
+        config={chartConfig}
+      />
     </>
   );
 }

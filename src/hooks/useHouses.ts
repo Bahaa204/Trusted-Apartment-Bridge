@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { House } from "../types/types";
+import type { Data, House } from "../types/types";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { supabaseClient } from "../lib/supabaseClient";
 import { GetMinMaxDate } from "../helpers/Date";
@@ -29,9 +29,9 @@ export function useHouses() {
     async function fetchHouses() {
       resetStates();
 
-      const { data, error: FetchError } = await supabaseClient
+      const { data, error: FetchError } = (await supabaseClient
         .from("houses")
-        .select("*");
+        .select("*")) as Data<House[]>;
 
       if (FetchError) {
         SetError(FetchError);
@@ -168,10 +168,7 @@ export function useHouses() {
       .from("houses")
       .select("*")
       .gte("added_at", start.toISOString())
-      .lt("added_at", end.toISOString())) as {
-      data: House[] | null;
-      error: PostgrestError | null;
-    };
+      .lt("added_at", end.toISOString())) as Data<House[]>;
 
     if (FetchError) {
       SetError(FetchError);

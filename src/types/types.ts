@@ -1,3 +1,4 @@
+import type { PostgrestError } from "@supabase/supabase-js";
 import type { Dispatch, SetStateAction } from "react";
 
 // Updater Function Type of the useState hook
@@ -77,3 +78,7 @@ export type Employee = Common & {
   email: string;
   salary: number;
 };
+
+export type Data<T> =
+  | { data: T; error: null }
+  | { error: PostgrestError; data: null };
