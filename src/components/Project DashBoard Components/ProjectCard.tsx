@@ -2,10 +2,31 @@ import { useState } from "react";
 import type { Country, Image, Project, ProjectsInput } from "../../types/types";
 import { DeleteImages, UploadImage } from "../../services/imageServices";
 import Modal from "./Modal";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardDescription,
+  CardAction,
+  CardFooter,
+} from "../ui/card";
+
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Textarea } from "../ui/textarea";
 
 type ProjectCardsProps = {
   project: Project;
   Countries: Country[];
+  IsBuildingOpen: boolean;
   ToggleBuildingShow: (projectId: Project["id"]) => void;
   UpdateProject: (
     updated_project: Project,
@@ -15,12 +36,16 @@ type ProjectCardsProps = {
 };
 
 export default function ProjectCard({
-  ToggleBuildingShow,
   project,
   Countries,
+  IsBuildingOpen,
+  ToggleBuildingShow,
   RemoveProject,
   UpdateProject,
 }: ProjectCardsProps) {
+  const PROJECT_PLACEHOLDER_IMAGE =
+    "https://placehold.co/820x360/1f2937/e5e7eb?text=No+Project+Image";
+
   const InitialValue: ProjectsInput = {
     name: project.name || "",
     description: project.description || "",
@@ -33,6 +58,8 @@ export default function ProjectCard({
   const [ProjectsInput, setProjectsInput] =
     useState<ProjectsInput>(InitialValue);
   const [IsOpen, setIsOpen] = useState<boolean>(false);
+
+  const projectImageSrc = project.images[0]?.url || PROJECT_PLACEHOLDER_IMAGE;
 
   async function handleEdit() {
     const images = ProjectsInput.images;
@@ -76,24 +103,20 @@ export default function ProjectCard({
 
   return (
     <>
-      <div
-        key={project.id}
-        className="bg-white text-black flex flex-col justify-center items-center gap-2.5 text-center p-4 rounded-2xl"
-      >
-        <div className="size-full flex flex-wrap justify-center items-center italic">
-          <img
-            src={project.images[0].url || undefined}
-            alt={`${project.name} image`}
-            className="size-9/12 rounded-lg"
-          />
-        </div>
-        <div className="flex flex-col flex-wrap justify-center items-center gap-2.5">
-          <p>
-            <strong>Project Name:</strong>
+      <Card>
+        <img
+          src={projectImageSrc}
+          alt={`${project.name} image`}
+          className="w-full h-62.5 object-center bg-no-repeat bg-cover italic"
+          onError={(event) => {
+            event.currentTarget.src = PROJECT_PLACEHOLDER_IMAGE;
+          }}
+        />
+        <CardHeader>
+          <CardTitle>
             {EditMode ? (
-              <input
+              <Input
                 type="text"
-                className="border border-black rounded disabled:cursor-not-allowed size-full"
                 value={ProjectsInput.name}
                 onChange={(event) => {
                   setProjectsInput((prev) => ({
@@ -105,13 +128,10 @@ export default function ProjectCard({
             ) : (
               project.name
             )}
-          </p>
-          <p>
-            <strong>Project Description:</strong>
+          </CardTitle>
+          <CardDescription>
             {EditMode ? (
-              <input
-                type="text"
-                className="border border-black rounded disabled:cursor-not-allowed size-full"
+              <Textarea
                 value={ProjectsInput.description}
                 onChange={(event) => {
                   setProjectsInput((prev) => ({
@@ -123,13 +143,36 @@ export default function ProjectCard({
             ) : (
               project.description
             )}
-          </p>
+          </CardDescription>
+          <CardAction className="flex flex-col justify-center items-center gap-2.5">
+            <Button
+              variant="destructive"
+              size="lg"
+              className="cursor-pointer"
+              onClick={() => setIsOpen(true)}
+            >
+              Delete Project
+            </Button>
+            <Button
+              variant="secondary"
+              size="lg"
+              className="cursor-pointer"
+              onClick={() => {
+                if (EditMode) return handleEdit();
+                return setEditMode((prev) => !prev);
+              }}
+            >
+              {EditMode ? "Submit Edits" : "Edit Project"}
+            </Button>
+          </CardAction>
+        </CardHeader>
+
+        <CardContent>
           <p>
             <strong>Project Location:</strong>
             {EditMode ? (
-              <input
+              <Input
                 type="text"
-                className="border border-black rounded disabled:cursor-not-allowed size-full"
                 value={ProjectsInput.location}
                 onChange={(event) => {
                   setProjectsInput((prev) => ({
@@ -142,31 +185,34 @@ export default function ProjectCard({
               project.location
             )}
           </p>
-
           <p>
             {EditMode ? (
               <>
                 <strong>Select a Country: </strong>
-                <select
-                  value={ProjectsInput.country_id}
-                  className="border border-black rounded cursor-pointer disabled:cursor-not-allowed size-full"
-                  onChange={(event) => {
+                <Select
+                  value={String(ProjectsInput.country_id ?? "")}
+                  onValueChange={(value) => {
                     setProjectsInput((prev) => ({
                       ...prev,
-                      country_id: parseInt(event.target.value),
+                      country_id: parseInt(value),
                     }));
                   }}
                 >
-                  {Countries.map((country) => (
-                    <option value={country.id} key={country.id}>
-                      {country.name}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Countries.map((country) => (
+                      <SelectItem value={String(country.id)} key={country.id}>
+                        {country.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </>
             ) : (
               <>
-                <strong>Project Name: </strong>
+                <strong>Country Name: </strong>
                 {
                   Countries.find((country) => country.id === project.country_id)
                     ?.name
@@ -174,16 +220,14 @@ export default function ProjectCard({
               </>
             )}
           </p>
-
           <p>
             {EditMode ? (
               <>
                 <strong>Project Images:</strong>
-                <input
+                <Input
                   type="file"
                   multiple
                   accept="images/*"
-                  className="border border-black rounded cursor-pointer disabled:cursor-not-allowed size-full"
                   onChange={(event) => {
                     setProjectsInput((prev) => ({
                       ...prev,
@@ -204,41 +248,22 @@ export default function ProjectCard({
               {project.added_at?.split("T")[0]}
             </p>
           )}
-          <button
-            type="button"
-            className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
-            onClick={() => {
-              ToggleBuildingShow(project.id);
-            }}
+        </CardContent>
+        <CardFooter>
+          <Button
+            variant="default"
+            size="lg"
+            className="cursor-pointer w-full"
+            onClick={() => ToggleBuildingShow(project.id)}
           >
-            See Buildings
-          </button>
-          <button
-            type="button"
-            className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
-            onClick={() => {
-              if (EditMode) return handleEdit();
-              return setEditMode((prev) => !prev);
-            }}
-          >
-            {EditMode ? "Submit Edits" : "Edit Project"}
-          </button>
-          <button
-            type="button"
-            className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
-            onClick={() => {
-              setIsOpen(true);
-            }}
-          >
-            Delete Project
-          </button>
-        </div>
-      </div>
+            {IsBuildingOpen ? "Hide Buildings" : "See Buildings"}
+          </Button>
+        </CardFooter>
+      </Card>
 
       <Modal
         Open={IsOpen}
-        setopen={setIsOpen}
-        id={project.id}
+        setOpen={setIsOpen}
         handleDelete={handleDelete}
         text={project.name}
       />

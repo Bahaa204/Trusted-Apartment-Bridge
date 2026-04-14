@@ -1,6 +1,15 @@
 import { useState } from "react";
 import type { Building, House } from "../../types/types";
 import Modal from "./Modal";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Button } from "../ui/button";
 
 type HouseCardsProps = {
   house: House;
@@ -43,21 +52,17 @@ export default function HouseCard({
     if (ok) setEditMode(false);
   }
 
-  async function handleDelete(houseId: House["id"]) {
-    const ok = await RemoveHouse(houseId);
+  async function handleDelete() {
+    const ok = await RemoveHouse(house.id);
 
-    if (ok) return alert("Building has been deleted");
+    if (ok) return alert("House has been deleted");
   }
 
   return (
     <>
-      <div
-        className="bg-white text-black flex flex-col justify-center items-center gap-2.5 text-center p-4 rounded-2xl"
-        key={house.id}
-      >
-        <div className="flex flex-col flex-wrap justify-center items-center gap-2.5">
-          <p>
-            <strong>House Floor: </strong>{" "}
+      <Card>
+        <CardHeader>
+          <CardTitle>
             {EditMode ? (
               <input
                 type="text"
@@ -71,16 +76,59 @@ export default function HouseCard({
                 }}
               />
             ) : (
-              house.floor
+              `Floor ${house.floor}`
             )}
-          </p>
+          </CardTitle>
+
+          <CardDescription>
+            {EditMode ? (
+              <input
+                type="text"
+                className="border border-black rounded disabled:cursor-not-allowed size-full"
+                value={HouseInput.price}
+                onChange={(event) => {
+                  setHouseInput((prev) => ({
+                    ...prev,
+                    price: parseInt(event.target.value.trim()),
+                  }));
+                }}
+              />
+            ) : (
+              `$${house.price}`
+            )}
+          </CardDescription>
+
+          <CardAction className="flex flex-col justify-center items-center gap-2.5">
+            <Button
+              variant="destructive"
+              size="lg"
+              className="cursor-pointer"
+              onClick={() => setIsOpen(true)}
+            >
+              Delete House
+            </Button>
+            <Button
+              variant="secondary"
+              size="lg"
+              className="cursor-pointer"
+              onClick={() => {
+                if (EditMode) return handleEdit(house.id);
+                return setEditMode((prev) => !prev);
+              }}
+            >
+              {EditMode ? "Submit Edits" : "Edit House"}
+            </Button>
+          </CardAction>
+        </CardHeader>
+
+        <CardContent>
           <p>
             <strong>Number of Bathrooms: </strong>
             {EditMode ? (
               <input
                 type="text"
                 className="border border-black rounded disabled:cursor-not-allowed size-full"
-                value={HouseInput.floor}
+                value={HouseInput.nb_bathrooms}
                 onChange={(event) => {
                   setHouseInput((prev) => ({
                     ...prev,
@@ -98,7 +146,7 @@ export default function HouseCard({
               <input
                 type="text"
                 className="border border-black rounded disabled:cursor-not-allowed size-full"
-                value={HouseInput.floor}
+                value={HouseInput.nb_bedrooms}
                 onChange={(event) => {
                   setHouseInput((prev) => ({
                     ...prev,
@@ -108,6 +156,28 @@ export default function HouseCard({
               />
             ) : (
               house.nb_bedrooms
+            )}
+          </p>
+          <p>
+            <strong>Is Sold: </strong>
+            {EditMode ? (
+              <select
+                value={HouseInput.is_sold ? "yes" : "no"}
+                className="border border-black rounded cursor-pointer disabled:cursor-not-allowed size-full"
+                onChange={(event) => {
+                  setHouseInput((prev) => ({
+                    ...prev,
+                    is_sold: event.target.value === "yes",
+                  }));
+                }}
+              >
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
+            ) : house.is_sold ? (
+              "Yes"
+            ) : (
+              "No"
             )}
           </p>
           <p>
@@ -142,56 +212,17 @@ export default function HouseCard({
               </>
             )}
           </p>
-          <p>
-            <strong>Price: </strong>
-            {EditMode ? (
-              <input
-                type="text"
-                className="border border-black rounded disabled:cursor-not-allowed size-full"
-                value={HouseInput.price}
-                onChange={(event) => {
-                  setHouseInput((prev) => ({
-                    ...prev,
-                    price: parseInt(event.target.value.trim()),
-                  }));
-                }}
-              />
-            ) : (
-              house.price
-            )}{" "}
-            $
-          </p>
           {!EditMode && (
             <p>
-              <strong>House Added At: </strong> {house.added_at?.split("T")[0]}
+              <strong>House added at:</strong> {house.added_at?.split("T")[0]}
             </p>
           )}
-        </div>
-        <button
-          type="button"
-          className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
-          onClick={() => {
-            if (EditMode) return handleEdit(house.id);
-            return setEditMode((prev) => !prev);
-          }}
-        >
-          {EditMode ? "Submit Edits" : "Edit House"}
-        </button>
-        <button
-          type="button"
-          className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
-          onClick={() => {
-            setIsOpen(true);
-          }}
-        >
-          Delete House
-        </button>
-      </div>
+        </CardContent>
+      </Card>
 
       <Modal
         Open={IsOpen}
-        setopen={setIsOpen}
-        id={house.id}
+        setOpen={setIsOpen}
         handleDelete={handleDelete}
         text="this house"
       />

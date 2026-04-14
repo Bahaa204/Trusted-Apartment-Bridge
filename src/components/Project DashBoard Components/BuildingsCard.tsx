@@ -4,15 +4,33 @@ import type {
   BuildingInput,
   Image,
   Project,
-  UpdaterFunction,
 } from "../../types/types";
 import { DeleteImages, UploadImage } from "../../services/imageServices";
 import Modal from "./Modal";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 type BuildingsCardProps = {
   Building: Building;
   Projects: Project[];
-  setHouseBuildingID: UpdaterFunction<Building["id"]>;
+  IsHouseOpen: boolean;
+  ToggleHouseShow: (buildingId: Building["id"]) => void;
   UpdateBuilding: (
     updated_building: Building,
     buildingId: Building["id"],
@@ -23,10 +41,14 @@ type BuildingsCardProps = {
 export default function BuildingsCard({
   Building,
   Projects,
-  setHouseBuildingID,
+  IsHouseOpen,
+  ToggleHouseShow,
   RemoveBuilding,
   UpdateBuilding,
 }: BuildingsCardProps) {
+  const BUILDING_PLACEHOLDER_IMAGE =
+    "https://placehold.co/820x360/1f2937/e5e7eb?text=No+Building+Image";
+
   const InitialValue: BuildingInput = {
     name: Building.name || "",
     block: Building.block || "",
@@ -36,10 +58,11 @@ export default function BuildingsCard({
 
   const [BuildingsInput, setBuildingsInput] =
     useState<BuildingInput>(InitialValue);
-
   const [EditMode, setEditMode] = useState<boolean>(false);
-
   const [IsOpen, setIsOpen] = useState<boolean>(false);
+
+  const buildingImageSrc =
+    Building.images[0]?.url || BUILDING_PLACEHOLDER_IMAGE;
 
   async function handleEdit() {
     const images = BuildingsInput.images;
@@ -51,6 +74,7 @@ export default function BuildingsCard({
         if (imageObj) building_images.push(imageObj);
       }
     }
+
     const updatedBuilding: Building = {
       name: BuildingsInput.name,
       block: BuildingsInput.block,
@@ -82,24 +106,21 @@ export default function BuildingsCard({
 
   return (
     <>
-      <div
-        className="bg-white text-black flex flex-col justify-center items-center gap-2.5 text-center p-4 rounded-2xl"
-        key={Building.id}
-      >
-        <div className="size-full flex flex-wrap justify-center items-center italic">
-          <img
-            src={Building.images[0].url || undefined}
-            alt="building Image"
-            className="size-9/12 rounded-lg"
-          />
-        </div>
-        <div className="flex flex-col flex-wrap justify-center items-center gap-2.5">
-          <p>
-            <strong>Building Name: </strong>
+      <Card>
+        <img
+          src={buildingImageSrc}
+          alt={`${Building.name} image`}
+          className="w-full h-62.5 object-center bg-no-repeat bg-cover italic"
+          onError={(event) => {
+            event.currentTarget.src = BUILDING_PLACEHOLDER_IMAGE;
+          }}
+        />
+
+        <CardHeader>
+          <CardTitle>
             {EditMode ? (
-              <input
+              <Input
                 type="text"
-                className="border border-black rounded disabled:cursor-not-allowed size-full"
                 value={BuildingsInput.name}
                 onChange={(event) => {
                   setBuildingsInput((prev) => ({
@@ -111,14 +132,13 @@ export default function BuildingsCard({
             ) : (
               Building.name
             )}
-          </p>
-          <p>
-            <strong>Building Block: </strong>{" "}
+          </CardTitle>
+
+          <CardDescription>
             {EditMode ? (
-              <input
+              <Input
                 type="text"
-                className="border border-black rounded disabled:cursor-not-allowed size-full"
-                value={BuildingsInput.name}
+                value={BuildingsInput.block}
                 onChange={(event) => {
                   setBuildingsInput((prev) => ({
                     ...prev,
@@ -129,27 +149,56 @@ export default function BuildingsCard({
             ) : (
               Building.block
             )}
-          </p>
+          </CardDescription>
+
+          <CardAction className="flex flex-col justify-center items-center gap-2.5">
+            <Button
+              variant="destructive"
+              size="lg"
+              className="cursor-pointer"
+              onClick={() => setIsOpen(true)}
+            >
+              Delete Building
+            </Button>
+            <Button
+              variant="secondary"
+              size="lg"
+              className="cursor-pointer"
+              onClick={() => {
+                if (EditMode) return handleEdit();
+                return setEditMode((prev) => !prev);
+              }}
+            >
+              {EditMode ? "Submit Edits" : "Edit Building"}
+            </Button>
+          </CardAction>
+        </CardHeader>
+
+        <CardContent>
           <p>
             {EditMode ? (
               <>
                 <strong>Select a Project: </strong>
-                <select
-                  value={BuildingsInput.project_id}
-                  className="border border-black rounded cursor-pointer disabled:cursor-not-allowed size-full"
-                  onChange={(event) => {
+                <Select
+                  value={String(BuildingsInput.project_id ?? "")}
+                  onValueChange={(value) => {
                     setBuildingsInput((prev) => ({
                       ...prev,
-                      project_id: parseInt(event.target.value),
+                      project_id: parseInt(value),
                     }));
                   }}
                 >
-                  {Projects.map((project) => (
-                    <option value={project.id} key={project.id}>
-                      {project.name}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a project" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Projects.map((project) => (
+                      <SelectItem value={String(project.id)} key={project.id}>
+                        {project.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </>
             ) : (
               <>
@@ -161,14 +210,15 @@ export default function BuildingsCard({
               </>
             )}
           </p>
+
           <p>
             {EditMode ? (
               <>
-                <strong>Building Images: </strong>
-                <input
+                <strong>Building Images:</strong>
+                <Input
                   type="file"
+                  multiple
                   accept="images/*"
-                  className="border border-black rounded cursor-pointer disabled:cursor-not-allowed size-full"
                   onChange={(event) => {
                     setBuildingsInput((prev) => ({
                       ...prev,
@@ -179,46 +229,28 @@ export default function BuildingsCard({
               </>
             ) : (
               <>
-                <strong>Building Added At: </strong>
+                <strong>Building added at:</strong>
                 {Building.added_at?.split("T")[0]}
               </>
             )}
           </p>
-          <button
-            type="button"
-            className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
-            onClick={() =>
-              setHouseBuildingID((prev) => (prev ? undefined : Building.id))
-            }
+        </CardContent>
+
+        <CardFooter>
+          <Button
+            variant="default"
+            size="lg"
+            className="cursor-pointer w-full"
+            onClick={() => ToggleHouseShow(Building.id)}
           >
-            See Houses
-          </button>
-          <button
-            type="button"
-            className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
-            onClick={() => {
-              if (EditMode) return handleEdit();
-              return setEditMode((prev) => !prev);
-            }}
-          >
-            {EditMode ? "Submit Edits" : "Edit Building"}
-          </button>
-          <button
-            type="button"
-            className="bg-black text-white py-2 px-4 rounded-lg cursor-pointer"
-            onClick={() => {
-              setIsOpen(true);
-            }}
-          >
-            Delete Building
-          </button>
-        </div>
-      </div>
+            {IsHouseOpen ? "Hide Houses" : "See Houses"}
+          </Button>
+        </CardFooter>
+      </Card>
 
       <Modal
         Open={IsOpen}
-        setopen={setIsOpen}
-        id={Building.id}
+        setOpen={setIsOpen}
         handleDelete={handleDelete}
         text={Building.name}
       />

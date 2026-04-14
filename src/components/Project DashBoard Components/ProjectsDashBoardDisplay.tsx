@@ -1,8 +1,9 @@
 import { useState } from "react";
 import type { Building, Country, House, Project } from "../../types/types";
-import ProjectCard from "./ProjectCard";
+import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import BuildingsCard from "./BuildingsCard";
 import HouseCard from "./HouseCard";
+import ProjectCard from "./ProjectCard";
 
 type Functions = {
   UpdateProject: (
@@ -39,73 +40,185 @@ export default function ProjectsDashBoardDisplay({
   UpdateHouse,
   UpdateProject,
 }: ProjectsDashBoardDisplayProps) {
-  const [BuildingProjectID, setBuildingProjectID] =
-    useState<Project["id"]>(undefined);
-  const [HouseBuildingID, setHouseBuildingID] =
-    useState<Building["id"]>(undefined);
+  const [OpenProjectIDs, setOpenProjectIDs] = useState<
+    NonNullable<Project["id"]>[]
+  >([]);
+  const [OpenBuildingIDs, setOpenBuildingIDs] = useState<
+    NonNullable<Building["id"]>[]
+  >([]);
 
   function ToggleBuildingShow(projectId: Project["id"]) {
-    if (BuildingProjectID) {
-      setHouseBuildingID(undefined);
-      setBuildingProjectID(undefined);
-      return;
-    }
-    setBuildingProjectID(projectId);
+    if (typeof projectId !== "number") return;
+
+    const projectBuildingIDs = Buildings.filter(
+      (building) => building.project_id === projectId,
+    )
+      .map((building) => building.id)
+      .filter((id): id is number => typeof id === "number");
+
+    setOpenProjectIDs((prev) =>
+      prev.includes(projectId)
+        ? prev.filter((id) => id !== projectId)
+        : [...prev, projectId],
+    );
+
+    setOpenBuildingIDs((prev) =>
+      prev.filter((id) => !projectBuildingIDs.includes(id)),
+    );
+  }
+
+  function ToggleHouseShow(buildingId: Building["id"]) {
+    if (typeof buildingId !== "number") return;
+
+    setOpenBuildingIDs((prev) =>
+      prev.includes(buildingId)
+        ? prev.filter((id) => id !== buildingId)
+        : [...prev, buildingId],
+    );
   }
 
   return (
     <>
-      <div className="flex flex-col flex-wrap justify-center items-center gap-4 bg-gray-900 text-white">
-        <h3>View Current Projects:</h3>
-        <div className="grid grid-cols-5 grid-rows-5 justify-center items-center gap-4">
+      <Card className="flex flex-col flex-wrap justify-center items-center gap-4 bg-gray-900 text-white">
+        <CardTitle className="text-2xl text-center">
+          Projects Dashboard
+        </CardTitle>
+        <CardDescription className="text-white text-lg text-center">
+          Here you can view, edit, and delete your projects, buildings, and
+          houses. You can also add new ones using the form above.
+        </CardDescription>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-center items-start gap-4 w-full">
           {Projects.length === 0 ? (
-            <div>We currently have to no projects :(</div>
+            <div>We currently have no projects </div>
           ) : (
             <>
-              {Projects.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  ToggleBuildingShow={ToggleBuildingShow}
-                  project={project}
-                  Countries={Countries}
-                  RemoveProject={RemoveProject}
-                  UpdateProject={UpdateProject}
-                />
-              ))}
-              {BuildingProjectID &&
-                Buildings.map((building) => {
-                  if (building.project_id !== BuildingProjectID) return;
+              {Projects.map((project) =>
+                (() => {
+                  if (typeof project.id !== "number") return null;
+
                   return (
-                    <BuildingsCard
-                      key={building.id}
-                      Building={building}
-                      Projects={Projects}
-                      setHouseBuildingID={setHouseBuildingID}
-                      RemoveBuilding={RemoveBuilding}
-                      UpdateBuilding={UpdateBuilding}
-                    />
+                    <div
+                      key={project.id}
+                      className={
+                        OpenProjectIDs.includes(project.id)
+                          ? "md:col-span-2 xl:col-span-3"
+                          : ""
+                      }
+                    >
+                      {OpenProjectIDs.includes(project.id) ? (
+                        <div className="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-3 items-start">
+                          <ProjectCard
+                            IsBuildingOpen={true}
+                            ToggleBuildingShow={ToggleBuildingShow}
+                            project={project}
+                            Countries={Countries}
+                            RemoveProject={RemoveProject}
+                            UpdateProject={UpdateProject}
+                          />
+
+                          <div className="rounded-lg border border-white/20 p-3 space-y-3">
+                            <h3 className="text-lg font-semibold">Buildings</h3>
+                            <p className="text-sm text-white/80">
+                              {project.name}
+                            </p>
+
+                            {Buildings.filter(
+                              (building) => building.project_id === project.id,
+                            ).length === 0 ? (
+                              <p>No buildings found for this project.</p>
+                            ) : (
+                              <div className="grid grid-cols-1 gap-3">
+                                {Buildings.filter(
+                                  (building) =>
+                                    building.project_id === project.id,
+                                ).map((building) => {
+                                  if (typeof building.id !== "number")
+                                    return null;
+
+                                  const buildingHouses = Houses.filter(
+                                    (house) =>
+                                      house.building_id === building.id,
+                                  );
+
+                                  return (
+                                    <div
+                                      key={building.id}
+                                      className={
+                                        OpenBuildingIDs.includes(building.id)
+                                          ? "grid grid-cols-1 2xl:grid-cols-[360px_1fr] gap-3 items-start"
+                                          : ""
+                                      }
+                                    >
+                                      <BuildingsCard
+                                        Building={building}
+                                        Projects={Projects}
+                                        IsHouseOpen={OpenBuildingIDs.includes(
+                                          building.id,
+                                        )}
+                                        ToggleHouseShow={ToggleHouseShow}
+                                        UpdateBuilding={UpdateBuilding}
+                                        RemoveBuilding={RemoveBuilding}
+                                      />
+
+                                      {OpenBuildingIDs.includes(
+                                        building.id,
+                                      ) && (
+                                        <div className="rounded-lg border border-white/20 p-3 space-y-3">
+                                          <h4 className="font-semibold">
+                                            Houses
+                                          </h4>
+                                          <p className="text-sm text-white/80">
+                                            {building.name}
+                                          </p>
+
+                                          {buildingHouses.length === 0 ? (
+                                            <p>
+                                              No houses found for this building.
+                                            </p>
+                                          ) : (
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                              {buildingHouses.map((house) => (
+                                                <HouseCard
+                                                  key={house.id}
+                                                  house={house}
+                                                  Buildings={Buildings.filter(
+                                                    (item) =>
+                                                      item.project_id ===
+                                                      project.id,
+                                                  )}
+                                                  UpdateHouse={UpdateHouse}
+                                                  RemoveHouse={RemoveHouse}
+                                                />
+                                              ))}
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <ProjectCard
+                          IsBuildingOpen={false}
+                          ToggleBuildingShow={ToggleBuildingShow}
+                          project={project}
+                          Countries={Countries}
+                          RemoveProject={RemoveProject}
+                          UpdateProject={UpdateProject}
+                        />
+                      )}
+                    </div>
                   );
-                })}
-              {HouseBuildingID && (
-                <>
-                  {Houses.map((house) => {
-                    if (house.building_id !== HouseBuildingID) return;
-                    return (
-                      <HouseCard
-                        Buildings={Buildings}
-                        house={house}
-                        key={house.id}
-                        RemoveHouse={RemoveHouse}
-                        UpdateHouse={UpdateHouse}
-                      />
-                    );
-                  })}
-                </>
+                })(),
               )}
             </>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </>
   );
 }

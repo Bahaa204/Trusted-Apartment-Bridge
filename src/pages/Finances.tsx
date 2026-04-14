@@ -5,14 +5,14 @@ import { formatDate } from "../helpers/Date";
 import type { DateRange, DateString } from "../types/date";
 import { useAuth } from "../hooks/useAuth";
 import { Navigate } from "react-router-dom";
-import ChartBarInteractive from "@/components/BarChart";
+import ChartBarInteractive from "@/components/Custom/BarChart";
 import type { ChartConfig } from "@/components/ui/chart";
 import type { ChartData } from "@/types/chart";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 // import { Card, CardHeader } from "@/components/ui/card";
-import { DatePickerWithRange } from "@/components/DatePickerWithRange";
-import Card from "@/components/Card";
+import { DatePickerWithRange } from "@/components/Custom/DatePickerWithRange";
+import Card from "@/components/Custom/Card";
 
 export default function Finances() {
   const { Session, Error: AuthError, Loading: AuthLoading } = useAuth();
