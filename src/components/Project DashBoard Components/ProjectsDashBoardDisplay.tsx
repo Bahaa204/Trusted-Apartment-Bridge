@@ -81,11 +81,11 @@ export default function ProjectsDashBoardDisplay({
     <>
       <Card className="flex flex-col flex-wrap justify-center items-center gap-4 bg-gray-900 text-white">
         <CardTitle className="text-2xl text-center">
-          Projects Dashboard
+          Projects Display
         </CardTitle>
         <CardDescription className="text-white text-lg text-center">
-          Here you can view, edit, and delete your projects, buildings, and
-          houses. You can also add new ones using the form above.
+          Here you can view, edit, and delete all projects, buildings, and
+          houses.
         </CardDescription>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-center items-start gap-4 w-full">
           {Projects.length === 0 ? (
