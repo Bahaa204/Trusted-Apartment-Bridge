@@ -33,11 +33,11 @@ export default function ChartBarInteractive({
   );
 
   return (
-    <Card className="border border-[#fd9a39]/40 py-0 shadow-sm">
+    <Card className="border border-[#fd9a39]/40 shadow-sm">
       <CardHeader className="flex flex-col items-stretch border-b border-[#fd9a39]/35 p-0! text-left! sm:flex-row">
-        <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-0!">
-          <CardTitle className="text-[#0b2b57]">{title}</CardTitle>
-          <CardDescription className="text-[#31527b]">
+        <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3">
+          <CardTitle className="text-[#0b2b57] text-3xl">{title}</CardTitle>
+          <CardDescription className="text-[#31527b] text-lg">
             {description}
           </CardDescription>
         </div>

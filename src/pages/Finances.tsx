@@ -171,9 +171,9 @@ export default function Finances() {
       <Card
         title="Finances"
         description="Manage your financial overview"
-        className="text-white w-full bg-transparent flex flex-col gap-6"
+        className="text-white min-h-screen w-full bg-transparent flex flex-col gap-6"
       >
-        <div className="mx-auto w-full h-31.25 max-w-md rounded-xl border bg-white/6 p-4 flex flex-wrap items-center justify-center gap-3">
+        <div className="mx-auto w-full h-31.25 max-w-md rounded-xl border bg-white/6 p-4 flex flex-wrap items-center justify-center gap-4">
           <DatePickerWithRange
             label="Select Dates"
             minDate={minInputDate}
