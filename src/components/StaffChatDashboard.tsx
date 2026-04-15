@@ -4,6 +4,20 @@ import { useMessages } from "../hooks/useMessages";
 import type { Conversation } from "@/types/chat";
 import { useAuth } from "@/hooks/useAuth";
 
+import { Button } from "@/components/ui/button";
+
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+import { Input } from "@/components/ui/input";
+
 export default function StaffChatDashboard() {
   const [selectedId, setSelectedId] = useState<Conversation["id"] | null>(null);
   const [Input, setInput] = useState<string>("");
@@ -87,78 +101,95 @@ export default function StaffChatDashboard() {
   const error = ConversationsError || MessagesError || AuthError;
 
   if (error) {
-    return <div className="chat-error">{error}</div>;
+    return (
+      <Card className="chat-error">
+        <CardHeader>
+          <CardTitle>Error</CardTitle>
+        </CardHeader>
+        <CardContent>{error}</CardContent>
+      </Card>
+    );
   }
 
   return (
-    <section className="staff-chat-shell">
-      <aside className="staff-chat-sidebar">
-        <header>
-          <h3>Open Chats</h3>
-          <p>{Conversations.length} active</p>
-        </header>
+    <Card className="staff-chat-shell p-0! gap-0!">
+      {/* Side Bar Card */}
+      <Card className="staff-chat-sidebar rounded-none!">
+        <CardHeader className="p-3">
+          <CardTitle>Open Chats</CardTitle>
+          <CardDescription>{Conversations.length} active</CardDescription>
+        </CardHeader>
 
-        {loading ? (
-          <div className="staff-chat-loading">
-            {AuthLoading ? "Checking Authentication" : "Loading chats"}...
-          </div>
-        ) : Conversations.length === 0 ? (
-          <div className="staff-chat-empty-list">
-            No open conversations yet.
-          </div>
-        ) : (
-          Conversations.map((conversation) => (
-            <div
-              key={conversation.id}
-              onClick={() => setSelectedId(conversation.id)}
-              className={`staff-chat-list-item ${conversation.id === selectedConversationId ? "active" : ""}`}
-            >
-              <strong>{conversation.customer_name || "Customer"}</strong>
-              <time>
-                {new Date(conversation.updated_at).toLocaleTimeString()}
-              </time>
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="staff-chat-loading">
+              {AuthLoading ? "Checking Authentication" : "Loading chats"}...
             </div>
-          ))
-        )}
-      </aside>
-
-      <main className="staff-chat-main">
-        {selected ? (
-          <>
-            <header className="staff-chat-header">
-              <div>
-                <h4>{selected.customer_name || "Customer"}</h4>
-                <p>Open support conversation</p>
-              </div>
-              <button
-                onClick={() => handleClose(selected.id)}
-                className="chat-secondary-btn"
-                type="button"
+          ) : Conversations.length === 0 ? (
+            <div className="staff-chat-empty-list">
+              No open conversations yet.
+            </div>
+          ) : (
+            Conversations.map((conversation, index) => (
+              <Card
+                key={conversation.id}
+                onClick={() => setSelectedId(conversation.id)}
+                className={`staff-chat-list-item ${conversation.id === selectedConversationId ? "active" : ""} rounded-none`}
               >
-                Close Chat
-              </button>
-            </header>
+                <CardHeader className="p-0">
+                  <CardTitle>
+                    {conversation.customer_name || "Customer"}
+                  </CardTitle>
+                  <CardDescription>Customer {index + 1}</CardDescription>
+                </CardHeader>
+                <CardFooter className="bg-transparent p-2!">
+                  {new Date(conversation.updated_at).toLocaleTimeString()}
+                </CardFooter>
+              </Card>
+            ))
+          )}
+        </CardContent>
+      </Card>
 
-            <div className="chat-messages">
-              {Messages.map((m) => (
-                <article
-                  key={m.id}
-                  className={`chat-message-row ${m.sender_type === "customer" ? "theirs" : "mine"}`}
+      {/* Conversation Card */}
+      <Card className="staff-chat-main rounded-none! p-0! bg-transparent">
+        {selected ? (
+          <Card className="min-h-screen rounded-none! p-0! bg-transparent">
+            <CardHeader className="staff-chat-header">
+              <CardTitle>{selected.customer_name || "Customer"}</CardTitle>
+              <CardDescription>Open support conversation</CardDescription>
+              <CardAction>
+                <Button
+                  onClick={() => handleClose(selected.id)}
+                  className="chat-secondary-btn"
+                  type="button"
                 >
+                  Close Chat
+                </Button>
+              </CardAction>
+            </CardHeader>
+            <CardContent className="min-h-screen bg-transparent">
+              {/* Messages Container */}
+              <Card className="chat-messages bg-none! rounded-none! border-none! min-h-screen">
+                {Messages.map((m) => (
                   <div
-                    className={`chat-bubble ${m.sender_type === "customer" ? "theirs" : "mine"}`}
+                    key={m.id}
+                    className={`chat-message-row ${m.sender_type === "customer" ? "theirs" : "mine"}`}
                   >
-                    <div className="chat-sender-line">
-                      {formatSender(m.sender_type, m.sender_id)}
+                    <div
+                      className={`chat-bubble ${m.sender_type === "customer" ? "theirs" : "mine"}`}
+                    >
+                      <div className="chat-sender-line">
+                        {formatSender(m.sender_type, m.sender_id)}
+                      </div>
+                      <p>{m.content}</p>
+                      <time>{new Date(m.created_at).toLocaleTimeString()}</time>
                     </div>
-                    <p>{m.content}</p>
-                    <time>{new Date(m.created_at).toLocaleTimeString()}</time>
                   </div>
-                </article>
-              ))}
-              <div ref={bottomRef} />
-            </div>
-
+                ))}
+                <div ref={bottomRef} />
+              </Card>
+            </CardContent>
             <div className="chat-input-wrap">
               <input
                 value={Input}
@@ -175,13 +206,13 @@ export default function StaffChatDashboard() {
                 Send
               </button>
             </div>
-          </>
+          </Card>
         ) : (
           <div className="staff-chat-main-empty">
             Select a conversation from the left panel to reply.
           </div>
         )}
-      </main>
-    </section>
+      </Card>
+    </Card>
   );
 }

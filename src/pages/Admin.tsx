@@ -73,14 +73,14 @@ export default function Admin() {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Welcome to the Admin Page</CardTitle>
-          <CardDescription>
+      <Card className="flex flex-col gap-5 justify-center min-h-screen">
+        <CardHeader className="text-center">
+          <CardTitle className="text-3xl font-bold">Welcome to the Admin Page</CardTitle>
+          <CardDescription className="text-xl">
             {`See Your options below to ${GetRoleFromEmail(Session.user.email) === "admin" ? "manage employees, finances, and" : "manage"} projects.`}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-6">
           {GetRoleFromEmail(Session.user.email) === "admin" && (
             <>
               <Card
@@ -88,14 +88,14 @@ export default function Admin() {
                 className="cursor-pointer"
               >
                 <CardHeader>
-                  <CardTitle>Manage Employees</CardTitle>
+                  <CardTitle className="text-xl">Manage Employees</CardTitle>
                   <CardDescription>
                     Add, edit, and delete employee records
                   </CardDescription>
                 </CardHeader>
                 <CardFooter>
                   <CardAction>
-                    <Button variant="link" className="cursor-pointer">
+                    <Button variant="link" className="cursor-pointer text-lg">
                       Go
                     </Button>
                   </CardAction>
@@ -106,14 +106,14 @@ export default function Admin() {
                 className="cursor-pointer"
               >
                 <CardHeader>
-                  <CardTitle>Manage Finances</CardTitle>
+                  <CardTitle className="text-xl">Manage Finances</CardTitle>
                   <CardDescription>
                     View financial reports and analytics
                   </CardDescription>
                 </CardHeader>
                 <CardFooter>
                   <CardAction>
-                    <Button variant="link" className="cursor-pointer">
+                    <Button variant="link" className="cursor-pointer text-lg">
                       Go
                     </Button>
                   </CardAction>
@@ -127,14 +127,14 @@ export default function Admin() {
             className="cursor-pointer"
           >
             <CardHeader>
-              <CardTitle>Manage Projects</CardTitle>
+              <CardTitle className="text-xl">Manage Projects</CardTitle>
               <CardDescription>
                 Add, edit, and delete project records
               </CardDescription>
             </CardHeader>
             <CardFooter>
               <CardAction>
-                <Button variant="link" className="cursor-pointer">
+                <Button variant="link" className="cursor-pointer text-lg">
                   Go
                 </Button>
               </CardAction>
@@ -143,7 +143,7 @@ export default function Admin() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Support Chat</CardTitle>
+              <CardTitle className="text-xl">Support Chat</CardTitle>
               <CardDescription>
                 Interact with customers and provide support
               </CardDescription>
@@ -156,7 +156,7 @@ export default function Admin() {
           {GetRoleFromEmail(Session.user.email) === "admin" && (
             <Card>
               <CardHeader>
-                <CardTitle>Invite an Admin</CardTitle>
+                <CardTitle className="text-xl">Invite an Admin</CardTitle>
                 <CardDescription>
                   Use the form below to invite a new admin user. Please enter
                   their email and password. The email must end with
