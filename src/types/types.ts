@@ -82,3 +82,5 @@ export type Employee = Common & {
 export type Data<T> =
   | { data: T; error: null }
   | { error: PostgrestError; data: null };
+
+export type UserRole = "admin" | "employee" | "customer";

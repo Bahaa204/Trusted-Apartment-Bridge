@@ -6,6 +6,21 @@ import {
 } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { supabaseClient } from "../lib/supabaseClient";
+import type { UserRole } from "@/types/types";
+
+const ADMIN_EMAIL_DOMAIN = "@tab-admin.com";
+const EMPLOYEE_EMAIL_DOMAIN = "@tab-employee.com";
+
+export function GetRoleFromEmail(email?: string | null): UserRole {
+  if (!email) return "customer";
+
+  const normalizedEmail = email.trim().toLowerCase();
+
+  if (normalizedEmail.endsWith(ADMIN_EMAIL_DOMAIN)) return "admin";
+  if (normalizedEmail.endsWith(EMPLOYEE_EMAIL_DOMAIN)) return "employee";
+
+  return "customer";
+}
 
 export function useAuth() {
   const [Session, setSession] = useState<Session | null>(null);
@@ -20,10 +35,14 @@ export function useAuth() {
 
   // Helper function to set the error
   function SetError(error: PostgrestError | AuthError) {
-    const msg = `Failed to fetch Session. Error message: ${error.message}`;
+    const msg = `An Error has occurred. Error code: ${error.code} Error message: ${error.message}`;
     console.error(error);
     setError(msg);
     setLoading(false);
+
+    setTimeout(() => {
+      setError("");
+    }, 10000);
   }
 
   useEffect(() => {
@@ -84,12 +103,37 @@ export function useAuth() {
     return true;
   }
 
-  async function SignUp(email: string, password: string) {
+  async function SignUp(
+    email: string,
+    password: string,
+    displayname: string,
+    options:
+      | { role: "admin" | "employee"; bypassRoleCheck: true }
+      | { role: "customer"; bypassRoleCheck?: never } = { role: "customer" },
+  ) {
     resetSates();
+
+    const Role = GetRoleFromEmail(email);
+
+    if (Role !== "customer" && !options.bypassRoleCheck) {
+      const error = new AuthError(
+        "Only customers can sign up with email and password. Please login with your credentials instead.",
+        401,
+        "TAB-AUTH-001",
+      );
+      SetError(error);
+      return false;
+    }
 
     const { error: SignUpError } = await supabaseClient.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          display_name: displayname,
+          role: options.bypassRoleCheck ? options.role : Role,
+        },
+      },
     });
 
     if (SignUpError) {
@@ -105,6 +149,9 @@ export function useAuth() {
 
     const { error: OAuthError } = await supabaseClient.auth.signInWithOAuth({
       provider: provider,
+      options: {
+        redirectTo: `${window.location.origin}/`,
+      },
     });
 
     if (OAuthError) {
@@ -157,6 +204,15 @@ export function useAuth() {
     return true;
   }
 
+  async function RestoreSession(Session: Session) {
+    const { error } = await supabaseClient.auth.setSession(Session);
+    if (error) {
+      SetError(error);
+      return false;
+    }
+    return true;
+  }
+
   return {
     Session,
     Error,
@@ -167,6 +223,8 @@ export function useAuth() {
     SignOut,
     ResetPassword,
     UpdatePassword,
-    GetUser
+    GetUser,
+    GetRoleFromEmail,
+    RestoreSession
   };
 }

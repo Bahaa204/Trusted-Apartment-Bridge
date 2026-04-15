@@ -6,9 +6,15 @@ import { useProjects } from "../hooks/useProjects";
 import ProjectsDashBoardForm from "../components/Project DashBoard Components/ProjectsDashBoardForm";
 import ProjectsDashBoardDisplay from "../components/Project DashBoard Components/ProjectsDashBoardDisplay";
 import useCountries from "../hooks/useCountries";
+import type { Session } from "@supabase/supabase-js";
 
 export default function ProjectsDashboard() {
-  const { Session, Loading: AuthLoading, Error: AuthError } = useAuth();
+  const {
+    Session,
+    Loading: AuthLoading,
+    Error: AuthError,
+    GetRoleFromEmail,
+  } = useAuth();
 
   const {
     Countries,
@@ -73,9 +79,15 @@ export default function ProjectsDashboard() {
     );
   }
 
-  // Preventing unauthenticated users from accessing the page
-  if (!Session) {
-    return <Navigate to="/login" />;
+  function checkAccess(Session: Session) {
+    const role = GetRoleFromEmail(Session.user.email);
+    return role === "admin" || role === "employee";
+  }
+
+  // Preventing unauthenticated or non-admin users from accessing the page
+  if (!Session || !checkAccess(Session)) {
+    alert("You must be logged in as an admin to access this page.");
+    return <Navigate to="/admin" replace />;
   }
 
   return (
