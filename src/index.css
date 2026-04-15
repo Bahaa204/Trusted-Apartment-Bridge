@@ -349,7 +349,7 @@
   top: 14px;
   right: 14px;
   z-index: 20;
-  max-width: 280px;
+  /* max-width: 280px; */
   border: 1px solid #fdba74;
   background: #fff7ed;
   color: #9a3412;

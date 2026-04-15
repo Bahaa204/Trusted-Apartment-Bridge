@@ -4,6 +4,19 @@ import { useMessages } from "../hooks/useMessages";
 import type { Conversation } from "@/types/chat";
 import { useAuth } from "@/hooks/useAuth";
 import { supabaseClient } from "@/lib/supabaseClient";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+
+import { Button } from "../components/ui/button";
+
+import { Input } from "../components/ui/Input";
 
 function getOrCreateToken() {
   let token = localStorage.getItem("chat_token");
@@ -136,40 +149,6 @@ export default function CustomerChatWidget() {
     return <div className="chat-error">{error}</div>;
   }
 
-  if (!conversationId) {
-    return (
-      <section className="customer-chat-shell">
-        {CloseNotice ? (
-          <div className="chat-notice" role="status" aria-live="polite">
-            {CloseNotice}
-          </div>
-        ) : null}
-
-        <header className="chat-head">
-          <div>
-            <h3>Support Chat</h3>
-            <p>{customerLabel}</p>
-          </div>
-        </header>
-
-        <div className="chat-start-state">
-          <h4>No support chat yet</h4>
-          <p>
-            Start a conversation with our support team. We typically reply
-            within a few minutes.
-          </p>
-          <button
-            onClick={handleStart}
-            className="chat-primary-btn"
-            type="button"
-          >
-            Start Chat
-          </button>
-        </div>
-      </section>
-    );
-  }
-
   function formatMessageSender(senderType: string, senderId: string) {
     if (senderType === "customer") {
       if (customerDisplayName) {
@@ -185,49 +164,80 @@ export default function CustomerChatWidget() {
   }
 
   return (
-    <section className="customer-chat-shell">
+    <Card className="customer-chat-shell">
       {CloseNotice ? (
         <div className="chat-notice" role="status" aria-live="polite">
           {CloseNotice}
         </div>
       ) : null}
 
-      <header className="chat-head">
-        <div>
-          <h3>Support Chat</h3>
-          <p>{customerLabel}</p>
-        </div>
-      </header>
+      <CardHeader className="chat-head">
+        <CardTitle>Support Chat</CardTitle>
+        <CardDescription>{customerLabel}</CardDescription>
+      </CardHeader>
 
-      <div className="chat-messages">
-        {Messages.length === 0 ? (
-          <div className="chat-empty-hint">
-            Send your first message and a team member will join soon.
-          </div>
-        ) : (
-          Messages.map((m) => {
-            const isCustomer = m.sender_type === "customer";
-
-            return (
-              <article
-                key={m.id}
-                className={`chat-message-row ${isCustomer ? "mine" : "theirs"}`}
-              >
-                <div
-                  className={`chat-bubble ${isCustomer ? "mine" : "theirs"}`}
+      <CardContent>
+        {!conversationId ? (
+          <>
+            <Card className="chat-start-state">
+              <CardTitle>No support chat yet</CardTitle>
+              <CardDescription>
+                Start a conversation with our support team. We typically reply
+                within a few minutes.
+              </CardDescription>
+            </Card>
+            <CardFooter className="flex justify-center items-center">
+              <CardAction>
+                <Button
+                  onClick={handleStart}
+                  className="chat-primary-btn"
+                  type="button"
                 >
-                  <div className="chat-sender-line">
-                    {formatMessageSender(m.sender_type, m.sender_id)}
-                  </div>
-                  <p>{m.content}</p>
-                  <time>{new Date(m.created_at).toLocaleTimeString()}</time>
-                </div>
-              </article>
-            );
-          })
+                  Start Chat
+                </Button>
+              </CardAction>
+            </CardFooter>
+          </>
+        ) : (
+          <>
+            <Card className="chat-messages">
+              {Messages.length === 0 ? (
+                <CardTitle className="chat-empty-hint">
+                  Send your first message and a team member will join soon.
+                </CardTitle>
+              ) : (
+                <CardContent className="flex flex-col justify-center gap-7">
+                  {Messages.map((m) => {
+                    const isCustomer = m.sender_type === "customer";
+                    return (
+                      <div
+                        key={m.id}
+                        className={`chat-message-row ${isCustomer ? "mine" : "theirs"}`}
+                      >
+                        <Card
+                          className={`chat-bubble ${isCustomer ? "mine" : "theirs"}`}
+                        >
+                          <div className="chat-sender-line">
+                            <CardTitle>
+                              {formatMessageSender(m.sender_type, m.sender_id)}
+                            </CardTitle>
+                          </div>
+                          <CardContent>{m.content}</CardContent>
+                          <p>
+                            {new Date(m.created_at).toLocaleTimeString()}
+                          </p>
+                        </Card>
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              )}
+              {/* Div to ensure we scroll to bottom when new messages arrive */}
+              <div ref={bottomRef} />
+            </Card>
+          </>
         )}
-        <div ref={bottomRef} />
-      </div>
+      </CardContent>
 
       <div className="chat-input-wrap">
         <input
@@ -245,6 +255,6 @@ export default function CustomerChatWidget() {
           Send
         </button>
       </div>
-    </section>
+    </Card>
   );
 }
