@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type SubmitEvent } from "react";
 import { useConversations } from "../hooks/useConversations";
 import { useMessages } from "../hooks/useMessages";
 import type { Conversation } from "@/types/chat";
@@ -16,7 +16,17 @@ import {
 
 import { Button } from "../components/ui/button";
 
-import { Input } from "../components/ui/Input";
+import { Input as InputElement } from "@/components/ui/input";
+
+import {
+  Field,
+  FieldContent,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field";
+
+import { Separator } from "@/components/ui/separator";
 
 function getOrCreateToken() {
   let token = localStorage.getItem("chat_token");
@@ -124,7 +134,8 @@ export default function CustomerChatWidget() {
     setConversationId(conversation.id);
   }
 
-  async function handleSend() {
+  async function handleSend(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
     const sent = await SendMessage({
       senderType: "customer",
       senderId: customerEmail,
@@ -207,27 +218,37 @@ export default function CustomerChatWidget() {
                 </CardTitle>
               ) : (
                 <CardContent className="flex flex-col justify-center gap-7">
-                  {Messages.map((m) => {
-                    const isCustomer = m.sender_type === "customer";
+                  {Messages.map((message, index) => {
+                    const isCustomer = message.sender_type === "customer";
                     return (
-                      <div
-                        key={m.id}
-                        className={`chat-message-row ${isCustomer ? "mine" : "theirs"}`}
-                      >
-                        <Card
-                          className={`chat-bubble ${isCustomer ? "mine" : "theirs"}`}
+                      <>
+                        <div
+                          key={message.id}
+                          className={`chat-message-row ${isCustomer ? "mine" : "theirs"}`}
                         >
-                          <div className="chat-sender-line">
-                            <CardTitle>
-                              {formatMessageSender(m.sender_type, m.sender_id)}
-                            </CardTitle>
-                          </div>
-                          <CardContent>{m.content}</CardContent>
-                          <p>
-                            {new Date(m.created_at).toLocaleTimeString()}
-                          </p>
-                        </Card>
-                      </div>
+                          <Card
+                            size="sm"
+                            className={`chat-bubble ${isCustomer ? "mine" : "theirs"}`}
+                          >
+                            <CardHeader className="chat-sender-line">
+                              <CardTitle>
+                                {formatMessageSender(
+                                  message.sender_type,
+                                  message.sender_id,
+                                )}
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>{message.content}</CardContent>
+                            <CardFooter className="bg-transparent">
+                              {new Date(
+                                message.created_at,
+                              ).toLocaleTimeString()}
+                            </CardFooter>
+                          </Card>
+                        </div>
+                        {/* Render a Separator between each message except the last message */}
+                        {index !== Messages.length - 1 && <Separator />}
+                      </>
                     );
                   })}
                 </CardContent>
@@ -239,22 +260,33 @@ export default function CustomerChatWidget() {
         )}
       </CardContent>
 
-      <div className="chat-input-wrap">
-        <input
-          value={Input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          placeholder="Type a message..."
-        />
-        <button
-          onClick={handleSend}
-          className="chat-primary-btn"
-          type="button"
-          disabled={!Input.trim()}
-        >
-          Send
-        </button>
-      </div>
+      <form onSubmit={handleSend}>
+        <FieldSet className="chat-input-wrap">
+          <Field>
+            <FieldContent>
+              <FieldLabel htmlFor="chat-input">Type your message</FieldLabel>
+            </FieldContent>
+            <InputElement
+              value={Input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="I have a problem with ..."
+              id="chat-input"
+              name="chat-input"
+              className="p-3!"
+              required
+            />
+          </Field>
+          <FieldGroup>
+            <Button
+              className="chat-primary-btn"
+              type="submit"
+              disabled={!Input.trim()}
+            >
+              Send
+            </Button>
+          </FieldGroup>
+        </FieldSet>
+      </form>
     </Card>
   );
 }
