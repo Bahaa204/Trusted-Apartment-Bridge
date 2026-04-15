@@ -81,6 +81,7 @@ export function useAuth() {
       SetError(error);
       return null;
     }
+    setLoading(false);
     return data.user;
   }
 
@@ -225,6 +226,6 @@ export function useAuth() {
     UpdatePassword,
     GetUser,
     GetRoleFromEmail,
-    RestoreSession
+    RestoreSession,
   };
 }

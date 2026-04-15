@@ -14,6 +14,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import LoginForm from "@/components/Custom/LoginForm";
 import { useState, type SubmitEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
+import StaffChatDashboard from "@/components/StaffChatDashboard";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -138,6 +139,18 @@ export default function Admin() {
                 </Button>
               </CardAction>
             </CardFooter>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Support Chat</CardTitle>
+              <CardDescription>
+                Interact with customers and provide support
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <StaffChatDashboard />
+            </CardContent>
           </Card>
 
           {GetRoleFromEmail(Session.user.email) === "admin" && (

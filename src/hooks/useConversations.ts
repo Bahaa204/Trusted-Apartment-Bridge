@@ -22,6 +22,11 @@ export function useConversations() {
     setLoading(false);
   }
 
+  function SetMessageError(message: string) {
+    setError(message);
+    setLoading(false);
+  }
+
   const FetchConversations = useCallback(async () => {
     ResetStates();
 
@@ -77,13 +82,13 @@ export function useConversations() {
     };
   }, [FetchConversations]);
 
-  async function getConversation(customerToken: string) {
-    const { data, error: FetchError } = await supabaseClient
+  const getConversation = useCallback(async (customerToken: string) => {
+    const { data, error: FetchError } = (await supabaseClient
       .from("conversations")
       .select("*")
       .eq("customer_token", customerToken)
       .eq("status", "open")
-      .single() as Data<Conversation>;
+      .single()) as Data<Conversation>;
 
     // PGRST116 is expected for a new user
     if (FetchError && FetchError.code !== "PGRST116") {
@@ -91,7 +96,7 @@ export function useConversations() {
       return null;
     }
     return data;
-  }
+  }, []);
 
   async function StartConversation(
     customerToken: string,
@@ -126,13 +131,32 @@ export function useConversations() {
   async function CloseConversation(conversationId: string): Promise<boolean> {
     ResetStates();
 
-    const { error: UpdateError } = await supabaseClient
-      .from("conversations")
-      .update({ status: "closed" })
-      .eq("id", conversationId);
+    const { error: DeleteMessagesError } = await supabaseClient
+      .from("messages")
+      .delete()
+      .eq("conversation_id", conversationId);
 
-    if (UpdateError) {
-      SetError(UpdateError);
+    if (DeleteMessagesError) {
+      SetError(DeleteMessagesError);
+      return false;
+    }
+
+    const { data: DeletedConversations, error: DeleteConversationError } =
+      await supabaseClient
+        .from("conversations")
+        .delete()
+        .eq("id", conversationId)
+        .select("id");
+
+    if (DeleteConversationError) {
+      SetError(DeleteConversationError);
+      return false;
+    }
+
+    if (!DeletedConversations || DeletedConversations.length === 0) {
+      SetMessageError(
+        "Close failed: conversation was not deleted. Check Supabase RLS delete policies for conversations/messages.",
+      );
       return false;
     }
 
