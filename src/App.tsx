@@ -13,6 +13,7 @@ import EmployeeDashboard from "./pages/EmployeeDashboard";
 import Finances from "./pages/Finances";
 import ProjectsDashboard from "./pages/ProjectsDashboard";
 import ResetPassword from "./pages/ResetPassword";
+import Support from "./pages/Support";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
       { path: "admin/finances", element: <Finances /> },
       { path: "admin/projects", element: <ProjectsDashboard /> },
       { path: "reset-password", element: <ResetPassword /> },
+      { path: "support", element: <Support /> },
       { path: "*", element: <NotFound /> },
     ],
     errorElement: <ErrorPage />,

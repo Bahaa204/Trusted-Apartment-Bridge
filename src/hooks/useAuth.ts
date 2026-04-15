@@ -55,6 +55,16 @@ export function useAuth() {
     };
   }, []);
 
+  async function GetUser() {
+    resetSates();
+    const { data, error } = await supabaseClient.auth.getUser();
+    if (error) {
+      SetError(error);
+      return null;
+    }
+    return data.user;
+  }
+
   async function SignInWithPassword(email: string, password: string) {
     setLoading(true);
 
@@ -157,5 +167,6 @@ export function useAuth() {
     SignOut,
     ResetPassword,
     UpdatePassword,
+    GetUser
   };
 }
