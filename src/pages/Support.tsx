@@ -17,15 +17,15 @@ export default function Support() {
 
   if (Error) {
     return (
-      <main className="min-h-screen bg-slate-100 p-4 md:p-8">
-        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white text-slate-900 shadow-lg">
+      <main className="min-h-screen bg-[#e6e0d8] p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
           <CardHeader>
-            <CardTitle className="text-2xl text-slate-900">Error</CardTitle>
-            <CardDescription className="text-slate-600">
+            <CardTitle className="text-2xl text-[#0f2f4f]">Error</CardTitle>
+            <CardDescription className="text-[#24507f]">
               We could not load the support chat. Please try again later.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-slate-700">{Error}</CardContent>
+          <CardContent className="text-[#173b67]">{Error}</CardContent>
           <CardFooter>{new Date().toLocaleString()}</CardFooter>
         </Card>
       </main>
@@ -34,10 +34,10 @@ export default function Support() {
 
   if (Loading) {
     return (
-      <main className="min-h-screen bg-slate-100 p-4 md:p-8">
-        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white text-slate-900 shadow-lg">
-          <CardContent className="flex items-center justify-center gap-3 py-8 text-center text-slate-700">
-            <Spinner className="size-5 text-slate-700" />
+      <main className="min-h-screen bg-[#e6e0d8] p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
+          <CardContent className="flex items-center justify-center gap-3 py-8 text-center text-[#173b67]">
+            <Spinner className="size-5 text-[#173b67]" />
             <span>Checking Authentication...</span>
           </CardContent>
         </Card>
@@ -51,9 +51,23 @@ export default function Support() {
   }
 
   return (
-    <>
-      <Breadcrumbs />
-      <CustomerChatWidget />
-    </>
+    <main className="min-h-screen bg-[#e6e0d8] px-4 py-6 md:px-8 md:py-10">
+      <section className="mx-auto flex w-full max-w-7xl flex-col gap-6">
+        <Breadcrumbs />
+        <Card className="border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-2xl text-[#0f2f4f]">
+              Support Chat
+            </CardTitle>
+            <CardDescription className="text-[#24507f]">
+              Ask questions and get help from the TAB support team.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-5">
+            <CustomerChatWidget />
+          </CardContent>
+        </Card>
+      </section>
+    </main>
   );
 }

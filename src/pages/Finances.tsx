@@ -19,7 +19,12 @@ import {
 } from "@/components/ui/card";
 import { DatePickerWithRange } from "@/components/Custom/DatePickerWithRange";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { FieldDescription, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
+import {
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field";
 
 export default function Finances() {
   const { Session, Error: AuthError, Loading: AuthLoading } = useAuth();
@@ -57,15 +62,17 @@ export default function Finances() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-slate-100 p-4 md:p-8">
-        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white text-slate-900 shadow-lg">
+      <main className="min-h-screen bg-[#e6e0d8] p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
           <CardHeader>
-            <CardTitle className="text-2xl">Finances Error</CardTitle>
-            <CardDescription className="text-slate-600">
+            <CardTitle className="text-2xl text-[#0f2f4f]">
+              Finances Error
+            </CardTitle>
+            <CardDescription className="text-[#24507f]">
               We could not load finances data.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-slate-700">{error}</CardContent>
+          <CardContent className="text-[#173b67]">{error}</CardContent>
         </Card>
       </main>
     );
@@ -73,10 +80,10 @@ export default function Finances() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-slate-100 p-4 md:p-8">
-        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white text-slate-900 shadow-lg">
-          <CardContent className="flex items-center justify-center gap-3 py-8 text-slate-700">
-            <Spinner className="size-5 text-slate-700" />
+      <main className="min-h-screen bg-[#e6e0d8] p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
+          <CardContent className="flex items-center justify-center gap-3 py-8 text-[#173b67]">
+            <Spinner className="size-5 text-[#173b67]" />
             <span>Loading Data...</span>
           </CardContent>
         </Card>
@@ -138,15 +145,15 @@ export default function Finances() {
     },
     profit: {
       label: "Total Profit",
-      color: "#FFA836",
+      color: "#f3a342",
     },
     income: {
       label: "Total Income",
-      color: "#FD673A",
+      color: "#24507f",
     },
     expenses: {
       label: "Total Expenses",
-      color: "#C35214",
+      color: "#e58f1e",
     },
   } satisfies ChartConfig;
 
@@ -195,25 +202,28 @@ export default function Finances() {
   const profit = Income - expenses;
 
   return (
-    <main className="min-h-screen bg-slate-100 px-4 py-6 md:px-8 md:py-10">
+    <main className="min-h-screen bg-[#e6e0d8] px-4 py-6 md:px-8 md:py-10">
       <section className="mx-auto flex w-full max-w-7xl flex-col gap-6">
         <Breadcrumbs />
 
-        <Card className="border border-slate-200 bg-white text-slate-900 shadow-lg">
+        <Card className="border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
           <CardHeader>
-            <CardTitle className="text-3xl">Finances</CardTitle>
-            <CardDescription className="text-slate-600">
+            <CardTitle className="text-3xl text-[#0f2f4f]">Finances</CardTitle>
+            <CardDescription className="text-[#24507f]">
               Manage your financial overview
             </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
-            <FieldSet className="mx-auto w-full max-w-xl rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <FieldSet className="mx-auto w-full max-w-xl rounded-xl border border-[#d2c5b7] bg-[#fff9f2] p-4">
               <FieldGroup>
-                <FieldLabel htmlFor="date-picker-range" className="text-slate-800">
+                <FieldLabel
+                  htmlFor="date-picker-range"
+                  className="text-[#0f2f4f]"
+                >
                   Select Dates
                 </FieldLabel>
-                <FieldDescription className="text-slate-600">
+                <FieldDescription className="text-[#24507f]">
                   Pick a start and end date to calculate financial totals.
                 </FieldDescription>
                 <DatePickerWithRange
@@ -223,33 +233,39 @@ export default function Finances() {
                   selectedMinDate={MinDate}
                   selectedMaxDate={MaxDate}
                   onDateRangeChange={handleDateRangeChange}
-                  pickerBackgroundColor="#ffffff"
-                  pickerTextColor="#0f172a"
+                  pickerBackgroundColor="#fffdf8"
+                  pickerTextColor="#0f2f4f"
                 />
               </FieldGroup>
             </FieldSet>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <Card className="border border-slate-200 bg-slate-50 text-center">
+              <Card className="border border-[#d2c5b7] bg-[#fff9f2] text-center">
                 <CardContent className="py-6">
-                  <h3 className="text-lg font-semibold text-slate-700">Income</h3>
-                  <p className="mt-2 text-2xl font-bold text-slate-900">
+                  <h3 className="text-lg font-semibold text-[#173b67]">
+                    Income
+                  </h3>
+                  <p className="mt-2 text-2xl font-bold text-[#0f2f4f]">
                     {Income.toLocaleString()}$
                   </p>
                 </CardContent>
               </Card>
-              <Card className="border border-[#f3a342]/45 bg-[#fff8ef] text-center">
+              <Card className="border border-[#f3a342]/60 bg-[#fff4e5] text-center">
                 <CardContent className="py-6">
-                  <h3 className="text-lg font-semibold text-slate-700">Profit</h3>
-                  <p className="mt-2 text-2xl font-bold text-slate-900">
+                  <h3 className="text-lg font-semibold text-[#173b67]">
+                    Profit
+                  </h3>
+                  <p className="mt-2 text-2xl font-bold text-[#0f2f4f]">
                     {profit < 0 ? 0 : profit.toLocaleString()}$
                   </p>
                 </CardContent>
               </Card>
-              <Card className="border border-slate-200 bg-slate-50 text-center">
+              <Card className="border border-[#d2c5b7] bg-[#fff9f2] text-center">
                 <CardContent className="py-6">
-                  <h3 className="text-lg font-semibold text-slate-700">Expenses</h3>
-                  <p className="mt-2 text-2xl font-bold text-slate-900">
+                  <h3 className="text-lg font-semibold text-[#173b67]">
+                    Expenses
+                  </h3>
+                  <p className="mt-2 text-2xl font-bold text-[#0f2f4f]">
                     {expenses.toLocaleString()}$
                   </p>
                 </CardContent>
@@ -263,7 +279,7 @@ export default function Finances() {
                 size="lg"
                 onClick={handleClick}
                 disabled={Calculating !== ""}
-                className="h-12 cursor-pointer rounded-xl bg-[#173b67] px-10 text-base text-white transition hover:bg-[#24507f] disabled:cursor-not-allowed disabled:opacity-70"
+                className="h-12 cursor-pointer rounded-xl bg-[#0f2f4f] px-10 text-base text-white transition hover:bg-[#173b67] disabled:cursor-not-allowed disabled:bg-[#6b7f95] disabled:opacity-80"
               >
                 {Calculating ? (
                   <>
@@ -276,7 +292,7 @@ export default function Finances() {
               </Button>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-2 sm:p-3">
+            <div className="rounded-2xl border border-[#d2c5b7] bg-white p-2 sm:p-3">
               <ChartBarInteractive
                 title="Finances"
                 description="Showing finances between the selected time frames"

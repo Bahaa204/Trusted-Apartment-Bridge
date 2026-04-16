@@ -43,15 +43,15 @@ export default function Admin() {
 
   if (Error) {
     return (
-      <main className="min-h-screen bg-slate-100 p-4 md:p-8">
-        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white text-slate-900 shadow-lg">
+      <main className="min-h-screen bg-[#e6e0d8] p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
           <CardHeader>
-            <CardTitle className="text-2xl text-slate-900">Error</CardTitle>
-            <CardDescription className="text-slate-600">
+            <CardTitle className="text-2xl text-[#0f2f4f]">Error</CardTitle>
+            <CardDescription className="text-[#24507f]">
               We could not load the admin dashboard. Please try again later.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-slate-700">{Error}</CardContent>
+          <CardContent className="text-[#173b67]">{Error}</CardContent>
           <CardFooter>{new Date().toLocaleString()}</CardFooter>
         </Card>
       </main>
@@ -60,10 +60,10 @@ export default function Admin() {
 
   if (Loading) {
     return (
-      <main className="min-h-screen bg-slate-100 p-4 md:p-8">
-        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white text-slate-900 shadow-lg">
-          <CardContent className="flex items-center justify-center gap-3 py-8 text-center text-slate-700">
-            <Spinner className="size-5 text-slate-700" />
+      <main className="min-h-screen bg-[#e6e0d8] p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
+          <CardContent className="flex items-center justify-center gap-3 py-8 text-center text-[#173b67]">
+            <Spinner className="size-5 text-[#173b67]" />
             <span>Checking Authentication...</span>
           </CardContent>
         </Card>
@@ -104,15 +104,15 @@ export default function Admin() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 px-4 py-6 md:px-8 md:py-10">
+    <main className="min-h-screen bg-[#e6e0d8] px-4 py-6 md:px-8 md:py-10">
       <Breadcrumbs />
       <section className="mx-auto flex w-full max-w-7xl flex-col gap-6">
-        <Card className="border border-slate-200 bg-white text-slate-900 shadow-lg">
+        <Card className="border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold text-slate-900">
+            <CardTitle className="text-3xl font-bold text-[#0f2f4f]">
               Welcome to the Admin Page
             </CardTitle>
-            <CardDescription className="text-base text-slate-600 md:text-lg">
+            <CardDescription className="text-base text-[#24507f] md:text-lg">
               {`See Your options below to ${GetRoleFromEmail(Session.user.email) === "admin" ? "manage employees, finances, and" : "manage"} projects.`}
             </CardDescription>
           </CardHeader>
@@ -123,13 +123,13 @@ export default function Admin() {
             <>
               <Card
                 onClick={() => navigate("/admin/employees")}
-                className="cursor-pointer border border-slate-200 bg-white text-slate-900 shadow-sm transition hover:border-[#f3a342] hover:shadow-md"
+                className="cursor-pointer border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-sm transition hover:border-[#f3a342] hover:shadow-md"
               >
                 <CardHeader>
-                  <CardTitle className="text-xl text-slate-900">
+                  <CardTitle className="text-xl text-[#0f2f4f]">
                     Manage Employees
                   </CardTitle>
-                  <CardDescription className="text-slate-600">
+                  <CardDescription className="text-[#24507f]">
                     Add, edit, and delete employee records
                   </CardDescription>
                 </CardHeader>
@@ -137,7 +137,7 @@ export default function Admin() {
                   <CardAction>
                     <Button
                       variant="default"
-                      className="cursor-pointer bg-[#173b67] text-white hover:bg-[#24507f]"
+                      className="cursor-pointer bg-[#0f2f4f] text-white hover:bg-[#173b67]"
                     >
                       Go
                     </Button>
@@ -147,13 +147,13 @@ export default function Admin() {
 
               <Card
                 onClick={() => navigate("/admin/finances")}
-                className="cursor-pointer border border-slate-200 bg-white text-slate-900 shadow-sm transition hover:border-[#f3a342] hover:shadow-md"
+                className="cursor-pointer border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-sm transition hover:border-[#f3a342] hover:shadow-md"
               >
                 <CardHeader>
-                  <CardTitle className="text-xl text-slate-900">
+                  <CardTitle className="text-xl text-[#0f2f4f]">
                     Manage Finances
                   </CardTitle>
-                  <CardDescription className="text-slate-600">
+                  <CardDescription className="text-[#24507f]">
                     View financial reports and analytics
                   </CardDescription>
                 </CardHeader>
@@ -161,7 +161,7 @@ export default function Admin() {
                   <CardAction>
                     <Button
                       variant="default"
-                      className="cursor-pointer bg-[#173b67] text-white hover:bg-[#24507f]"
+                      className="cursor-pointer bg-[#0f2f4f] text-white hover:bg-[#173b67]"
                     >
                       Go
                     </Button>
@@ -173,13 +173,13 @@ export default function Admin() {
 
           <Card
             onClick={() => navigate("/admin/projects")}
-            className="cursor-pointer border border-slate-200 bg-white text-slate-900 shadow-sm transition hover:border-[#f3a342] hover:shadow-md"
+            className="cursor-pointer border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-sm transition hover:border-[#f3a342] hover:shadow-md"
           >
             <CardHeader>
-              <CardTitle className="text-xl text-slate-900">
+              <CardTitle className="text-xl text-[#0f2f4f]">
                 Manage Projects
               </CardTitle>
-              <CardDescription className="text-slate-600">
+              <CardDescription className="text-[#24507f]">
                 Add, edit, and delete project records
               </CardDescription>
             </CardHeader>
@@ -187,7 +187,7 @@ export default function Admin() {
               <CardAction>
                 <Button
                   variant="default"
-                  className="cursor-pointer bg-[#173b67] text-white hover:bg-[#24507f]"
+                  className="cursor-pointer bg-[#0f2f4f] text-white hover:bg-[#173b67]"
                 >
                   Go
                 </Button>
@@ -196,12 +196,12 @@ export default function Admin() {
           </Card>
         </section>
 
-        <Card className="border border-slate-200 bg-white text-slate-900 shadow-lg">
+        <Card className="border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
           <CardHeader>
-            <CardTitle className="text-xl text-slate-900">
+            <CardTitle className="text-xl text-[#0f2f4f]">
               Support Chat
             </CardTitle>
-            <CardDescription className="text-slate-600">
+            <CardDescription className="text-[#24507f]">
               Interact with customers and provide support
             </CardDescription>
           </CardHeader>
@@ -211,12 +211,12 @@ export default function Admin() {
         </Card>
 
         {GetRoleFromEmail(Session.user.email) === "admin" && (
-          <Card className="border border-slate-200 bg-white text-slate-900 shadow-lg">
+          <Card className="border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
             <CardHeader>
-              <CardTitle className="text-xl text-slate-900">
+              <CardTitle className="text-xl text-[#0f2f4f]">
                 Invite an Admin
               </CardTitle>
-              <CardDescription className="text-slate-600">
+              <CardDescription className="text-[#24507f]">
                 Use the form below to invite a new admin user. Please enter
                 their email and password. The email must end with
                 "@tab-admin.com" to be recognized as an admin.
@@ -225,15 +225,15 @@ export default function Admin() {
 
             <CardContent>
               <form onSubmit={handleSubmit}>
-                <FieldSet className="rounded-xl border border-slate-200 bg-slate-50 p-4 md:p-5">
+                <FieldSet className="rounded-xl border border-[#d2c5b7] bg-[#fff9f2] p-4 md:p-5">
                   {FormError && (
-                    <FieldError className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-red-700">
+                    <FieldError className="rounded-md border border-[#f3a342] bg-[#fff4e5] px-3 py-2 text-[#8a3f00]">
                       {FormError}
                     </FieldError>
                   )}
                   <FieldGroup>
                     <Field>
-                      <FieldLabel htmlFor="email" className="text-slate-800">
+                      <FieldLabel htmlFor="email" className="text-[#0f2f4f]">
                         Email
                       </FieldLabel>
                       <Input
@@ -243,17 +243,17 @@ export default function Admin() {
                         autoComplete="email"
                         type="email"
                         placeholder="omar@tab-admin.com"
-                        className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400"
+                        className="border-[#c8b9a7] bg-white text-[#0f2f4f] placeholder:text-[#6b7f95]"
                         required
                       />
-                      <FieldDescription className="text-slate-600">
+                      <FieldDescription className="text-[#24507f]">
                         The email must end with "@tab-admin.com" to be
                         recognized as an admin.
                       </FieldDescription>
                     </Field>
-                    <FieldSeparator className="text-slate-300" />
+                    <FieldSeparator className="text-[#d2c5b7]" />
                     <Field>
-                      <FieldLabel htmlFor="password" className="text-slate-800">
+                      <FieldLabel htmlFor="password" className="text-[#0f2f4f]">
                         Password
                       </FieldLabel>
                       <Input
@@ -263,10 +263,10 @@ export default function Admin() {
                         autoComplete="current-password"
                         type="password"
                         placeholder="******"
-                        className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400"
+                        className="border-[#c8b9a7] bg-white text-[#0f2f4f] placeholder:text-[#6b7f95]"
                         required
                       />
-                      <FieldDescription className="text-slate-600">
+                      <FieldDescription className="text-[#24507f]">
                         Password must be at least 6 characters long.
                       </FieldDescription>
                     </Field>
@@ -275,7 +275,7 @@ export default function Admin() {
                     <Field>
                       <Button
                         type="submit"
-                        className="cursor-pointer bg-[#173b67] text-white hover:bg-[#24507f]"
+                        className="cursor-pointer bg-[#0f2f4f] text-white hover:bg-[#173b67]"
                       >
                         Invite Admin
                       </Button>
