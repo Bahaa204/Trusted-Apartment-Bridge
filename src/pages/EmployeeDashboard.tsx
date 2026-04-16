@@ -2,7 +2,7 @@ import EmployeeTable from "../components/EmployeeTable";
 
 export default function EmployeeDashboard() {
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_#fffdfb,_#f7f8fb_55%,_#e8eef6)] px-4 py-10 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#e6e0d8] px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 rounded-[2rem] bg-[linear-gradient(135deg,_#10243e,_#17365d_65%,_#bf530a)] px-8 py-10 text-white shadow-xl">
           <p className="mb-3 text-sm uppercase tracking-[0.3em] text-[#ffe0c2]">

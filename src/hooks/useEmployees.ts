@@ -3,65 +3,10 @@ import type { Employee, EmployeeFormValues } from "../types/types";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { supabaseClient } from "../lib/supabaseClient";
 
-const LOCAL_STORAGE_KEY = "admin-employees";
-const LOCAL_MODE_KEY = "admin-employees-local-mode";
-
-function getLocalEmployees(): Employee[] {
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-  const rawValue = window.localStorage.getItem(LOCAL_STORAGE_KEY);
-
-  if (!rawValue) {
-    return [];
-  }
-
-  try {
-    return JSON.parse(rawValue) as Employee[];
-  } catch (error) {
-    console.error("Failed to parse locally stored employees.", error);
-    return [];
-  }
-}
-
-function saveLocalEmployees(employees: Employee[]) {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(employees));
-}
-
-function getStoredLocalMode() {
-  if (typeof window === "undefined") {
-    return false;
-  }
-
-  return window.localStorage.getItem(LOCAL_MODE_KEY) === "true";
-}
-
-function saveStoredLocalMode(isEnabled: boolean) {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  window.localStorage.setItem(LOCAL_MODE_KEY, String(isEnabled));
-}
-
-function createLocalEmployeeId(employees: Employee[]) {
-  const maxId = employees.reduce((currentMax, employee) => {
-    return employee.id > currentMax ? employee.id : currentMax;
-  }, 0);
-
-  return maxId + 1;
-}
-
 export function useEmployees() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
-  const [isUsingLocalMode, setIsUsingLocalMode] = useState<boolean>(false);
 
   // Helper Function to reset the states
   function resetStates() {
@@ -71,38 +16,16 @@ export function useEmployees() {
 
   // Helper function to set the error message
   function setHookError(error: PostgrestError) {
-    const msg: string =
-      error.code === "42501"
-        ? "Supabase is read-only for this app right now, so employee changes are being saved locally in this browser instead."
-        : `An Error has occurred. Error Message: ${error.message}`;
+    const msg = `An Error has occurred. Error Message: ${error.message}`;
     console.error(error);
     setError(msg);
     setLoading(false);
   }
 
-  function enableLocalMode(message?: string) {
-    setIsUsingLocalMode(true);
-    saveStoredLocalMode(true);
-    setEmployees(getLocalEmployees());
-    setLoading(false);
-
-    if (message) {
-      setError(message);
-    }
-  }
-
   // Fetching the data from the database + real time listeners to update the data
   useEffect(() => {
-    
     async function fetchEmployees() {
       resetStates();
-
-      if (getStoredLocalMode()) {
-        setIsUsingLocalMode(true);
-        setEmployees(getLocalEmployees());
-        setLoading(false);
-        return;
-      }
 
       const { data, error: fetchError } = await supabaseClient
         .from("employees")
@@ -110,21 +33,11 @@ export function useEmployees() {
         .order("id", { ascending: true });
 
       if (fetchError) {
-        if (fetchError.code === "42501") {
-          enableLocalMode(
-            "Supabase access is restricted, so employees are loading from local browser storage instead.",
-          );
-          return;
-        }
-
         setHookError(fetchError);
         return;
       }
 
-      const remoteEmployees = data || [];
-      const localEmployees = getLocalEmployees();
-
-      setEmployees(remoteEmployees.length > 0 ? remoteEmployees : localEmployees);
+      setEmployees(data || []);
       setLoading(false);
     }
 
@@ -178,42 +91,12 @@ export function useEmployees() {
   async function addEmployee(newEmployee: EmployeeFormValues) {
     resetStates();
 
-    if (isUsingLocalMode) {
-      const currentEmployees = employees;
-      const employeeToStore: Employee = {
-        id: createLocalEmployeeId(currentEmployees),
-        ...newEmployee,
-      };
-      const updatedEmployees = [...currentEmployees, employeeToStore];
-
-      saveLocalEmployees(updatedEmployees);
-      setEmployees(updatedEmployees);
-      setLoading(false);
-      return true;
-    }
-
     const { error: insertError } = await supabaseClient
       .from("employees")
       .insert(newEmployee)
       .single();
 
     if (insertError) {
-      if (insertError.code === "42501") {
-        const currentEmployees = employees;
-        const employeeToStore: Employee = {
-          id: createLocalEmployeeId(currentEmployees),
-          ...newEmployee,
-        };
-        const updatedEmployees = [...currentEmployees, employeeToStore];
-
-        saveLocalEmployees(updatedEmployees);
-        setEmployees(updatedEmployees);
-        setIsUsingLocalMode(true);
-        saveStoredLocalMode(true);
-        setHookError(insertError);
-        return true;
-      }
-
       setHookError(insertError);
       return false;
     }
@@ -228,36 +111,12 @@ export function useEmployees() {
   ) {
     resetStates();
 
-    if (isUsingLocalMode) {
-      const updatedEmployees = employees.map((employee) =>
-        employee.id === employeeId ? { ...employee, ...updatedEmployee } : employee,
-      );
-
-      saveLocalEmployees(updatedEmployees);
-      setEmployees(updatedEmployees);
-      setLoading(false);
-      return true;
-    }
-
     const { error: updateError } = await supabaseClient
       .from("employees")
       .update(updatedEmployee)
       .eq("id", employeeId);
 
     if (updateError) {
-      if (updateError.code === "42501") {
-        const updatedEmployees = employees.map((employee) =>
-          employee.id === employeeId ? { ...employee, ...updatedEmployee } : employee,
-        );
-
-        saveLocalEmployees(updatedEmployees);
-        setEmployees(updatedEmployees);
-        setIsUsingLocalMode(true);
-        saveStoredLocalMode(true);
-        setHookError(updateError);
-        return true;
-      }
-
       setHookError(updateError);
       return false;
     }
@@ -275,28 +134,12 @@ export function useEmployees() {
 
     setEmployees(updatedEmployees);
 
-    if (isUsingLocalMode) {
-      saveLocalEmployees(updatedEmployees);
-      setEmployees(updatedEmployees);
-      setLoading(false);
-      return true;
-    }
-
     const { error: deleteError } = await supabaseClient
       .from("employees")
       .delete()
       .eq("id", employeeId);
 
     if (deleteError) {
-      if (deleteError.code === "42501") {
-        saveLocalEmployees(updatedEmployees);
-        setEmployees(updatedEmployees);
-        setIsUsingLocalMode(true);
-        saveStoredLocalMode(true);
-        setHookError(deleteError);
-        return true;
-      }
-
       setEmployees(previousEmployees);
       setHookError(deleteError);
       return false;
@@ -310,7 +153,6 @@ export function useEmployees() {
     employees,
     loading,
     error,
-    isUsingLocalMode,
     addEmployee,
     updateEmployee,
     removeEmployee,

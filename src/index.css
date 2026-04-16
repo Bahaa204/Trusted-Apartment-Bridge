@@ -17,13 +17,13 @@
 }
 
 body {
-  background: linear-gradient(180deg, #fffdfb 0%, #f6f8fb 55%, #edf2f7 100%);
+  background: #e6e0d8;
   color: var(--text);
 }
 
 .home-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #fffdfa 0%, #f8f8fa 45%, #eef2f6 100%);
+  background: #e6e0d8;
 }
 
 .home-hero-shell {
@@ -188,7 +188,7 @@ body {
 
 .listing-card-inner {
   position: relative;
-  min-height: 28.5rem;
+  min-height: 31rem;
   transform-style: preserve-3d;
   transition: transform 0.7s ease;
 }

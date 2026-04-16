@@ -1,4 +1,9 @@
 import { Link } from "react-router-dom";
+import heroImage from "../assets/home/hero-home.jpg";
+import agencyGuidanceImage from "../assets/home/agency-guidance.jpg";
+import agencyPresentationImage from "../assets/home/agency-presentation.jpg";
+import agencyTrustImage from "../assets/home/agency-trust.jpg";
+import storyImage from "../assets/home/story-home.jpg";
 
 const heroMetrics = [
   { value: "120+", label: "Signature properties" },
@@ -12,18 +17,21 @@ const agencyValues = [
     text: "We work closely with each client to understand the lifestyle, goals, and details behind every move.",
     detail:
       "Each client gets a more personal path, with advice shaped around timing, priorities, and the kind of home or opportunity they want.",
+    image: agencyGuidanceImage,
   },
   {
     title: "Curated presentation",
     text: "From the first impression to the final decision, every property is presented with clarity and elegance.",
     detail:
       "We focus on stronger positioning, cleaner presentation, and a more elevated first impression for every home and development.",
+    image: agencyPresentationImage,
   },
   {
     title: "Long-term trust",
     text: "Our agency is built on relationships, not just transactions, with service that stays strong after the deal.",
     detail:
       "Support does not stop at the agreement. We want clients to feel confident returning to us for future moves and recommendations.",
+    image: agencyTrustImage,
   },
 ];
 
@@ -57,9 +65,9 @@ export default function Home() {
                   A more refined way to present exceptional real estate
                 </h1>
                 <p className="animate-fade-up-delay-2 mt-4 max-w-lg text-sm leading-7 text-[#d8e3f0] sm:text-base">
-                  Inspired by premium brokerage websites, this homepage puts
-                  the focus on elegant presentation, featured listings, and a
-                  stronger sense of trust from the first scroll.
+                  TAB Developments is a real estate agency focused on presenting
+                  homes and projects with clarity, care, and a more personal
+                  approach from the very first conversation.
                 </p>
 
                 <div className="animate-fade-up-delay-3 mt-6 flex flex-wrap gap-3">
@@ -85,11 +93,11 @@ export default function Home() {
             </div>
 
             <div className="home-hero-image image-zoom !min-h-[420px]">
-              <div className="flex h-full min-h-[420px] w-full items-center justify-center bg-[linear-gradient(135deg,_#dfe7f1,_#f8fafc_45%,_#fff0e2)]">
-                <div className="border border-dashed border-[#bf530a] px-6 py-4 text-center text-sm font-medium tracking-[0.2em] text-[#a94708] uppercase">
-                  Hero Image Placeholder
-                </div>
-              </div>
+              <img
+                alt="Luxury home exterior"
+                className="h-full min-h-[420px] w-full object-cover"
+                src={heroImage}
+              />
               <div className="home-hero-overlay animate-fade-up-delay-2 !py-6">
                 <p className="text-sm uppercase tracking-[0.3em] text-[#ffd8bb]">
                   Featured destination
@@ -117,9 +125,9 @@ export default function Home() {
               A more personal real estate experience
             </h2>
             <p className="home-copy mt-4 text-sm leading-7">
-              Instead of pushing only listings, this section introduces the
-              character of your agency and helps visitors understand the kind of
-              service and quality they can expect.
+              We believe real estate should feel more personal, with thoughtful
+              guidance, refined presentation, and a level of service clients
+              can trust from start to finish.
             </p>
           </div>
 
@@ -131,11 +139,11 @@ export default function Home() {
               >
                 <div className="listing-card-inner">
                   <div className="listing-card-face listing-card-front">
-                    <div className="flex h-72 w-full items-center justify-center bg-[linear-gradient(135deg,_#eef2f7,_#ffffff_45%,_#fff3e8)]">
-                      <div className="border border-dashed border-[#bf530a] px-5 py-4 text-center text-xs font-semibold uppercase tracking-[0.25em] text-[#a94708]">
-                        Agency Photo Placeholder
-                      </div>
-                    </div>
+                    <img
+                      alt={item.title}
+                      className="h-72 w-full object-cover"
+                      src={item.image}
+                    />
                     <div className="listing-band">
                       <p className="listing-location">TAB Developments</p>
                     </div>
@@ -173,23 +181,23 @@ export default function Home() {
 
         <section className="home-section-divider py-0">
           <div className="relative overflow-hidden bg-[#10243e] text-white">
-            <div className="mx-auto grid max-w-[1440px] gap-8 px-6 py-8 lg:grid-cols-[minmax(380px,0.9fr)_minmax(0,1.1fr)] lg:px-10">
+            <div className="mx-auto grid max-w-[1440px] gap-6 px-6 py-5 lg:grid-cols-[minmax(320px,0.82fr)_minmax(0,1.18fr)] lg:px-10">
               <div className="animate-fade-up">
-                <div className="flex min-h-[250px] items-center justify-center bg-[linear-gradient(135deg,_#dfe7f1,_#f8fafc_45%,_#fff0e2)] shadow-[0_20px_40px_rgba(0,0,0,0.16)]">
-                  <div className="border border-dashed border-[#bf530a] px-6 py-4 text-center text-sm font-medium uppercase tracking-[0.2em] text-[#a94708]">
-                    Section Image Placeholder
-                  </div>
-                </div>
-                <div className="mt-5 max-w-md">
+                <img
+                  alt="Elegant home exterior"
+                  className="h-[190px] w-full object-cover shadow-[0_16px_30px_rgba(0,0,0,0.16)] sm:h-[220px]"
+                  src={storyImage}
+                />
+                <div className="mt-3 max-w-md">
                   <div className="h-px w-28 bg-[#bf530a]" />
-                  <p className="mt-5 text-sm uppercase tracking-[0.3em] text-[#ffd8bb]">
+                  <p className="mt-3 text-xs uppercase tracking-[0.3em] text-[#ffd8bb]">
                     Agency perspective
                   </p>
-                  <div className="mt-4 space-y-3">
+                  <div className="mt-3 space-y-2">
                     {agencyStory.map((item) => (
                       <div key={item.title}>
-                        <p className="text-lg leading-tight text-white">{item.title}</p>
-                        <p className="mt-1 text-sm leading-6 text-[#d8e3f0]">
+                        <p className="text-base leading-tight text-white">{item.title}</p>
+                        <p className="mt-1 text-sm leading-5 text-[#d8e3f0]">
                           {item.text}
                         </p>
                       </div>
@@ -198,21 +206,21 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="animate-fade-up-delay-1 flex flex-col justify-center py-4 lg:px-8">
-                <p className="text-sm uppercase tracking-[0.35em] text-[#ffd8bb]">
+              <div className="animate-fade-up-delay-1 flex flex-col justify-center py-2 lg:px-6">
+                <p className="text-xs uppercase tracking-[0.35em] text-[#ffd8bb]">
                   Our story
                 </p>
-                <h2 className="mt-4 max-w-xl text-3xl font-semibold leading-tight sm:text-4xl">
+                <h2 className="mt-3 max-w-xl text-2xl font-semibold leading-tight sm:text-3xl">
                   Built around presentation, trust, and the feeling of home
                 </h2>
-                <p className="mt-5 max-w-xl text-base leading-8 text-[#d8e3f0]">
+                <p className="mt-3 max-w-xl text-sm leading-7 text-[#d8e3f0]">
                   TAB Developments is presented as an agency that values elegant
                   presentation and genuine guidance, creating confidence around
                   every opportunity and every step.
                 </p>
-                <div className="mt-7">
+                <div className="mt-5">
                   <Link
-                    className="border border-[#bf530a] px-7 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-[#bf530a]"
+                    className="border border-[#bf530a] px-6 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-[#bf530a] sm:text-sm"
                     to="/about"
                   >
                     Read more
@@ -227,13 +235,12 @@ export default function Home() {
           <div className="home-surface animate-fade-up p-8">
             <p className="home-eyebrow">Why clients stay</p>
             <h2 className="home-title mt-4 text-4xl font-semibold">
-              More than listings, a stronger agency presence
+              More than listings, a trusted real estate partner
             </h2>
             <p className="home-copy mt-5 max-w-3xl text-base leading-8">
-              A memorable real estate homepage should feel calm, elegant, and
-              confident. By adding richer sections like this, your site stops
-              looking small or unfinished and starts feeling like a genuine
-              agency brand.
+              We focus on building long-term relationships through honest
+              guidance, thoughtful presentation, and a smoother experience for
+              every client looking to buy, sell, or invest.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link className="home-button-primary" to="/contact">
@@ -258,6 +265,7 @@ export default function Home() {
             </p>
           </div>
         </section>
+
       </div>
     </div>
   );

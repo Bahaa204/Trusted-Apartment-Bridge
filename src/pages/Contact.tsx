@@ -60,7 +60,7 @@ export default function Contact() {
   }
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,_#fffdfb_0%,_#f7f8fb_55%,_#edf2f7_100%)] px-4 py-14 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#e6e0d8] px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="border border-[#d7e0ea] bg-white p-8 shadow-sm">
           <div className="mb-8">

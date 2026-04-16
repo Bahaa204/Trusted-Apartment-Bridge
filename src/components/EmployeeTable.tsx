@@ -27,7 +27,6 @@ export default function EmployeeTable() {
     employees,
     loading,
     error,
-    isUsingLocalMode,
     addEmployee,
     updateEmployee,
     removeEmployee,
@@ -438,20 +437,6 @@ export default function EmployeeTable() {
         {error ? (
           <div className="mb-4 rounded-md border border-[#ffd2ad] bg-[#fff0e2] px-4 py-3 text-sm text-[#ea6a12]">
             {error}
-          </div>
-        ) : null}
-
-        {!error ? (
-          <div className="mb-4 rounded-md border border-[#d7e0ea] bg-[#f7f9fc] px-4 py-3 text-sm text-[#31527d]">
-            If the table is empty, that means your Supabase `employees` table
-            currently has no rows yet.
-          </div>
-        ) : null}
-
-        {isUsingLocalMode ? (
-          <div className="mb-4 rounded-md border border-[#ffd2ad] bg-[#fff0e2] px-4 py-3 text-sm text-[#ea6a12]">
-            Local mode is active. Employee changes are saved in this browser
-            only because the hosted database is not allowing write access.
           </div>
         ) : null}
 
