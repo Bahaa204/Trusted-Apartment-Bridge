@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent, type SubmitEvent } from "react";
 import { useEmployees } from "../hooks/useEmployees";
 import type { Employee, EmployeeFormValues } from "../types/types";
 
@@ -24,12 +24,12 @@ function getEmployeeTone(employeeId: number) {
 
 export default function EmployeeTable() {
   const {
-    employees,
-    loading,
-    error,
+    Employees,
+    Loading,
+    Error,
     addEmployee,
-    updateEmployee,
     removeEmployee,
+    updateEmployee,
   } = useEmployees();
   const [newEmployee, setNewEmployee] = useState<EmployeeFormValues>(emptyForm);
   const [editingId, setEditingId] = useState<Employee["id"] | null>(null);
@@ -38,12 +38,12 @@ export default function EmployeeTable() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState<Employee["id"] | null>(
-    null,
-  );
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<
+    Employee["id"] | null
+  >(null);
 
   const normalizedQuery = searchQuery.trim().toLowerCase();
-  const filteredEmployees = employees.filter((employee) => {
+  const filteredEmployees = Employees.filter((employee) => {
     if (!normalizedQuery) {
       return true;
     }
@@ -55,20 +55,22 @@ export default function EmployeeTable() {
     );
   });
 
-  const sortedEmployees = [...filteredEmployees].sort((firstEmployee, secondEmployee) => {
-    const directionMultiplier = sortDirection === "asc" ? 1 : -1;
+  const sortedEmployees = [...filteredEmployees].sort(
+    (firstEmployee, secondEmployee) => {
+      const directionMultiplier = sortDirection === "asc" ? 1 : -1;
 
-    if (sortKey === "salary") {
+      if (sortKey === "salary") {
+        return (
+          (firstEmployee.salary - secondEmployee.salary) * directionMultiplier
+        );
+      }
+
       return (
-        (firstEmployee.salary - secondEmployee.salary) * directionMultiplier
+        firstEmployee[sortKey].localeCompare(secondEmployee[sortKey]) *
+        directionMultiplier
       );
-    }
-
-    return (
-      firstEmployee[sortKey].localeCompare(secondEmployee[sortKey]) *
-      directionMultiplier
-    );
-  });
+    },
+  );
 
   const totalPayroll = filteredEmployees.reduce(
     (sum, employee) => sum + employee.salary,
@@ -93,9 +95,7 @@ export default function EmployeeTable() {
         .toUpperCase()
     : "CT";
 
-  function handleNewEmployeeChange(
-    event: ChangeEvent<HTMLInputElement>,
-  ) {
+  function handleNewEmployeeChange(event: ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
 
     setNewEmployee((current) => ({
@@ -113,11 +113,11 @@ export default function EmployeeTable() {
     }));
   }
 
-  async function handleAddEmployee(event: FormEvent<HTMLFormElement>) {
+  async function handleAddEmployee(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setActionMessage("");
 
-    const duplicateEmail = employees.some(
+    const duplicateEmail = Employees.some(
       (employee) =>
         employee.email.trim().toLowerCase() ===
         newEmployee.email.trim().toLowerCase(),
@@ -154,7 +154,7 @@ export default function EmployeeTable() {
   async function handleUpdateEmployee(employeeId: Employee["id"]) {
     setActionMessage("");
 
-    const duplicateEmail = employees.some(
+    const duplicateEmail = Employees.some(
       (employee) =>
         employee.id !== employeeId &&
         employee.email.trim().toLowerCase() ===
@@ -249,7 +249,7 @@ export default function EmployeeTable() {
 
           <div className="relative mt-8 flex flex-wrap items-center gap-5">
             <div
-              className={`flex h-20 w-20 items-center justify-center rounded-md border border-white/20 bg-gradient-to-br ${spotlightEmployee ? getEmployeeTone(spotlightEmployee.id) : "from-white/50 to-white/10"} text-2xl font-semibold text-[#10243e] shadow-lg backdrop-blur`}
+              className={`flex h-20 w-20 items-center justify-center rounded-md border border-white/20 bg-gradient-to-br ${spotlightEmployee ? getEmployeeTone(spotlightEmployee.id!) : "from-white/50 to-white/10"} text-2xl font-semibold text-[#10243e] shadow-lg backdrop-blur`}
             >
               {spotlightInitials}
             </div>
@@ -372,10 +372,10 @@ export default function EmployeeTable() {
           <div className="flex items-end">
             <button
               className="w-full rounded-md bg-[#10243e] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#17365d] disabled:cursor-not-allowed disabled:bg-[#5f7490]"
-              disabled={loading}
+              disabled={Loading}
               type="submit"
             >
-              {loading ? "Saving..." : "Add employee"}
+              {Loading ? "Saving..." : "Add employee"}
             </button>
           </div>
         </form>
@@ -392,7 +392,7 @@ export default function EmployeeTable() {
             </p>
           </div>
           <div className="rounded-md bg-[#e8eef6] px-4 py-2 text-sm font-medium text-[#17365d]">
-            {employees.length} employee{employees.length === 1 ? "" : "s"}
+            {Employees.length} employee{Employees.length === 1 ? "" : "s"}
           </div>
         </div>
 
@@ -434,9 +434,9 @@ export default function EmployeeTable() {
           </div>
         ) : null}
 
-        {error ? (
+        {Error ? (
           <div className="mb-4 rounded-md border border-[#ffd2ad] bg-[#fff0e2] px-4 py-3 text-sm text-[#ea6a12]">
-            {error}
+            {Error}
           </div>
         ) : null}
 
@@ -475,7 +475,7 @@ export default function EmployeeTable() {
               </tr>
             </thead>
             <tbody>
-              {loading && sortedEmployees.length === 0 ? (
+              {Loading && sortedEmployees.length === 0 ? (
                 <tr>
                   <td
                     className="rounded-md bg-[#f7f9fc] px-4 py-6 text-center text-sm text-[#5f7490]"
@@ -486,7 +486,7 @@ export default function EmployeeTable() {
                 </tr>
               ) : null}
 
-              {!loading && employees.length === 0 ? (
+              {!Loading && Employees.length === 0 ? (
                 <tr>
                   <td
                     className="rounded-md bg-[#f7f9fc] px-4 py-6 text-center text-sm text-[#5f7490]"
@@ -497,7 +497,9 @@ export default function EmployeeTable() {
                 </tr>
               ) : null}
 
-              {!loading && employees.length > 0 && sortedEmployees.length === 0 ? (
+              {!Loading &&
+              Employees.length > 0 &&
+              sortedEmployees.length === 0 ? (
                 <tr>
                   <td
                     className="rounded-md bg-[#f7f9fc] px-4 py-6 text-center text-sm text-[#5f7490]"
@@ -516,14 +518,16 @@ export default function EmployeeTable() {
                   <tr
                     key={employee.id}
                     className={`transition ${
-                      isSelected ? "bg-[#fff0e2] ring-1 ring-[#ffd2ad]" : "bg-[#f7f9fc]"
+                      isSelected
+                        ? "bg-[#fff0e2] ring-1 ring-[#ffd2ad]"
+                        : "bg-[#f7f9fc]"
                     }`}
                     onClick={() => setSelectedEmployeeId(employee.id)}
                   >
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
                         <div
-                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-gradient-to-br ${getEmployeeTone(employee.id)} text-sm font-semibold text-[#10243e] shadow-sm`}
+                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-gradient-to-br ${getEmployeeTone(employee.id!)} text-sm font-semibold text-[#10243e] shadow-sm`}
                         >
                           {employee.name
                             .split(" ")
