@@ -1,4 +1,14 @@
 import type { Project } from "../../types/types";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 type BuildingData = {
   buildings_name: string;
@@ -22,17 +32,22 @@ export default function BuildingForm({
   Options,
 }: BuildingFormProps) {
   return (
-    <div className="flex flex-wrap flex-col justify-center items-center gap-2.5">
-      <div>
-        <h2>Add a Building</h2>
+    <div className="grid grid-cols-1 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 md:p-5">
+      <div className="space-y-1">
+        <h2 className="text-xl font-semibold text-slate-900">Add a Building</h2>
+        <p className="text-sm text-slate-600">
+          Link each building to a project and upload visual references.
+        </p>
       </div>
 
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <label htmlFor="name">Name: </label>
-        <input
+      <div className="grid gap-1.5">
+        <Label htmlFor="building-name" className="text-slate-700">
+          Name
+        </Label>
+        <Input
           type="text"
-          id="name"
-          className="border border-black rounded"
+          id="building-name"
+          className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400"
           required
           value={buildings_name}
           onChange={(event) =>
@@ -42,12 +57,14 @@ export default function BuildingForm({
         />
       </div>
 
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <label htmlFor="block">Block</label>
-        <input
+      <div className="grid gap-1.5">
+        <Label htmlFor="building-block" className="text-slate-700">
+          Block
+        </Label>
+        <Input
           type="text"
-          id="block"
-          className="border border-black rounded disabled:cursor-not-allowed"
+          id="building-block"
+          className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400"
           required
           value={buildings_block}
           onChange={(event) =>
@@ -57,13 +74,15 @@ export default function BuildingForm({
         />
       </div>
 
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <label htmlFor="images">Images</label>
-        <input
+      <div className="grid gap-1.5">
+        <Label htmlFor="building-images" className="text-slate-700">
+          Images
+        </Label>
+        <Input
           type="file"
           multiple
-          id="images"
-          className="border border-black rounded cursor-pointer disabled:cursor-not-allowed"
+          id="building-images"
+          className="cursor-pointer border-slate-300 bg-white text-slate-900 file:text-slate-700"
           required
           onChange={(event) => {
             if (event.target.files && event.target.files.length > 0) {
@@ -74,34 +93,45 @@ export default function BuildingForm({
         />
       </div>
 
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <label htmlFor="select">Select a Project to add to the building</label>
-        <select
-          id="select"
-          className="border border-black rounded cursor-pointer disabled:cursor-not-allowed"
-          required
-          value={buildings_project_id}
-          onChange={(event) =>
-            updateFields({ buildings_project_id: parseInt(event.target.value) })
+      <div className="grid gap-1.5">
+        <Label htmlFor="building-project" className="text-slate-700">
+          Select a project
+        </Label>
+        <Select
+          value={
+            Number.isNaN(buildings_project_id)
+              ? ""
+              : String(buildings_project_id)
+          }
+          onValueChange={(value) =>
+            updateFields({ buildings_project_id: parseInt(value) })
           }
           disabled={loading}
         >
-          {Options.map((options) => (
-            <option value={options.id} key={options.id}>
-              {options.name}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger
+            id="building-project"
+            className="h-9 w-full cursor-pointer border-slate-300 bg-white text-slate-900"
+          >
+            <SelectValue placeholder="Select a project" />
+          </SelectTrigger>
+          <SelectContent>
+            {Options.map((options) => (
+              <SelectItem value={String(options.id)} key={options.id}>
+                {options.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <button
+      <div className="pt-1">
+        <Button
           type="submit"
-          className="border-2 border-black py-1 px-2 rounded cursor-pointer disabled:cursor-not-allowed"
+          className="h-9 w-full cursor-pointer bg-[#173b67] font-semibold text-white hover:bg-[#24507f] md:w-auto"
           disabled={loading}
         >
           Add a Building
-        </button>
+        </Button>
       </div>
     </div>
   );

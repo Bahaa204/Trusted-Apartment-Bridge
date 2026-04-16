@@ -12,6 +12,14 @@ import ProjectForm from "./ProjectForm";
 import BuildingForm from "../Project DashBoard Components/BuildingForm";
 import HouseForm from "../Project DashBoard Components/HouseForm";
 import { UploadImage } from "../../services/imageServices";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Button } from "../ui/button";
 
 const InitialData: FormData = {
   project_name: "",
@@ -154,54 +162,61 @@ export default function ProjectsDashBoardForm({
   }
 
   return (
-    <>
-      <h1>Projects Dashboard</h1>
+    <Card className="border border-slate-200 bg-white text-slate-900 shadow-lg">
+      <CardHeader className="space-y-2">
+        <CardTitle className="text-2xl font-semibold text-slate-900 md:text-3xl">
+          Projects Dashboard
+        </CardTitle>
+        <CardDescription className="text-slate-600">
+          Create projects, buildings, and houses from one workflow.
+        </CardDescription>
+      </CardHeader>
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-wrap flex-col justify-center items-center gap-2.5"
-      >
-        <div>
-          {CurrentStepIndex + 1} / {steps.length}
+      <CardContent className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 md:text-sm">
+            Step {CurrentStepIndex + 1} of {steps.length}
+          </div>
+          {step}
+        </form>
+
+        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+          <p className="text-sm text-slate-700">Jump to step:</p>
+          <Button
+            type="button"
+            variant="secondary"
+            className="cursor-pointer bg-[#173b67] text-white hover:bg-[#24507f]"
+            onClick={() => {
+              goTo(0);
+            }}
+            disabled={loading}
+          >
+            Add Project
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="cursor-pointer border-slate-300 bg-white text-slate-900 hover:bg-slate-100"
+            onClick={() => {
+              goTo(1);
+            }}
+            disabled={loading}
+          >
+            Add Building
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="cursor-pointer border-slate-300 bg-white text-slate-900 hover:bg-slate-100"
+            onClick={() => {
+              goTo(2);
+            }}
+            disabled={loading}
+          >
+            Add House
+          </Button>
         </div>
-        {step}
-      </form>
-
-      <div className="mt-2 flex flex-wrap justify-center items-center gap-1">
-        <p>Already existing Projects or Buildings? </p>
-        <button
-          type="button"
-          className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer disabled:cursor-not-allowed"
-          onClick={() => {
-            goTo(0);
-          }}
-          disabled={loading}
-        >
-          Add a Project
-        </button>
-        <p className="font-medium text-indigo-400">or</p>
-        <button
-          type="button"
-          className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer disabled:cursor-not-allowed"
-          onClick={() => {
-            goTo(1);
-          }}
-          disabled={loading}
-        >
-          Add a Building
-        </button>
-        <p className="font-medium text-indigo-400">or</p>
-        <button
-          type="button"
-          className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer disabled:cursor-not-allowed"
-          onClick={() => {
-            goTo(2);
-          }}
-          disabled={loading}
-        >
-          Add a House
-        </button>
-      </div>
-    </>
+      </CardContent>
+    </Card>
   );
 }

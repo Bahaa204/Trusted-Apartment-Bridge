@@ -1,4 +1,14 @@
 import type { Building } from "../../types/types";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 type HouseData = {
   house_floor: number;
@@ -25,97 +35,118 @@ export default function HouseForm({
   Options,
 }: HouseFormProps) {
   return (
-    <div className="flex flex-wrap flex-col justify-center items-center gap-2.5">
-      <div>
-        <h2>Add a House</h2>
+    <div className="grid grid-cols-1 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 md:p-5">
+      <div className="space-y-1">
+        <h2 className="text-xl font-semibold text-slate-900">Add a House</h2>
+        <p className="text-sm text-slate-600">
+          Enter unit details, price, and assign the house to a building.
+        </p>
       </div>
 
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <label htmlFor="floor">Floor</label>
-        <input
-          type="number"
-          id="floor"
-          className="border border-black rounded disabled:cursor-not-allowed"
-          required
-          value={house_floor}
-          onChange={(event) =>
-            updateFields({ house_floor: parseInt(event.target.value) })
-          }
-          disabled={loading}
-        />
-      </div>
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <label htmlFor="bedrooms">Number of Bedrooms</label>
-        <input
-          type="number"
-          id="bedrooms"
-          className="border border-black rounded  disabled:cursor-not-allowed"
-          required
-          value={house_nb_bedrooms}
-          onChange={(event) =>
-            updateFields({ house_nb_bedrooms: parseInt(event.target.value) })
-          }
-          disabled={loading}
-        />
-      </div>
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <label htmlFor="bathrooms">Number of Bathrooms</label>
-        <input
-          type="number"
-          id="bathrooms"
-          className="border border-black rounded disabled:cursor-not-allowed"
-          required
-          value={house_nb_bathrooms}
-          onChange={(event) =>
-            updateFields({ house_nb_bathrooms: parseInt(event.target.value) })
-          }
-          disabled={loading}
-        />
+      <div className="grid gap-1.5 sm:grid-cols-2 sm:gap-4">
+        <div className="grid gap-1.5">
+          <Label htmlFor="house-floor" className="text-slate-700">
+            Floor
+          </Label>
+          <Input
+            type="number"
+            id="house-floor"
+            className="border-slate-300 bg-white text-slate-900"
+            required
+            value={Number.isNaN(house_floor) ? "" : house_floor}
+            onChange={(event) =>
+              updateFields({ house_floor: parseInt(event.target.value) })
+            }
+            disabled={loading}
+          />
+        </div>
+        <div className="grid gap-1.5">
+          <Label htmlFor="house-bedrooms" className="text-slate-700">
+            Bedrooms
+          </Label>
+          <Input
+            type="number"
+            id="house-bedrooms"
+            className="border-slate-300 bg-white text-slate-900"
+            required
+            value={Number.isNaN(house_nb_bedrooms) ? "" : house_nb_bedrooms}
+            onChange={(event) =>
+              updateFields({ house_nb_bedrooms: parseInt(event.target.value) })
+            }
+            disabled={loading}
+          />
+        </div>
+        <div className="grid gap-1.5">
+          <Label htmlFor="house-bathrooms" className="text-slate-700">
+            Bathrooms
+          </Label>
+          <Input
+            type="number"
+            id="house-bathrooms"
+            className="border-slate-300 bg-white text-slate-900"
+            required
+            value={Number.isNaN(house_nb_bathrooms) ? "" : house_nb_bathrooms}
+            onChange={(event) =>
+              updateFields({ house_nb_bathrooms: parseInt(event.target.value) })
+            }
+            disabled={loading}
+          />
+        </div>
+        <div className="grid gap-1.5">
+          <Label htmlFor="house-price" className="text-slate-700">
+            Price
+          </Label>
+          <Input
+            type="number"
+            id="house-price"
+            className="border-slate-300 bg-white text-slate-900"
+            required
+            value={Number.isNaN(house_price) ? "" : house_price}
+            onChange={(event) =>
+              updateFields({ house_price: parseInt(event.target.value) })
+            }
+            disabled={loading}
+          />
+        </div>
       </div>
 
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <label htmlFor="price">Price</label>
-        <input
-          type="number"
-          id="price"
-          className="border border-black rounded disabled:cursor-not-allowed"
-          required
-          value={house_price}
-          onChange={(event) =>
-            updateFields({ house_price: parseInt(event.target.value) })
+      <div className="grid gap-1.5">
+        <Label htmlFor="house-building" className="text-slate-700">
+          Select a building
+        </Label>
+        <Select
+          value={
+            Number.isNaN(house_building_id) ? "" : String(house_building_id)
           }
-          disabled={loading}
-        />
-      </div>
-
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <label htmlFor="select">Select a Building</label>
-        <select
-          id="select"
-          className="border border-black rounded cursor-pointer disabled:cursor-not-allowed"
-          required
-          value={house_building_id}
-          onChange={(event) =>
-            updateFields({ house_building_id: parseInt(event.target.value) })
+          onValueChange={(value) =>
+            updateFields({ house_building_id: parseInt(value) })
           }
           disabled={loading}
         >
-          {Options.map((option) => (
-            <option value={option.id} key={option.id}>
-              {option.name}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger
+            id="house-building"
+            className="h-9 w-full cursor-pointer border-slate-300 bg-white text-slate-900"
+          >
+            <SelectValue placeholder="Select a building" />
+          </SelectTrigger>
+          <SelectContent>
+            {Options.map((option) => (
+              <SelectItem value={String(option.id)} key={option.id}>
+                {option.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <button
+      <div className="pt-1">
+        <Button
           type="submit"
-          className="border-2 border-black py-1 px-2 rounded cursor-pointer disabled:cursor-not-allowed"
+          className="h-9 w-full cursor-pointer bg-[#173b67] font-semibold text-white hover:bg-[#24507f] md:w-auto"
           disabled={loading}
         >
           Add a House
-        </button>
+        </Button>
       </div>
     </div>
   );

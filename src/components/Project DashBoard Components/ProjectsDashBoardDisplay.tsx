@@ -79,17 +79,19 @@ export default function ProjectsDashBoardDisplay({
 
   return (
     <>
-      <Card className="flex flex-col flex-wrap justify-center items-center gap-4 bg-gray-900 text-white">
-        <CardTitle className="text-2xl text-center">
+      <Card className="flex flex-col flex-wrap justify-center items-center gap-4 border border-slate-200 bg-white text-slate-900 shadow-lg">
+        <CardTitle className="pt-2 text-center text-2xl text-slate-900 md:text-3xl">
           Projects Display
         </CardTitle>
-        <CardDescription className="text-white text-lg text-center">
+        <CardDescription className="text-center text-base text-slate-600 md:text-lg">
           Here you can view, edit, and delete all projects, buildings, and
           houses.
         </CardDescription>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-center items-start gap-4 w-full">
           {Projects.length === 0 ? (
-            <div>We currently have no projects </div>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-slate-700">
+              We currently have no projects.
+            </div>
           ) : (
             <>
               {Projects.map((project) =>
@@ -116,16 +118,20 @@ export default function ProjectsDashBoardDisplay({
                             UpdateProject={UpdateProject}
                           />
 
-                          <div className="rounded-lg border border-white/20 p-3 space-y-3">
-                            <h3 className="text-lg font-semibold">Buildings</h3>
-                            <p className="text-sm text-white/80">
+                          <div className="rounded-lg border border-slate-200 bg-white p-3 space-y-3">
+                            <h3 className="text-lg font-semibold text-slate-900">
+                              Buildings
+                            </h3>
+                            <p className="text-sm text-slate-600">
                               {project.name}
                             </p>
 
                             {Buildings.filter(
                               (building) => building.project_id === project.id,
                             ).length === 0 ? (
-                              <p>No buildings found for this project.</p>
+                              <p className="text-sm text-slate-600">
+                                No buildings found for this project.
+                              </p>
                             ) : (
                               <div className="grid grid-cols-1 gap-3">
                                 {Buildings.filter(
@@ -163,16 +169,16 @@ export default function ProjectsDashBoardDisplay({
                                       {OpenBuildingIDs.includes(
                                         building.id,
                                       ) && (
-                                        <div className="rounded-lg border border-white/20 p-3 space-y-3">
-                                          <h4 className="font-semibold">
+                                        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 space-y-3">
+                                          <h4 className="font-semibold text-slate-900">
                                             Houses
                                           </h4>
-                                          <p className="text-sm text-white/80">
+                                          <p className="text-sm text-slate-600">
                                             {building.name}
                                           </p>
 
                                           {buildingHouses.length === 0 ? (
-                                            <p>
+                                            <p className="text-sm text-slate-600">
                                               No houses found for this building.
                                             </p>
                                           ) : (

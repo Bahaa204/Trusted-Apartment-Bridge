@@ -106,7 +106,7 @@ export default function BuildingsCard({
 
   return (
     <>
-      <Card>
+      <Card className="border border-slate-200 bg-white text-slate-900 shadow-lg">
         <img
           src={buildingImageSrc}
           alt={`${Building.name} image`}
@@ -121,6 +121,7 @@ export default function BuildingsCard({
             {EditMode ? (
               <Input
                 type="text"
+                className="border-slate-300 bg-white text-slate-900"
                 value={BuildingsInput.name}
                 onChange={(event) => {
                   setBuildingsInput((prev) => ({
@@ -138,6 +139,7 @@ export default function BuildingsCard({
             {EditMode ? (
               <Input
                 type="text"
+                className="border-slate-300 bg-white text-slate-900"
                 value={BuildingsInput.block}
                 onChange={(event) => {
                   setBuildingsInput((prev) => ({
@@ -155,7 +157,7 @@ export default function BuildingsCard({
             <Button
               variant="destructive"
               size="lg"
-              className="cursor-pointer"
+              className="cursor-pointer bg-red-600 text-white hover:bg-red-500"
               onClick={() => setIsOpen(true)}
             >
               Delete Building
@@ -163,7 +165,7 @@ export default function BuildingsCard({
             <Button
               variant="secondary"
               size="lg"
-              className="cursor-pointer"
+              className="cursor-pointer border border-slate-300 bg-slate-100 text-slate-900 hover:bg-slate-200"
               onClick={() => {
                 if (EditMode) return handleEdit();
                 return setEditMode((prev) => !prev);
@@ -188,7 +190,7 @@ export default function BuildingsCard({
                     }));
                   }}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full border-slate-300 bg-white text-slate-900">
                     <SelectValue placeholder="Select a project" />
                   </SelectTrigger>
                   <SelectContent>
@@ -219,6 +221,7 @@ export default function BuildingsCard({
                   type="file"
                   multiple
                   accept="images/*"
+                  className="mt-1 cursor-pointer border-slate-300 bg-white text-slate-900 file:text-slate-700"
                   onChange={(event) => {
                     setBuildingsInput((prev) => ({
                       ...prev,
@@ -240,7 +243,7 @@ export default function BuildingsCard({
           <Button
             variant="default"
             size="lg"
-            className="cursor-pointer w-full"
+            className="w-full cursor-pointer bg-[#173b67] font-semibold text-white hover:bg-[#24507f]"
             onClick={() => ToggleHouseShow(Building.id)}
           >
             {IsHouseOpen ? "Hide Houses" : "See Houses"}

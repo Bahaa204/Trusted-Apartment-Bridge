@@ -10,6 +10,14 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 type HouseCardsProps = {
   house: House;
@@ -60,14 +68,14 @@ export default function HouseCard({
 
   return (
     <>
-      <Card>
+      <Card className="border border-slate-200 bg-white text-slate-900 shadow-lg">
         <CardHeader>
           <CardTitle>
             {EditMode ? (
-              <input
-                type="text"
-                className="border border-black rounded disabled:cursor-not-allowed size-full"
-                value={HouseInput.floor}
+              <Input
+                type="number"
+                className="border-slate-300 bg-white text-slate-900"
+                value={Number.isNaN(HouseInput.floor) ? "" : HouseInput.floor}
                 onChange={(event) => {
                   setHouseInput((prev) => ({
                     ...prev,
@@ -82,10 +90,10 @@ export default function HouseCard({
 
           <CardDescription>
             {EditMode ? (
-              <input
-                type="text"
-                className="border border-black rounded disabled:cursor-not-allowed size-full"
-                value={HouseInput.price}
+              <Input
+                type="number"
+                className="border-slate-300 bg-white text-slate-900"
+                value={Number.isNaN(HouseInput.price) ? "" : HouseInput.price}
                 onChange={(event) => {
                   setHouseInput((prev) => ({
                     ...prev,
@@ -102,7 +110,7 @@ export default function HouseCard({
             <Button
               variant="destructive"
               size="lg"
-              className="cursor-pointer"
+              className="cursor-pointer bg-red-600 text-white hover:bg-red-500"
               onClick={() => setIsOpen(true)}
             >
               Delete House
@@ -110,7 +118,7 @@ export default function HouseCard({
             <Button
               variant="secondary"
               size="lg"
-              className="cursor-pointer"
+              className="cursor-pointer border border-slate-300 bg-slate-100 text-slate-900 hover:bg-slate-200"
               onClick={() => {
                 if (EditMode) return handleEdit(house.id);
                 return setEditMode((prev) => !prev);
@@ -125,10 +133,14 @@ export default function HouseCard({
           <p>
             <strong>Number of Bathrooms: </strong>
             {EditMode ? (
-              <input
-                type="text"
-                className="border border-black rounded disabled:cursor-not-allowed size-full"
-                value={HouseInput.nb_bathrooms}
+              <Input
+                type="number"
+                className="mt-1 border-slate-300 bg-white text-slate-900"
+                value={
+                  Number.isNaN(HouseInput.nb_bathrooms)
+                    ? ""
+                    : HouseInput.nb_bathrooms
+                }
                 onChange={(event) => {
                   setHouseInput((prev) => ({
                     ...prev,
@@ -143,10 +155,14 @@ export default function HouseCard({
           <p>
             <strong>Number of Bedrooms: </strong>
             {EditMode ? (
-              <input
-                type="text"
-                className="border border-black rounded disabled:cursor-not-allowed size-full"
-                value={HouseInput.nb_bedrooms}
+              <Input
+                type="number"
+                className="mt-1 border-slate-300 bg-white text-slate-900"
+                value={
+                  Number.isNaN(HouseInput.nb_bedrooms)
+                    ? ""
+                    : HouseInput.nb_bedrooms
+                }
                 onChange={(event) => {
                   setHouseInput((prev) => ({
                     ...prev,
@@ -161,19 +177,23 @@ export default function HouseCard({
           <p>
             <strong>Is Sold: </strong>
             {EditMode ? (
-              <select
+              <Select
                 value={HouseInput.is_sold ? "yes" : "no"}
-                className="border border-black rounded cursor-pointer disabled:cursor-not-allowed size-full"
-                onChange={(event) => {
+                onValueChange={(value) => {
                   setHouseInput((prev) => ({
                     ...prev,
-                    is_sold: event.target.value === "yes",
+                    is_sold: value === "yes",
                   }));
                 }}
               >
-                <option value="no">No</option>
-                <option value="yes">Yes</option>
-              </select>
+                <SelectTrigger className="mt-1 h-9 w-full border-slate-300 bg-white text-slate-900">
+                  <SelectValue placeholder="Sold status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="no">No</SelectItem>
+                  <SelectItem value="yes">Yes</SelectItem>
+                </SelectContent>
+              </Select>
             ) : house.is_sold ? (
               "Yes"
             ) : (
@@ -184,22 +204,26 @@ export default function HouseCard({
             {EditMode ? (
               <>
                 <strong>Select a Building: </strong>
-                <select
-                  value={HouseInput.building_id}
-                  className="border border-black rounded cursor-pointer disabled:cursor-not-allowed size-full"
-                  onChange={(event) => {
+                <Select
+                  value={String(HouseInput.building_id)}
+                  onValueChange={(value) => {
                     setHouseInput((prev) => ({
                       ...prev,
-                      building_id: parseInt(event.target.value),
+                      building_id: parseInt(value),
                     }));
                   }}
                 >
-                  {Buildings.map((Building) => (
-                    <option value={Building.id} key={Building.id}>
-                      {Building.name}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className="mt-1 h-9 w-full border-slate-300 bg-white text-slate-900">
+                    <SelectValue placeholder="Select a building" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Buildings.map((Building) => (
+                      <SelectItem value={String(Building.id)} key={Building.id}>
+                        {Building.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </>
             ) : (
               <>

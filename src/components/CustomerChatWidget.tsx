@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/field";
 
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "./ui/spinner";
 
 function getOrCreateToken() {
   let token = localStorage.getItem("chat_token");
@@ -152,12 +153,37 @@ export default function CustomerChatWidget() {
     AuthLoading || ConversationsLoading || MessagesLoading || CheckingExisting;
   const error = AuthError || ConversationsError || MessagesError;
 
-  if (loading) {
-    return <div className="chat-loading">Loading support chat...</div>;
+  if (error) {
+    return (
+      <main className="min-h-screen bg-slate-100 p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white text-slate-900 shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-2xl text-slate-900">Error</CardTitle>
+            <CardDescription className="text-slate-600">
+              We could not load the support chat. Please try again later.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-slate-700">{error}</CardContent>
+          <CardFooter>{new Date().toLocaleString()}</CardFooter>
+        </Card>
+      </main>
+    );
   }
 
-  if (error) {
-    return <div className="chat-error">{error}</div>;
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-slate-100 p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white text-slate-900 shadow-lg">
+          <CardContent className="flex items-center justify-center gap-3 py-8 text-center text-slate-700">
+            <Spinner className="size-5 text-slate-700" />
+            <span>
+              {AuthLoading ? "Checking Authentication" : "Loading Support Chat"}
+              ...
+            </span>
+          </CardContent>
+        </Card>
+      </main>
+    );
   }
 
   function formatMessageSender(senderType: string, senderId: string) {

@@ -7,6 +7,15 @@ import ProjectsDashBoardForm from "../components/Project DashBoard Components/Pr
 import ProjectsDashBoardDisplay from "../components/Project DashBoard Components/ProjectsDashBoardDisplay";
 import useCountries from "../hooks/useCountries";
 import type { Session } from "@supabase/supabase-js";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "../components/ui/card";
+import { Spinner } from "../components/ui/spinner";
 
 export default function ProjectsDashboard() {
   const {
@@ -66,16 +75,34 @@ export default function ProjectsDashboard() {
 
   // Checking for any errors
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <main className="min-h-screen bg-slate-100 p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white text-slate-900 shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-2xl text-slate-900">Error</CardTitle>
+            <CardDescription className="text-slate-600">
+              We could not load the support chat. Please try again later.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-slate-700">{error}</CardContent>
+          <CardFooter>{new Date().toLocaleString()}</CardFooter>
+        </Card>
+      </main>
+    );
   }
 
-  // Waiting till everything loads
   if (loading) {
     return (
-      <div>
-        {AuthLoading ? "Checking Authentication " : "Loading Data"}. Please
-        Wait...
-      </div>
+      <main className="min-h-screen bg-slate-100 p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white text-slate-900 shadow-lg">
+          <CardContent className="flex items-center justify-center gap-3 py-8 text-center text-slate-700">
+            <Spinner className="size-5 text-slate-700" />
+            <span>
+              {AuthLoading ? "Checking Authentication" : "Loading Data"}...
+            </span>
+          </CardContent>
+        </Card>
+      </main>
     );
   }
 
@@ -91,29 +118,31 @@ export default function ProjectsDashboard() {
   }
 
   return (
-    <>
-      <ProjectsDashBoardForm
-        AddBuilding={AddBuilding}
-        AddHouse={AddHouse}
-        AddProject={AddProject}
-        Projects={Projects}
-        Buildings={Buildings}
-        loading={loading}
-        Countries={Countries}
-      />
+    <main className="min-h-screen bg-slate-100 px-4 py-6 md:px-8 md:py-10">
+      <section className="mx-auto flex w-full max-w-7xl flex-col gap-6">
+        <ProjectsDashBoardForm
+          AddBuilding={AddBuilding}
+          AddHouse={AddHouse}
+          AddProject={AddProject}
+          Projects={Projects}
+          Buildings={Buildings}
+          loading={loading}
+          Countries={Countries}
+        />
 
-      <ProjectsDashBoardDisplay
-        Buildings={Buildings}
-        Projects={Projects}
-        Countries={Countries}
-        Houses={Houses}
-        UpdateProject={UpdateProject}
-        RemoveProject={RemoveProject}
-        UpdateBuilding={UpdateBuilding}
-        RemoveBuilding={RemoveBuilding}
-        RemoveHouse={RemoveHouse}
-        UpdateHouse={UpdateHouse}
-      />
-    </>
+        <ProjectsDashBoardDisplay
+          Buildings={Buildings}
+          Projects={Projects}
+          Countries={Countries}
+          Houses={Houses}
+          UpdateProject={UpdateProject}
+          RemoveProject={RemoveProject}
+          UpdateBuilding={UpdateBuilding}
+          RemoveBuilding={RemoveBuilding}
+          RemoveHouse={RemoveHouse}
+          UpdateHouse={UpdateHouse}
+        />
+      </section>
+    </main>
   );
 }

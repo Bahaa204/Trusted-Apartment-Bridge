@@ -111,12 +111,18 @@ export default function StaffChatDashboard() {
 
   if (error) {
     return (
-      <Card className="chat-error">
-        <CardHeader>
-          <CardTitle>Error</CardTitle>
-        </CardHeader>
-        <CardContent>{error}</CardContent>
-      </Card>
+      <main className="min-h-screen bg-slate-100 p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white text-slate-900 shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-2xl text-slate-900">Error</CardTitle>
+            <CardDescription className="text-slate-600">
+              We could not load the support chat. Please try again later.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-slate-700">{error}</CardContent>
+          <CardFooter>{new Date().toLocaleString()}</CardFooter>
+        </Card>
+      </main>
     );
   }
 

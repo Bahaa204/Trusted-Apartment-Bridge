@@ -1,4 +1,15 @@
 import type { Country } from "../../types/types";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Textarea } from "../ui/textarea";
 
 type ProjectsData = {
   project_name: string;
@@ -24,17 +35,22 @@ export default function ProjectForm({
   Options,
 }: ProjectFormProps) {
   return (
-    <div className="flex flex-wrap flex-col justify-center items-center gap-2.5">
-      <div>
-        <h2>Add a Project</h2>
+    <div className="grid grid-cols-1 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 md:p-5">
+      <div className="space-y-1">
+        <h2 className="text-xl font-semibold text-slate-900">Add a Project</h2>
+        <p className="text-sm text-slate-600">
+          Add core details and upload showcase images.
+        </p>
       </div>
 
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <label htmlFor="name">Name: </label>
-        <input
+      <div className="grid gap-1.5">
+        <Label htmlFor="project-name" className="text-slate-700">
+          Name
+        </Label>
+        <Input
           type="text"
-          id="name"
-          className="border border-black rounded"
+          id="project-name"
+          className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400"
           required
           value={project_name}
           onChange={(event) =>
@@ -44,12 +60,13 @@ export default function ProjectForm({
         />
       </div>
 
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <label htmlFor="description">Description</label>
-        <input
-          type="text"
-          id="description"
-          className="border border-black rounded disabled:cursor-not-allowed"
+      <div className="grid gap-1.5">
+        <Label htmlFor="project-description" className="text-slate-700">
+          Description
+        </Label>
+        <Textarea
+          id="project-description"
+          className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400"
           required
           value={project_description}
           onChange={(event) =>
@@ -59,12 +76,14 @@ export default function ProjectForm({
         />
       </div>
 
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <label htmlFor="location">Location</label>
-        <input
+      <div className="grid gap-1.5">
+        <Label htmlFor="project-location" className="text-slate-700">
+          Location
+        </Label>
+        <Input
           type="text"
-          id="location"
-          className="border border-black rounded disabled:cursor-not-allowed"
+          id="project-location"
+          className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400"
           required
           value={project_location}
           onChange={(event) =>
@@ -74,14 +93,16 @@ export default function ProjectForm({
         />
       </div>
 
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <label htmlFor="images">Images</label>
-        <input
+      <div className="grid gap-1.5">
+        <Label htmlFor="project-images" className="text-slate-700">
+          Images
+        </Label>
+        <Input
           type="file"
+          id="project-images"
           accept="images/*"
           multiple
-          id="images"
-          className="border border-black rounded cursor-pointer disabled:cursor-not-allowed"
+          className="cursor-pointer border-slate-300 bg-white text-slate-900 file:text-slate-700"
           required
           onChange={(event) => {
             if (event.target.files && event.target.files.length > 0) {
@@ -92,34 +113,43 @@ export default function ProjectForm({
         />
       </div>
 
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <label htmlFor="select">Select a country to add to the project</label>
-        <select
-          id="select"
-          className="border border-black rounded cursor-pointer disabled:cursor-not-allowed"
-          required
-          value={project_country_id}
-          onChange={(event) =>
-            updateFields({ project_country_id: parseInt(event.target.value) })
+      <div className="grid gap-1.5">
+        <Label htmlFor="project-country" className="text-slate-700">
+          Select a country
+        </Label>
+        <Select
+          value={
+            Number.isNaN(project_country_id) ? "" : String(project_country_id)
+          }
+          onValueChange={(value) =>
+            updateFields({ project_country_id: parseInt(value) })
           }
           disabled={loading}
         >
-          {Options.map((option) => (
-            <option value={option.id} key={option.id}>
-              {option.name}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger
+            id="project-country"
+            className="h-9 w-full cursor-pointer border-slate-300 bg-white text-slate-900"
+          >
+            <SelectValue placeholder="Select a country" />
+          </SelectTrigger>
+          <SelectContent>
+            {Options.map((option) => (
+              <SelectItem value={String(option.id)} key={option.id}>
+                {option.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
-      <div className="flex flex-wrap flex-col justify-center items-center gap-1">
-        <button
+      <div className="pt-1">
+        <Button
           type="submit"
-          className="border-2 border-black py-1 px-2 rounded cursor-pointer disabled:cursor-not-allowed"
+          className="h-9 w-full cursor-pointer bg-[#173b67] font-semibold text-white hover:bg-[#24507f] md:w-auto"
           disabled={loading}
         >
           Add a Project
-        </button>
+        </Button>
       </div>
     </div>
   );

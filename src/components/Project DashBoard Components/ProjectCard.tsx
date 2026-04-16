@@ -103,7 +103,7 @@ export default function ProjectCard({
 
   return (
     <>
-      <Card>
+      <Card className="border border-slate-200 bg-white text-slate-900 shadow-lg">
         <img
           src={projectImageSrc}
           alt={`${project.name} image`}
@@ -117,6 +117,7 @@ export default function ProjectCard({
             {EditMode ? (
               <Input
                 type="text"
+                className="border-slate-300 bg-white text-slate-900"
                 value={ProjectsInput.name}
                 onChange={(event) => {
                   setProjectsInput((prev) => ({
@@ -132,6 +133,7 @@ export default function ProjectCard({
           <CardDescription>
             {EditMode ? (
               <Textarea
+                className="border-slate-300 bg-white text-slate-900"
                 value={ProjectsInput.description}
                 onChange={(event) => {
                   setProjectsInput((prev) => ({
@@ -148,7 +150,7 @@ export default function ProjectCard({
             <Button
               variant="destructive"
               size="lg"
-              className="cursor-pointer"
+              className="cursor-pointer bg-red-600 text-white hover:bg-red-500"
               onClick={() => setIsOpen(true)}
             >
               Delete Project
@@ -156,7 +158,7 @@ export default function ProjectCard({
             <Button
               variant="secondary"
               size="lg"
-              className="cursor-pointer"
+              className="cursor-pointer border border-slate-300 bg-slate-100 text-slate-900 hover:bg-slate-200"
               onClick={() => {
                 if (EditMode) return handleEdit();
                 return setEditMode((prev) => !prev);
@@ -173,6 +175,7 @@ export default function ProjectCard({
             {EditMode ? (
               <Input
                 type="text"
+                className="mt-1 border-slate-300 bg-white text-slate-900"
                 value={ProjectsInput.location}
                 onChange={(event) => {
                   setProjectsInput((prev) => ({
@@ -198,7 +201,7 @@ export default function ProjectCard({
                     }));
                   }}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full border-slate-300 bg-white text-slate-900">
                     <SelectValue placeholder="Select a country" />
                   </SelectTrigger>
                   <SelectContent>
@@ -228,6 +231,7 @@ export default function ProjectCard({
                   type="file"
                   multiple
                   accept="images/*"
+                  className="mt-1 cursor-pointer border-slate-300 bg-white text-slate-900 file:text-slate-700"
                   onChange={(event) => {
                     setProjectsInput((prev) => ({
                       ...prev,
@@ -253,7 +257,7 @@ export default function ProjectCard({
           <Button
             variant="default"
             size="lg"
-            className="cursor-pointer w-full"
+            className="w-full cursor-pointer bg-[#173b67] font-semibold text-white hover:bg-[#24507f]"
             onClick={() => ToggleBuildingShow(project.id)}
           >
             {IsBuildingOpen ? "Hide Buildings" : "See Buildings"}
