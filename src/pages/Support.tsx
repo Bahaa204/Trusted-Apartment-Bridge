@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default function Support() {
   const { Session, Error, Loading } = useAuth();
@@ -51,6 +52,7 @@ export default function Support() {
 
   return (
     <>
+      <Breadcrumbs />
       <CustomerChatWidget />
     </>
   );

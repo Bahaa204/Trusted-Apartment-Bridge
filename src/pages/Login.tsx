@@ -2,45 +2,114 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, type SubmitEvent } from "react";
 import type { Provider } from "@supabase/supabase-js";
-import type { LoginMode } from "@/types/types";
+import type { LoginFormData } from "@/types/types";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
+import Logo from "/images/Logo.png";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import { useMultistepForm } from "@/hooks/useMultistepForm";
+import { LoginForm } from "@/components/Login page Components/LoginForm";
+import {
+  FieldError,
+  FieldGroup,
+  FieldSeparator,
+  FieldSet,
+} from "@/components/ui/field";
+import { SignUpForm } from "@/components/Login page Components/SignUpForm";
+import ResetPasswordForm from "@/components/Login page Components/ResetPasswordForm";
 
 export default function Login() {
   const {
     Session,
     Error: AuthError,
     Loading: AuthLoading,
-    SignInWithPassword,
     SignInWithOAuth,
-    SignUp,
+    SignInWithPassword,
     ResetPassword,
+    SignUp,
   } = useAuth();
 
-  const [Email, setEmail] = useState<string>("");
-  const [Password, setPassword] = useState<string>("");
-  const [DisplayName, setDisplayName] = useState<string>("");
-  const [Mode, setMode] = useState<LoginMode>("SignIn");
-  const [EmailSent, setEmailSent] = useState<boolean>(false);
+  const LoginFormData: LoginFormData = {
+    email: "",
+    password: "",
+    display_name: "",
+    email_sent: false,
+  };
+
+  const [FormData, setFormData] = useState<LoginFormData>(LoginFormData);
   const navigate = useNavigate();
 
-  function SwitchModes(mode: LoginMode) {
-    setEmail("");
-    setPassword("");
-    setDisplayName("");
-    setEmailSent(false);
-    setMode(mode);
+  const { CurrentStepIndex, goTo, step } = useMultistepForm([
+    <LoginForm
+      {...FormData}
+      loading={AuthLoading}
+      UpdateFields={UpdateFields}
+    />,
+    <SignUpForm
+      {...FormData}
+      loading={AuthLoading}
+      UpdateFields={UpdateFields}
+    />,
+    <ResetPasswordForm
+      {...FormData}
+      loading={AuthLoading}
+      UpdateFields={UpdateFields}
+    />,
+  ]);
+
+  function UpdateFields(fields: Partial<LoginFormData>) {
+    setFormData((prev) => {
+      return { ...prev, ...fields };
+    });
+  }
+
+  if (AuthError) {
+    return (
+      <main className="min-h-screen bg-[#e6e0d8] p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white/90 text-slate-900 shadow-[0_24px_80px_rgba(15,23,42,0.16)] backdrop-blur">
+          <CardHeader className="border-b border-slate-200 bg-slate-950 text-white">
+            <CardTitle className="text-2xl text-white">Error</CardTitle>
+            <CardDescription className="text-slate-300">
+              There has been an error while checking authentication. Please try
+              again later.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="border-b border-slate-200 bg-orange-50/70 text-slate-700">
+            {AuthError}
+          </CardContent>
+          <CardFooter className="bg-white/80 text-sm text-slate-600">
+            {new Date().toLocaleString()}
+          </CardFooter>
+        </Card>
+      </main>
+    );
   }
 
   if (AuthLoading) {
-    return <div>Checking Authentication...</div>;
+    return (
+      <main className="min-h-screen bg-[#e6e0d8] p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white/90 text-slate-900 shadow-[0_24px_80px_rgba(15,23,42,0.16)] backdrop-blur">
+          <CardContent className="flex items-center justify-center gap-3 py-8 text-center text-slate-700">
+            <Spinner className="size-5 text-slate-950" />
+            <span>Checking Authentication...</span>
+          </CardContent>
+        </Card>
+      </main>
+    );
   }
 
   // If there is already a session, redirect them to the home page.
   if (Session) {
-    return <Navigate to="/" />;
+    return <Navigate to={"/"} />;
   }
 
   async function handleOAuth(provider: Provider) {
@@ -51,236 +120,210 @@ export default function Login() {
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (Mode === "ResetPassword") {
-      setEmailSent(true);
-      return await ResetPassword(Email);
+    switch (CurrentStepIndex) {
+      case 0: {
+        // Handle login form submission
+
+        const ok = await SignInWithPassword(FormData.email, FormData.password);
+
+        if (ok) return navigate(-1);
+
+        break;
+      }
+      case 1: {
+        // Handle sign-up form submission
+
+        const ok = await SignUp(
+          FormData.email,
+          FormData.password,
+          FormData.display_name,
+        );
+
+        if (ok) return navigate(-1);
+
+        break;
+      }
+      case 2: {
+        // Handle reset password form submission
+
+        const ok = await ResetPassword(FormData.email);
+
+        if (ok) {
+          UpdateFields({ email_sent: true });
+        }
+
+        break;
+      }
+      default:
+        break;
     }
 
-    if (Mode === "SignIn") {
-      const ok = await SignInWithPassword(Email, Password);
-      if (ok) navigate("/");
-    } else {
-      const ok = await SignUp(Email, Password, DisplayName);
-      if (ok) navigate("/");
-    }
+    // if (Mode === "ResetPassword") {
+    //   setEmailSent(true);
+    //   return await ResetPassword(Email);
+    // }
+
+    // if (Mode === "SignIn") {
+    //   const ok = await SignInWithPassword(Email, Password);
+    //   if (ok) navigate("/");
+    // } else {
+    //   const ok = await SignUp(Email, Password, DisplayName);
+    //   if (ok) navigate("/");
+    // }
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
-      {/* Header Section */}
-      <div className="sm:mx-auto sm:w-full sm:max-w-md flex flex-col items-center">
-        {/* Abstract Logo (This will Change) */}
-        <svg
-          className="h-10 w-10 text-indigo-500"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-black tracking-tight">
-          {Mode === "ResetPassword"
-            ? "Reset Your Password"
-            : Mode === "SignIn"
-              ? "Sign in"
-              : "Sign Up"}
-          {Mode !== "ResetPassword" && " to your account"}
-        </h2>
+    <main className="relative min-h-screen overflow-hidden bg-[#e6e0d8] text-slate-900">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(15,23,42,0.15),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(245,158,11,0.16),transparent_32%),linear-gradient(180deg,rgba(255,255,255,0.36),rgba(255,255,255,0.12))]" />
+      <div className="absolute -left-20 top-20 h-56 w-56 rounded-full bg-slate-950/10 blur-3xl" />
+      <div className="absolute -bottom-12 -right-16 h-64 w-64 rounded-full bg-orange-400/15 blur-3xl" />
 
-        {AuthError && (
-          <div
-            role="alert"
-            className="bg-red-700 p-5 rounded-lg text-white text-lg m-2.5"
-          >
-            {AuthError}
-          </div>
-        )}
-        {EmailSent && (
-          <div
-            className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4"
-            role="alert"
-          >
-            <p className="font-bold">Email Sent</p>
-            <p className="text-sm">
-              We've sent a password reset link to your email address.
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Main Card */}
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {Mode === "SignUp" && (
-              <div>
-                <label
-                  htmlFor="displayName"
-                  className="block text-sm font-medium text-black"
-                >
-                  Display Name
-                </label>
-                <div className="mt-2">
-                  <Input
-                    required
-                    id="displayName"
-                    name="displayName"
-                    type="text"
-                    autoComplete="name"
-                    placeholder="John Doe"
-                    onChange={(event) => {
-                      setDisplayName(event.target.value);
-                    }}
-                    disabled={AuthLoading}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Email Input */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-black"
-              >
-                Email address
-              </label>
-              <div className="mt-2">
-                <Input
-                  required
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="test@gmail.com"
-                  onChange={(event) => {
-                    setEmail(event.target.value);
-                  }}
-                  disabled={AuthLoading}
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-4 py-8 md:px-8">
+        <Card className="w-full max-w-4xl overflow-hidden border border-white/60 bg-white/85 text-slate-900 shadow-[0_30px_100px_rgba(15,23,42,0.2)] backdrop-blur p-0!">
+          <CardHeader className="rounded-none! gap-6 border-b border-slate-200 bg-linear-to-br from-slate-950 via-slate-900 to-slate-800 px-6 py-8 text-white md:px-10">
+            <div className="flex flex-col items-center gap-5 text-center md:flex-row md:text-left">
+              <div className="flex size-28 items-center justify-center rounded-full border border-orange-300/40 bg-white shadow-inner shadow-black/20">
+                <img
+                  src={Logo}
+                  alt="TAB Logo"
+                  className="size-20 object-contain"
                 />
               </div>
+
+              <div className="space-y-3">
+                <span className="inline-flex rounded-full border border-orange-300/40 bg-orange-400/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-orange-100">
+                  TAB portal
+                </span>
+                <CardTitle className="text-3xl font-bold tracking-tight md:text-4xl">
+                  {CurrentStepIndex === 0
+                    ? "Log in to your account"
+                    : CurrentStepIndex === 1
+                      ? "Create a new account"
+                      : "Reset your password"}
+                </CardTitle>
+                <CardDescription className="max-w-xl text-sm text-slate-300 md:text-base">
+                  {CurrentStepIndex === 0
+                    ? "Welcome back! Please enter your details to access your account."
+                    : CurrentStepIndex === 1
+                      ? "Sign up for a new account"
+                      : "Reset your password"}
+                </CardDescription>
+              </div>
             </div>
 
-            {/* Password Input */}
-            {Mode !== "ResetPassword" && (
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-black"
-                >
-                  Password
-                </label>
-                <div className="mt-2">
-                  <Input
-                    required
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    placeholder="********"
-                    onChange={(event) => {
-                      setPassword(event.target.value);
-                    }}
-                    disabled={AuthLoading}
-                  />
-                </div>
-              </div>
+            {AuthError && (
+              <FieldError className="rounded-xl border border-orange-200 bg-orange-50/90 px-4 py-3 text-slate-900">
+                {AuthError}
+              </FieldError>
             )}
+          </CardHeader>
 
-            {/* Remember Me & Forgot Password */}
-            {Mode !== "ResetPassword" && (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <Input
-                    id="remember-me"
-                    name="remember-me"
-                    type="checkbox"
-                    className="h-4 w-4 rounded cursor-pointer disabled:cursor-not-allowed"
-                    disabled={AuthLoading}
-                  />
-                  <label
-                    htmlFor="remember-me"
-                    className="ml-2 block text-sm text-black cursor-pointer"
-                  >
-                    Remember me
-                  </label>
-                </div>
-
-                <div className="text-sm">
-                  <Button
-                    type="button"
-                    variant="link"
-                    className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer disabled:cursor-not-allowed"
-                    onClick={() => SwitchModes("ResetPassword")}
-                    disabled={AuthLoading}
-                  >
-                    Forgot password?
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {/* Sign In Button */}
-            <div>
-              <Button
-                type="submit"
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#6366f1] hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-[#1e293b] transition-colors cursor-pointer disabled:cursor-not-allowed"
-                disabled={AuthLoading}
-              >
-                {Mode === "ResetPassword"
-                  ? "Reset Password"
-                  : Mode === "SignIn"
-                    ? "Sign In"
-                    : "Sign Up"}
-              </Button>
-            </div>
-          </form>
-
-          {Mode !== "ResetPassword" && (
-            <div className="mt-8">
-              <Separator decorative />
-              <div className="mt-6 flex justify-center items-center gap-6">
-                <Button
-                  variant="link"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-slate-600 rounded-md shadow-sm bg-[#334155] text-sm font-medium text-white hover:bg-slate-600 transition-colors cursor-pointer disabled:cursor-not-allowed"
-                  onClick={() => {
-                    handleOAuth("google");
-                  }}
-                  disabled={AuthLoading}
+          <CardContent className="flex flex-col justify-center p-5">
+            <div className="space-y-5">
+              <FieldSet className="gap-5">
+                <form
+                  onSubmit={handleSubmit}
+                  className="flex flex-col justify-center items-center gap-5"
                 >
-                  <GoogleIcon />
-                </Button>
-              </div>
+                  {step}
+                </form>
+
+                <FieldSeparator className="my-1 **:data-[slot=separator]:bg-linear-to-r **:data-[slot=separator]:from-transparent **:data-[slot=separator]:via-orange-300 **:data-[slot=separator]:to-transparent" />
+
+                {CurrentStepIndex !== 2 && (
+                  <FieldGroup>
+                    <Button
+                      type="button"
+                      variant="default"
+                      className="w-full justify-center gap-3 rounded-xl border border-orange-300 bg-slate-950 px-4 py-3 text-white shadow-lg shadow-slate-950/15 transition-colors hover:bg-slate-800"
+                      onClick={() => {
+                        handleOAuth("google");
+                      }}
+                      disabled={AuthLoading}
+                    >
+                      <GoogleIcon />
+                      <span>Continue with Google</span>
+                    </Button>
+                  </FieldGroup>
+                )}
+
+                <FieldGroup className="flex flex-row flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-[#f7f3ec] p-4 whitespace-nowrap">
+                  {CurrentStepIndex === 0 && (
+                    <>
+                      <p className="text-sm text-slate-700">Not a member?</p>
+                      <Button
+                        type="button"
+                        variant="link"
+                        className=" cursor-pointer h-auto p-0 text-slate-950 underline-offset-4 hover:text-orange-700 hover:underline"
+                        onClick={() => {
+                          goTo(1);
+                        }}
+                        disabled={AuthLoading}
+                      >
+                        Sign up
+                      </Button>
+                    </>
+                  )}
+                  {CurrentStepIndex === 1 && (
+                    <>
+                      <p className="text-sm text-slate-700">
+                        Already have an account?
+                      </p>
+                      <Button
+                        type="button"
+                        variant="link"
+                        className="cursor-pointer h-auto p-0 text-slate-950 underline-offset-4 hover:text-orange-700 hover:underline"
+                        onClick={() => {
+                          goTo(0);
+                        }}
+                        disabled={AuthLoading}
+                      >
+                        Log in
+                      </Button>
+                    </>
+                  )}
+                  {CurrentStepIndex === 2 && (
+                    <>
+                      <p className="text-sm text-slate-700">
+                        Remembered your password?
+                      </p>
+                      <Button
+                        type="button"
+                        variant="link"
+                        className="cursor-pointer h-auto p-0 text-slate-950 underline-offset-4 hover:text-orange-700 hover:underline"
+                        onClick={() => {
+                          goTo(0);
+                        }}
+                        disabled={AuthLoading}
+                      >
+                        Log in
+                      </Button>
+                    </>
+                  )}
+                  {CurrentStepIndex !== 2 && (
+                    <>
+                      <p className="text-sm text-slate-700">
+                        Forgot your password?
+                      </p>
+                      <Button
+                        type="button"
+                        variant="link"
+                        className="cursor-pointer h-auto p-0 text-orange-700 underline-offset-4 hover:text-orange-800 hover:underline"
+                        onClick={() => {
+                          goTo(2);
+                        }}
+                        disabled={AuthLoading}
+                      >
+                        Reset password
+                      </Button>
+                    </>
+                  )}
+                </FieldGroup>
+              </FieldSet>
             </div>
-          )}
-        </div>
-
-        {/* Footer Link */}
-
-        <p className="mt-8 text-center text-sm text-slate-400">
-          {Mode === "ResetPassword"
-            ? "Remembered your password?"
-            : Mode === "SignIn"
-              ? "Don't have an account?"
-              : "Already have an account?"}{" "}
-          <Button
-            variant="link"
-            className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer disabled:cursor-not-allowed"
-            onClick={() => {
-              SwitchModes(Mode === "SignIn" ? "SignUp" : "SignIn");
-            }}
-            disabled={AuthLoading}
-          >
-            {Mode === "SignIn" ? "Sign Up" : "Sign In"}
-          </Button>
-        </p>
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </main>
   );
 }

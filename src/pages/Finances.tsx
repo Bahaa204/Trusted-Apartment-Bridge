@@ -10,9 +10,16 @@ import type { ChartConfig } from "@/components/ui/chart";
 import type { ChartData } from "@/types/chart";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-// import { Card, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { DatePickerWithRange } from "@/components/Custom/DatePickerWithRange";
-import Card from "@/components/Custom/Card";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { FieldDescription, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 
 export default function Finances() {
   const { Session, Error: AuthError, Loading: AuthLoading } = useAuth();
@@ -49,11 +56,32 @@ export default function Finances() {
   const error = EmployeesError || HousesError || AuthError;
 
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <main className="min-h-screen bg-slate-100 p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white text-slate-900 shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-2xl">Finances Error</CardTitle>
+            <CardDescription className="text-slate-600">
+              We could not load finances data.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-slate-700">{error}</CardContent>
+        </Card>
+      </main>
+    );
   }
 
   if (loading) {
-    return <div>Loading Data...</div>;
+    return (
+      <main className="min-h-screen bg-slate-100 p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white text-slate-900 shadow-lg">
+          <CardContent className="flex items-center justify-center gap-3 py-8 text-slate-700">
+            <Spinner className="size-5 text-slate-700" />
+            <span>Loading Data...</span>
+          </CardContent>
+        </Card>
+      </main>
+    );
   }
 
   if (!Session) {
@@ -167,81 +195,98 @@ export default function Finances() {
   const profit = Income - expenses;
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-[#061b3a] via-[#0b2b57] to-[#123a74] p-4 text-white sm:p-8">
-      <Card
-        title="Finances"
-        description="Manage your financial overview"
-        className="text-white min-h-screen w-full bg-transparent flex flex-col gap-6"
-      >
-        <div className="mx-auto w-full h-31.25 max-w-md rounded-xl border bg-white/6 p-4 flex flex-wrap items-center justify-center gap-4">
-          <DatePickerWithRange
-            label="Select Dates"
-            minDate={minInputDate}
-            maxDate={maxInputDate}
-            selectedMinDate={MinDate}
-            selectedMaxDate={MaxDate}
-            onDateRangeChange={handleDateRangeChange}
-            pickerBackgroundColor="#0b1f3f"
-            pickerTextColor="#ffffff"
-          />
-        </div>
+    <main className="min-h-screen bg-slate-100 px-4 py-6 md:px-8 md:py-10">
+      <section className="mx-auto flex w-full max-w-7xl flex-col gap-6">
+        <Breadcrumbs />
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="flex flex-wrap flex-col gap-2.5 justify-center items-center rounded-xl bg-transparent p-4 text-center">
-            <h3 className="text-2xl tracking-wide text-[#ffd8b1]">
-              <strong>Income</strong>
-            </h3>
-            <p className="text-xl font-bold text-white">
-              {Income.toLocaleString()}$
-            </p>
-          </div>
-          <div className="flex flex-wrap flex-col gap-2.5 justify-center items-center rounded-xl bg-transparent p-4 text-center">
-            <h3 className="text-2xl tracking-wide text-[#ffd8b1]">
-              <strong>Profit</strong>
-            </h3>
-            <p className="text-xl font-bold text-[#ffb76a]">
-              {profit < 0 ? 0 : profit.toLocaleString()}$
-            </p>
-          </div>
-          <div className="flex flex-wrap flex-col gap-2.5 justify-center items-center rounded-xl bg-transparent p-4 text-center">
-            <h3 className="text-2xl tracking-wide text-[#ffd8b1]">
-              <strong>Expenses</strong>
-            </h3>
-            <p className="text-xl font-bold text-white">
-              {expenses.toLocaleString()}$
-            </p>
-          </div>
-        </div>
+        <Card className="border border-slate-200 bg-white text-slate-900 shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-3xl">Finances</CardTitle>
+            <CardDescription className="text-slate-600">
+              Manage your financial overview
+            </CardDescription>
+          </CardHeader>
 
-        <div className="flex justify-center">
-          <Button
-            type="button"
-            variant="default"
-            size="lg"
-            onClick={handleClick}
-            disabled={Calculating !== ""}
-            className="h-12 cursor-pointer rounded-xl border border-[#ffdfbf] bg-[#C35214] px-10 text-base text-white shadow-[0_12px_30px_rgba(249,115,22,0.35)] transition hover:bg-[#ea6407] disabled:cursor-not-allowed! disabled:opacity-70"
-          >
-            {Calculating ? (
-              <>
-                <Spinner className="size-5" />
-                {Calculating}
-              </>
-            ) : (
-              "Calculate Finances"
-            )}
-          </Button>
-        </div>
+          <CardContent className="space-y-6">
+            <FieldSet className="mx-auto w-full max-w-xl rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <FieldGroup>
+                <FieldLabel htmlFor="date-picker-range" className="text-slate-800">
+                  Select Dates
+                </FieldLabel>
+                <FieldDescription className="text-slate-600">
+                  Pick a start and end date to calculate financial totals.
+                </FieldDescription>
+                <DatePickerWithRange
+                  label="Select Dates"
+                  minDate={minInputDate}
+                  maxDate={maxInputDate}
+                  selectedMinDate={MinDate}
+                  selectedMaxDate={MaxDate}
+                  onDateRangeChange={handleDateRangeChange}
+                  pickerBackgroundColor="#ffffff"
+                  pickerTextColor="#0f172a"
+                />
+              </FieldGroup>
+            </FieldSet>
 
-        <div className="rounded-2xl border border-[#fd9a39]/40 bg-white p-2 text-[#0b2b57] sm:p-3">
-          <ChartBarInteractive
-            title="Finances"
-            description="Showing finances between the selected time frames"
-            data={ChartData}
-            config={chartConfig}
-          />
-        </div>
-      </Card>
-    </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <Card className="border border-slate-200 bg-slate-50 text-center">
+                <CardContent className="py-6">
+                  <h3 className="text-lg font-semibold text-slate-700">Income</h3>
+                  <p className="mt-2 text-2xl font-bold text-slate-900">
+                    {Income.toLocaleString()}$
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border border-[#f3a342]/45 bg-[#fff8ef] text-center">
+                <CardContent className="py-6">
+                  <h3 className="text-lg font-semibold text-slate-700">Profit</h3>
+                  <p className="mt-2 text-2xl font-bold text-slate-900">
+                    {profit < 0 ? 0 : profit.toLocaleString()}$
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border border-slate-200 bg-slate-50 text-center">
+                <CardContent className="py-6">
+                  <h3 className="text-lg font-semibold text-slate-700">Expenses</h3>
+                  <p className="mt-2 text-2xl font-bold text-slate-900">
+                    {expenses.toLocaleString()}$
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                variant="default"
+                size="lg"
+                onClick={handleClick}
+                disabled={Calculating !== ""}
+                className="h-12 cursor-pointer rounded-xl bg-[#173b67] px-10 text-base text-white transition hover:bg-[#24507f] disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {Calculating ? (
+                  <>
+                    <Spinner className="size-5" />
+                    {Calculating}
+                  </>
+                ) : (
+                  "Calculate Finances"
+                )}
+              </Button>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-2 sm:p-3">
+              <ChartBarInteractive
+                title="Finances"
+                description="Showing finances between the selected time frames"
+                data={ChartData}
+                config={chartConfig}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+    </main>
   );
 }

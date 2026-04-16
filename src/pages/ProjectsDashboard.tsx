@@ -16,6 +16,7 @@ import {
   CardFooter,
 } from "../components/ui/card";
 import { Spinner } from "../components/ui/spinner";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default function ProjectsDashboard() {
   const {
@@ -119,6 +120,7 @@ export default function ProjectsDashboard() {
 
   return (
     <main className="min-h-screen bg-slate-100 px-4 py-6 md:px-8 md:py-10">
+      <Breadcrumbs />
       <section className="mx-auto flex w-full max-w-7xl flex-col gap-6">
         <ProjectsDashBoardForm
           AddBuilding={AddBuilding}

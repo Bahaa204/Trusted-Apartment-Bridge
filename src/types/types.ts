@@ -84,3 +84,10 @@ export type Data<T> =
   | { error: PostgrestError; data: null };
 
 export type UserRole = "admin" | "employee" | "customer";
+
+export type LoginFormData = {
+  email: string;
+  password: string;
+  display_name: string;
+  email_sent: boolean;
+};

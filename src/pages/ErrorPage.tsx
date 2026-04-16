@@ -1,19 +1,22 @@
-import { useNavigate } from "react-router-dom";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { Button } from "@/components/ui/button";
 
 export default function ErrorPage() {
-  const navigate = useNavigate();
 
   return (
-    <div className="error">
+    <>
+      <Breadcrumbs />
       <h1>An Error has occurred</h1>
-      <button
+      <Button
+        variant="link"
         type="button"
+        className="cursor-pointer"
         onClick={() => {
-          navigate("/");
+          window.location.reload();
         }}
       >
-        Return Home
-      </button>
-    </div>
+        Reload Page
+      </Button>
+    </>
   );
 }

@@ -11,11 +11,20 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate, useNavigate } from "react-router-dom";
 
-import LoginForm from "@/components/Custom/LoginForm";
 import { useState, type SubmitEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
 import StaffChatDashboard from "@/components/StaffChatDashboard";
 import { Spinner } from "@/components/ui/spinner";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import {
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+  FieldSet,
+} from "@/components/ui/field";
+import { Field, Input } from "@headlessui/react";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -96,6 +105,7 @@ export default function Admin() {
 
   return (
     <main className="min-h-screen bg-slate-100 px-4 py-6 md:px-8 md:py-10">
+      <Breadcrumbs />
       <section className="mx-auto flex w-full max-w-7xl flex-col gap-6">
         <Card className="border border-slate-200 bg-white text-slate-900 shadow-lg">
           <CardHeader className="text-center">
@@ -214,18 +224,65 @@ export default function Admin() {
             </CardHeader>
 
             <CardContent>
-              <LoginForm
-                emailInput={{ email: Email, setEmail: setEmail }}
-                passwordInput={{
-                  password: Password,
-                  setPassword: setPassword,
-                }}
-                submitLabel="Invite Admin"
-                emailDescription='The email must end with "@tab-admin.com" to be recognized as an admin.'
-                passwordDescription="Password must be at least 6 characters long."
-                error={FormError}
-                onsubmit={handleSubmit}
-              />
+              <form onSubmit={handleSubmit}>
+                <FieldSet className="rounded-xl border border-slate-200 bg-slate-50 p-4 md:p-5">
+                  {FormError && (
+                    <FieldError className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-red-700">
+                      {FormError}
+                    </FieldError>
+                  )}
+                  <FieldGroup>
+                    <Field>
+                      <FieldLabel htmlFor="email" className="text-slate-800">
+                        Email
+                      </FieldLabel>
+                      <Input
+                        value={Email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        id="email"
+                        autoComplete="email"
+                        type="email"
+                        placeholder="omar@tab-admin.com"
+                        className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400"
+                        required
+                      />
+                      <FieldDescription className="text-slate-600">
+                        The email must end with "@tab-admin.com" to be
+                        recognized as an admin.
+                      </FieldDescription>
+                    </Field>
+                    <FieldSeparator className="text-slate-300" />
+                    <Field>
+                      <FieldLabel htmlFor="password" className="text-slate-800">
+                        Password
+                      </FieldLabel>
+                      <Input
+                        value={Password}
+                        onChange={(event) => setPassword(event.target.value)}
+                        id="password"
+                        autoComplete="current-password"
+                        type="password"
+                        placeholder="******"
+                        className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400"
+                        required
+                      />
+                      <FieldDescription className="text-slate-600">
+                        Password must be at least 6 characters long.
+                      </FieldDescription>
+                    </Field>
+                  </FieldGroup>
+                  <FieldGroup>
+                    <Field>
+                      <Button
+                        type="submit"
+                        className="cursor-pointer bg-[#173b67] text-white hover:bg-[#24507f]"
+                      >
+                        Invite Admin
+                      </Button>
+                    </Field>
+                  </FieldGroup>
+                </FieldSet>
+              </form>
             </CardContent>
           </Card>
         )}

@@ -187,6 +187,7 @@ export function useAuth() {
       return false;
     }
 
+    setLoading(false);
     return true;
   }
 
