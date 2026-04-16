@@ -73,7 +73,7 @@ export default function Admin() {
 
   return (
     <>
-      <Card className="flex flex-col gap-5 justify-center min-h-screen">
+      <Card className="flex flex-col gap-5 justify-center min-h-screen rounded-none!">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold">Welcome to the Admin Page</CardTitle>
           <CardDescription className="text-xl">
