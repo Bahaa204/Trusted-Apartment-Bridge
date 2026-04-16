@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  min-height: 100%;
+  background-color: #e6e0d8;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #e6e0d8;
+}
+
+#root {
+  min-height: 100vh;
+  background-color: #e6e0d8;
+}
+
+.bg-gray-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgba(230, 224, 216, var(--tw-bg-opacity));
+}
