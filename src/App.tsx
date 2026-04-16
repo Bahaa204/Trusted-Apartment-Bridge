@@ -32,12 +32,8 @@ const router = createBrowserRouter([
       { path: "admin/employees", element: <EmployeeDashboard /> },
       { path: "admin/finances", element: <Finances /> },
       { path: "admin/projects", element: <ProjectsDashboard /> },
-<<<<<<< HEAD
       { path: "reset-password", element: <ResetPassword /> },
       { path: "support", element: <Support /> },
-=======
-      { path:"/employees",  element: <EmployeeDashboard /> },
->>>>>>> a05784e377ad9d5b398cad2289cc010555effeae
       { path: "*", element: <NotFound /> },
     ],
     errorElement: <ErrorPage />,
