@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabaseClient } from "../lib/supabaseClient";
 import { Suspense } from 'react';
@@ -178,11 +178,13 @@ function UnitCard({
   isHovered,
   onHover,
   onLeave,
+  onBuy,
 }: {
   house: House;
   isHovered: boolean;
   onHover: () => void;
   onLeave: () => void;
+  onBuy: () => void;
 }) {
   return (
     <div
@@ -221,6 +223,17 @@ function UnitCard({
           <span>🛏 {house.nb_bedrooms} Bedrooms</span>
           <span>🚿 {house.nb_bathrooms} Bathrooms</span>
         </div>
+        <button
+          type="button"
+          onClick={onBuy}
+          className={`mt-5 w-full rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+            isHovered
+              ? "border-white bg-white text-orange-500 hover:bg-white/90"
+              : "border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100"
+          }`}
+        >
+          Buy this unit
+        </button>
       </div>
     </div>
   );
@@ -234,6 +247,17 @@ export default function ProjectDetails() {
   const [error, setError] = useState(false);
   const [selectedBuilding, setSelectedBuilding] = useState<number | null>(null);
   const [hoveredUnit, setHoveredUnit] = useState<number | null>(null);
+  const [showPayment, setShowPayment] = useState(false);
+  const [paymentHouse, setPaymentHouse] = useState<House | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [paymentError, setPaymentError] = useState("");
+  const [paymentForm, setPaymentForm] = useState({
+    cardName: "",
+    cardNumber: "",
+    expiry: "",
+    cvc: "",
+    email: "",
+  });
 
   const modelAssignments = useMemo(() => {
     if (!project) return [];
@@ -296,6 +320,55 @@ export default function ProjectDetails() {
     0
   );
   const activeBldg = project.buildings.find((b) => b.id === selectedBuilding);
+
+  function openPayment(house: House) {
+    setPaymentHouse(house);
+    setPaymentSuccess(false);
+    setPaymentError("");
+    setPaymentForm({
+      cardName: "",
+      cardNumber: "",
+      expiry: "",
+      cvc: "",
+      email: "",
+    });
+    setShowPayment(true);
+  }
+
+  function closePayment() {
+    setShowPayment(false);
+    setPaymentHouse(null);
+    setPaymentSuccess(false);
+    setPaymentError("");
+  }
+
+  function handlePaymentSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const { cardName, cardNumber, expiry, cvc, email } = paymentForm;
+    if (!cardName || !cardNumber || !expiry || !cvc || !email) {
+      setPaymentError("Please fill in all fields to complete the payment.");
+      return;
+    }
+
+    const normalizedNumber = cardNumber.replace(/\s+/g, "");
+    if (!/^\d{16}$/.test(normalizedNumber)) {
+      setPaymentError("Enter a valid 16-digit card number.");
+      return;
+    }
+
+    if (!/^\d{2}\/\d{2}$/.test(expiry)) {
+      setPaymentError("Expiry must be in MM/YY format.");
+      return;
+    }
+
+    if (!/^\d{3,4}$/.test(cvc)) {
+      setPaymentError("Enter a valid CVC code.");
+      return;
+    }
+
+    setPaymentError("");
+    setPaymentSuccess(true);
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -418,6 +491,7 @@ export default function ProjectDetails() {
                           isHovered={hoveredUnit === house.id}
                           onHover={() => setHoveredUnit(house.id)}
                           onLeave={() => setHoveredUnit(null)}
+                          onBuy={() => openPayment(house)}
                         />
                       ))}
                   </div>
@@ -456,6 +530,147 @@ export default function ProjectDetails() {
           </div>
         </div>
       </div>
+
+      {showPayment && (
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-black/50 p-4"
+          onMouseDown={closePayment}
+        >
+          <div
+            className="w-full max-w-2xl max-h-[90vh] rounded-[2rem] bg-white shadow-2xl overflow-y-auto"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between flex-wrap gap-4 bg-orange-500 px-6 py-5 text-white">
+              <div>
+                <h2 className="text-2xl font-bold">Complete purchase</h2>
+                <p className="mt-2 text-sm text-orange-100">
+                  Fill the card details to confirm your purchase.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closePayment}
+                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
+                <div className="space-y-4">
+                  <div className="rounded-3xl bg-slate-50 p-5 shadow-sm">
+                    <p className="text-sm text-gray-500">Selected</p>
+                    <p className="mt-2 text-xl font-semibold text-slate-900">
+                      {paymentHouse ? `Unit #${paymentHouse.id} - $${paymentHouse.price.toLocaleString()}` : "No unit selected"}
+                    </p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      {paymentHouse ? `${paymentHouse.nb_bedrooms} bedrooms • ${paymentHouse.nb_bathrooms} bathrooms` : "Select a unit to start."}
+                    </p>
+                  </div>
+
+                  <form onSubmit={handlePaymentSubmit} className="space-y-5">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Cardholder name</label>
+                      <input
+                        value={paymentForm.cardName}
+                        onChange={(e) => setPaymentForm({ ...paymentForm, cardName: e.target.value })}
+                        className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm"
+                        placeholder="John Doe"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Card number</label>
+                      <input
+                        value={paymentForm.cardNumber}
+                        onChange={(e) => setPaymentForm({ ...paymentForm, cardNumber: e.target.value })}
+                        className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm"
+                        placeholder="1234 5678 9012 3456"
+                        inputMode="numeric"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Expiry</label>
+                        <input
+                          value={paymentForm.expiry}
+                          onChange={(e) => setPaymentForm({ ...paymentForm, expiry: e.target.value })}
+                          className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm"
+                          placeholder="MM/YY"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">CVC</label>
+                        <input
+                          value={paymentForm.cvc}
+                          onChange={(e) => setPaymentForm({ ...paymentForm, cvc: e.target.value })}
+                          className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm"
+                          placeholder="123"
+                          inputMode="numeric"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Email</label>
+                      <input
+                        value={paymentForm.email}
+                        onChange={(e) => setPaymentForm({ ...paymentForm, email: e.target.value })}
+                        className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm"
+                        placeholder="you@example.com"
+                        type="email"
+                      />
+                    </div>
+
+                    {paymentError && (
+                      <p className="text-sm text-red-500">{paymentError}</p>
+                    )}
+
+                    <button
+                      type="submit"
+                      className="w-full rounded-3xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition"
+                    >
+                      Pay now
+                    </button>
+                  </form>
+                </div>
+
+                <div className="rounded-3xl bg-slate-950 p-6 text-white shadow-sm">
+                  <p className="text-sm uppercase tracking-[0.2em] text-slate-400">Payment summary</p>
+                  <div className="mt-4 space-y-4">
+                    <div className="rounded-3xl bg-slate-900 p-4">
+                      <p className="text-sm text-slate-400">Unit</p>
+                      <p className="mt-2 text-lg font-semibold">{paymentHouse ? `#${paymentHouse.id}` : "-"}</p>
+                    </div>
+                    <div className="rounded-3xl bg-slate-900 p-4">
+                      <p className="text-sm text-slate-400">Price</p>
+                      <p className="mt-2 text-lg font-semibold">{paymentHouse ? `$${paymentHouse.price.toLocaleString()}` : "-"}</p>
+                    </div>
+                    <div className="rounded-3xl bg-slate-900 p-4">
+                      <p className="text-sm text-slate-400">Total</p>
+                      <p className="mt-2 text-lg font-semibold">{paymentHouse ? `$${paymentHouse.price.toLocaleString()}` : "-"}</p>
+                    </div>
+                  </div>
+
+                  {paymentSuccess && (
+                    <div className="mt-6 rounded-3xl bg-emerald-50 p-4 text-emerald-900 shadow-inner">
+                      <p className="text-sm uppercase tracking-[0.2em] text-emerald-600">Success</p>
+                      <p className="mt-2 text-base font-semibold">
+                        Payment completed successfully.
+                      </p>
+                      <p className="mt-2 text-sm text-slate-700">
+                        Your purchase is confirmed. Our team will contact you shortly.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
