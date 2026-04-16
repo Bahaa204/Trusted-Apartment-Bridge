@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { supabaseClient } from "../lib/supabaseClient";
-import type { Employee } from "../types/types";
+import type { Data, Employee, EmployeeFormValues } from "../types/types";
 
 export function useEmployees() {
   const [Employees, setEmployees] = useState<Employee[]>([]);
@@ -27,9 +27,9 @@ export function useEmployees() {
     async function fetchEmployees() {
       resetStates();
 
-      const { data, error: FetchError } = await supabaseClient
+      const { data, error: FetchError } = (await supabaseClient
         .from("employees")
-        .select("*");
+        .select("*")) as Data<Employee[]>;
 
       if (FetchError) {
         SetError(FetchError);
@@ -91,5 +91,67 @@ export function useEmployees() {
     return Employees.reduce((sum, employee) => (sum += employee.salary), 0);
   }
 
-  return { Employees, Loading, Error, getSalaries };
+  async function addEmployee(newEmployee: EmployeeFormValues) {
+    resetStates();
+
+    const { error: insertError } = await supabaseClient
+      .from("employees")
+      .insert(newEmployee)
+      .single();
+
+    if (insertError) {
+      SetError(insertError);
+      return false;
+    }
+
+    setLoading(false);
+    return true;
+  }
+
+  async function updateEmployee(
+    updatedEmployee: Partial<EmployeeFormValues>,
+    employeeId: Employee["id"],
+  ) {
+    resetStates();
+
+    const { error: updateError } = await supabaseClient
+      .from("employees")
+      .update(updatedEmployee)
+      .eq("id", employeeId);
+
+    if (updateError) {
+      SetError(updateError);
+      return false;
+    }
+
+    setLoading(false);
+    return true;
+  }
+
+  async function removeEmployee(employeeId: Employee["id"]) {
+    resetStates();
+
+    const { error: DeleteError } = await supabaseClient
+      .from("employees")
+      .delete()
+      .eq("id", employeeId);
+
+    if (DeleteError) {
+      SetError(DeleteError);
+      return false;
+    }
+
+    setLoading(false);
+    return true;
+  }
+
+  return {
+    Employees,
+    Loading,
+    Error,
+    addEmployee,
+    updateEmployee,
+    removeEmployee,
+    getSalaries,
+  };
 }

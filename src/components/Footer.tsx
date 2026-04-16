@@ -17,10 +17,18 @@ export default function Footer() {
         <div>
           <h4 className="text-white font-semibold mb-3">Quick Links</h4>
           <div className="flex flex-col gap-2 text-sm">
-            <Link to="/" className="hover:text-orange-500 transition">Home</Link>
-            <Link to="/projects" className="hover:text-orange-500 transition">Projects</Link>
-            <Link to="/about" className="hover:text-orange-500 transition">About Us</Link>
-            <Link to="/contact" className="hover:text-orange-500 transition">Contact</Link>
+            <Link to="/" className="hover:text-orange-500 transition">
+              Home
+            </Link>
+            <Link to="/projects" className="hover:text-orange-500 transition">
+              Projects
+            </Link>
+            <Link to="/about" className="hover:text-orange-500 transition">
+              About Us
+            </Link>
+            <Link to="/contact" className="hover:text-orange-500 transition">
+              Contact
+            </Link>
           </div>
         </div>
 
