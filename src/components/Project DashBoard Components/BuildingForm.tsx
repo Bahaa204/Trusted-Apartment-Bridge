@@ -1,7 +1,6 @@
 import type { Project } from "../../types/types";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import {
   Select,
   SelectContent,
@@ -9,6 +8,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "../ui/field";
 
 type BuildingData = {
   buildings_name: string;
@@ -32,18 +39,20 @@ export default function BuildingForm({
   Options,
 }: BuildingFormProps) {
   return (
-    <div className="grid grid-cols-1 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 md:p-5">
+    <FieldSet className="grid grid-cols-1 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 md:p-5">
       <div className="space-y-1">
-        <h2 className="text-xl font-semibold text-slate-900">Add a Building</h2>
-        <p className="text-sm text-slate-600">
+        <FieldLegend className="text-xl font-semibold text-slate-900">
+          Add a Building
+        </FieldLegend>
+        <FieldDescription className="text-sm text-slate-600">
           Link each building to a project and upload visual references.
-        </p>
+        </FieldDescription>
       </div>
 
-      <div className="grid gap-1.5">
-        <Label htmlFor="building-name" className="text-slate-700">
+      <FieldGroup className="grid gap-1.5">
+        <FieldLabel htmlFor="building-name" className="text-slate-700">
           Name
-        </Label>
+        </FieldLabel>
         <Input
           type="text"
           id="building-name"
@@ -55,12 +64,12 @@ export default function BuildingForm({
           }
           disabled={loading}
         />
-      </div>
+      </FieldGroup>
 
-      <div className="grid gap-1.5">
-        <Label htmlFor="building-block" className="text-slate-700">
+      <FieldGroup className="grid gap-1.5">
+        <FieldLabel htmlFor="building-block" className="text-slate-700">
           Block
-        </Label>
+        </FieldLabel>
         <Input
           type="text"
           id="building-block"
@@ -72,12 +81,12 @@ export default function BuildingForm({
           }
           disabled={loading}
         />
-      </div>
+      </FieldGroup>
 
-      <div className="grid gap-1.5">
-        <Label htmlFor="building-images" className="text-slate-700">
+      <FieldGroup className="grid gap-1.5">
+        <FieldLabel htmlFor="building-images" className="text-slate-700">
           Images
-        </Label>
+        </FieldLabel>
         <Input
           type="file"
           multiple
@@ -91,12 +100,12 @@ export default function BuildingForm({
           }}
           disabled={loading}
         />
-      </div>
+      </FieldGroup>
 
-      <div className="grid gap-1.5">
-        <Label htmlFor="building-project" className="text-slate-700">
+      <FieldGroup className="grid gap-1.5">
+        <FieldLabel htmlFor="building-project" className="text-slate-700">
           Select a project
-        </Label>
+        </FieldLabel>
         <Select
           value={
             Number.isNaN(buildings_project_id)
@@ -122,9 +131,9 @@ export default function BuildingForm({
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </FieldGroup>
 
-      <div className="pt-1">
+      <Field orientation="vertical" className="pt-1">
         <Button
           type="submit"
           className="h-9 w-full cursor-pointer bg-[#173b67] font-semibold text-white hover:bg-[#24507f] md:w-auto"
@@ -132,7 +141,7 @@ export default function BuildingForm({
         >
           Add a Building
         </Button>
-      </div>
-    </div>
+      </Field>
+    </FieldSet>
   );
 }

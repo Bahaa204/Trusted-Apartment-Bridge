@@ -1,7 +1,6 @@
 import type { Building } from "../../types/types";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import {
   Select,
   SelectContent,
@@ -9,6 +8,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "../ui/field";
 
 type HouseData = {
   house_floor: number;
@@ -35,19 +42,21 @@ export default function HouseForm({
   Options,
 }: HouseFormProps) {
   return (
-    <div className="grid grid-cols-1 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 md:p-5">
+    <FieldSet className="grid grid-cols-1 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 md:p-5">
       <div className="space-y-1">
-        <h2 className="text-xl font-semibold text-slate-900">Add a House</h2>
-        <p className="text-sm text-slate-600">
+        <FieldLegend className="text-xl font-semibold text-slate-900">
+          Add a House
+        </FieldLegend>
+        <FieldDescription className="text-sm text-slate-600">
           Enter unit details, price, and assign the house to a building.
-        </p>
+        </FieldDescription>
       </div>
 
       <div className="grid gap-1.5 sm:grid-cols-2 sm:gap-4">
-        <div className="grid gap-1.5">
-          <Label htmlFor="house-floor" className="text-slate-700">
+        <FieldGroup className="grid gap-1.5">
+          <FieldLabel htmlFor="house-floor" className="text-slate-700">
             Floor
-          </Label>
+          </FieldLabel>
           <Input
             type="number"
             id="house-floor"
@@ -59,11 +68,11 @@ export default function HouseForm({
             }
             disabled={loading}
           />
-        </div>
-        <div className="grid gap-1.5">
-          <Label htmlFor="house-bedrooms" className="text-slate-700">
+        </FieldGroup>
+        <FieldGroup className="grid gap-1.5">
+          <FieldLabel htmlFor="house-bedrooms" className="text-slate-700">
             Bedrooms
-          </Label>
+          </FieldLabel>
           <Input
             type="number"
             id="house-bedrooms"
@@ -75,11 +84,11 @@ export default function HouseForm({
             }
             disabled={loading}
           />
-        </div>
-        <div className="grid gap-1.5">
-          <Label htmlFor="house-bathrooms" className="text-slate-700">
+        </FieldGroup>
+        <FieldGroup className="grid gap-1.5">
+          <FieldLabel htmlFor="house-bathrooms" className="text-slate-700">
             Bathrooms
-          </Label>
+          </FieldLabel>
           <Input
             type="number"
             id="house-bathrooms"
@@ -91,11 +100,11 @@ export default function HouseForm({
             }
             disabled={loading}
           />
-        </div>
-        <div className="grid gap-1.5">
-          <Label htmlFor="house-price" className="text-slate-700">
+        </FieldGroup>
+        <FieldGroup className="grid gap-1.5">
+          <FieldLabel htmlFor="house-price" className="text-slate-700">
             Price
-          </Label>
+          </FieldLabel>
           <Input
             type="number"
             id="house-price"
@@ -107,13 +116,13 @@ export default function HouseForm({
             }
             disabled={loading}
           />
-        </div>
+        </FieldGroup>
       </div>
 
-      <div className="grid gap-1.5">
-        <Label htmlFor="house-building" className="text-slate-700">
+      <FieldGroup className="grid gap-1.5">
+        <FieldLabel htmlFor="house-building" className="text-slate-700">
           Select a building
-        </Label>
+        </FieldLabel>
         <Select
           value={
             Number.isNaN(house_building_id) ? "" : String(house_building_id)
@@ -137,9 +146,9 @@ export default function HouseForm({
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </FieldGroup>
 
-      <div className="pt-1">
+      <Field orientation="vertical" className="pt-1">
         <Button
           type="submit"
           className="h-9 w-full cursor-pointer bg-[#173b67] font-semibold text-white hover:bg-[#24507f] md:w-auto"
@@ -147,7 +156,7 @@ export default function HouseForm({
         >
           Add a House
         </Button>
-      </div>
-    </div>
+      </Field>
+    </FieldSet>
   );
 }

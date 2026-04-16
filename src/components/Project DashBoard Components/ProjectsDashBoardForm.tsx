@@ -6,20 +6,21 @@ import type {
   House,
   Image,
   Project,
-} from "../../types/types";
-import { useMultistepForm } from "../../hooks/useMultistepForm";
+} from "@/types/types";
+import { useMultistepForm } from "@/hooks/useMultistepForm";
 import ProjectForm from "./ProjectForm";
-import BuildingForm from "../Project DashBoard Components/BuildingForm";
-import HouseForm from "../Project DashBoard Components/HouseForm";
-import { UploadImage } from "../../services/imageServices";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
+import BuildingForm from "./BuildingForm";
+import HouseForm from "./HouseForm";
+import { UploadImage } from "@/services/imageServices";
 import { Button } from "../ui/button";
+
+import {
+  FieldDescription,
+  FieldGroup,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+} from "../ui/field";
 
 const InitialData: FormData = {
   project_name: "",
@@ -161,62 +162,66 @@ export default function ProjectsDashBoardForm({
     }
   }
 
+  const active: string = "bg-[#173b67] text-white hover:bg-[#24507f]";
+  const inactive: string =
+    "border-slate-300 bg-white text-slate-900 hover:bg-slate-100";
+
   return (
-    <Card className="border border-slate-200 bg-white text-slate-900 shadow-lg">
-      <CardHeader className="space-y-2">
-        <CardTitle className="text-2xl font-semibold text-slate-900 md:text-3xl">
+    <FieldSet className="gap-4 rounded-xl border border-slate-200 bg-white p-4 text-slate-900 shadow-lg md:p-6">
+      <div className="space-y-2">
+        <FieldLegend className="text-2xl font-semibold text-slate-900 md:text-3xl">
           Projects Dashboard
-        </CardTitle>
-        <CardDescription className="text-slate-600">
+        </FieldLegend>
+        <FieldDescription className="text-slate-600">
           Create projects, buildings, and houses from one workflow.
-        </CardDescription>
-      </CardHeader>
+        </FieldDescription>
+      </div>
 
-      <CardContent className="space-y-4">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 md:text-sm">
-            Step {CurrentStepIndex + 1} of {steps.length}
-          </div>
-          {step}
-        </form>
-
-        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
-          <p className="text-sm text-slate-700">Jump to step:</p>
-          <Button
-            type="button"
-            variant="secondary"
-            className="cursor-pointer bg-[#173b67] text-white hover:bg-[#24507f]"
-            onClick={() => {
-              goTo(0);
-            }}
-            disabled={loading}
-          >
-            Add Project
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="cursor-pointer border-slate-300 bg-white text-slate-900 hover:bg-slate-100"
-            onClick={() => {
-              goTo(1);
-            }}
-            disabled={loading}
-          >
-            Add Building
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="cursor-pointer border-slate-300 bg-white text-slate-900 hover:bg-slate-100"
-            onClick={() => {
-              goTo(2);
-            }}
-            disabled={loading}
-          >
-            Add House
-          </Button>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 md:text-sm">
+          Step {CurrentStepIndex + 1} of {steps.length}
         </div>
-      </CardContent>
-    </Card>
+        {step}
+      </form>
+
+      <FieldSeparator />
+
+      <FieldGroup className="flex flex-row items-center gap-2 overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-3 whitespace-nowrap">
+        <p className="text-sm text-slate-700">Jump to step:</p>
+        <Button
+          type="button"
+          variant="link"
+          className={`cursor-pointer ${CurrentStepIndex === 0 ? active : inactive}`}
+          onClick={() => {
+            goTo(0);
+          }}
+          disabled={loading}
+        >
+          Add Project
+        </Button>
+        <Button
+          type="button"
+          variant="link"
+          className={`cursor-pointer ${CurrentStepIndex === 1 ? active : inactive}`}
+          onClick={() => {
+            goTo(1);
+          }}
+          disabled={loading}
+        >
+          Add Building
+        </Button>
+        <Button
+          type="button"
+          variant="link"
+          className={`cursor-pointer ${CurrentStepIndex === 2 ? active : inactive}`}
+          onClick={() => {
+            goTo(2);
+          }}
+          disabled={loading}
+        >
+          Add House
+        </Button>
+      </FieldGroup>
+    </FieldSet>
   );
 }

@@ -1,7 +1,6 @@
 import type { Country } from "../../types/types";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import {
   Select,
   SelectContent,
@@ -10,6 +9,14 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "../ui/field";
 
 type ProjectsData = {
   project_name: string;
@@ -35,18 +42,20 @@ export default function ProjectForm({
   Options,
 }: ProjectFormProps) {
   return (
-    <div className="grid grid-cols-1 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 md:p-5">
+    <FieldSet className="grid grid-cols-1 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 md:p-5">
       <div className="space-y-1">
-        <h2 className="text-xl font-semibold text-slate-900">Add a Project</h2>
-        <p className="text-sm text-slate-600">
+        <FieldLegend className="text-xl font-semibold text-slate-900">
+          Add a Project
+        </FieldLegend>
+        <FieldDescription className="text-sm text-slate-600">
           Add core details and upload showcase images.
-        </p>
+        </FieldDescription>
       </div>
 
-      <div className="grid gap-1.5">
-        <Label htmlFor="project-name" className="text-slate-700">
+      <FieldGroup className="grid gap-1.5">
+        <FieldLabel htmlFor="project-name" className="text-slate-700">
           Name
-        </Label>
+        </FieldLabel>
         <Input
           type="text"
           id="project-name"
@@ -58,12 +67,12 @@ export default function ProjectForm({
           }
           disabled={loading}
         />
-      </div>
+      </FieldGroup>
 
-      <div className="grid gap-1.5">
-        <Label htmlFor="project-description" className="text-slate-700">
+      <FieldGroup className="grid gap-1.5">
+        <FieldLabel htmlFor="project-description" className="text-slate-700">
           Description
-        </Label>
+        </FieldLabel>
         <Textarea
           id="project-description"
           className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400"
@@ -74,12 +83,12 @@ export default function ProjectForm({
           }
           disabled={loading}
         />
-      </div>
+      </FieldGroup>
 
-      <div className="grid gap-1.5">
-        <Label htmlFor="project-location" className="text-slate-700">
+      <FieldGroup className="grid gap-1.5">
+        <FieldLabel htmlFor="project-location" className="text-slate-700">
           Location
-        </Label>
+        </FieldLabel>
         <Input
           type="text"
           id="project-location"
@@ -91,12 +100,12 @@ export default function ProjectForm({
           }
           disabled={loading}
         />
-      </div>
+      </FieldGroup>
 
-      <div className="grid gap-1.5">
-        <Label htmlFor="project-images" className="text-slate-700">
+      <FieldGroup className="grid gap-1.5">
+        <FieldLabel htmlFor="project-images" className="text-slate-700">
           Images
-        </Label>
+        </FieldLabel>
         <Input
           type="file"
           id="project-images"
@@ -111,12 +120,12 @@ export default function ProjectForm({
           }}
           disabled={loading}
         />
-      </div>
+      </FieldGroup>
 
-      <div className="grid gap-1.5">
-        <Label htmlFor="project-country" className="text-slate-700">
+      <FieldGroup className="grid gap-1.5">
+        <FieldLabel htmlFor="project-country" className="text-slate-700">
           Select a country
-        </Label>
+        </FieldLabel>
         <Select
           value={
             Number.isNaN(project_country_id) ? "" : String(project_country_id)
@@ -140,9 +149,9 @@ export default function ProjectForm({
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </FieldGroup>
 
-      <div className="pt-1">
+      <Field orientation="vertical" className="pt-1">
         <Button
           type="submit"
           className="h-9 w-full cursor-pointer bg-[#173b67] font-semibold text-white hover:bg-[#24507f] md:w-auto"
@@ -150,7 +159,7 @@ export default function ProjectForm({
         >
           Add a Project
         </Button>
-      </div>
-    </div>
+      </Field>
+    </FieldSet>
   );
 }
