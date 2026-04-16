@@ -20,10 +20,10 @@ import { Input as InputElement } from "@/components/ui/input";
 
 import {
   Field,
-  FieldContent,
   FieldGroup,
   FieldLabel,
-  FieldSet,
+  FieldSeparator,
+  FieldTitle,
 } from "@/components/ui/field";
 
 import { Separator } from "@/components/ui/separator";
@@ -211,7 +211,7 @@ export default function CustomerChatWidget() {
           </>
         ) : (
           <>
-            <Card className="chat-messages">
+            <Card className="chat-messages min-h-screen">
               {Messages.length === 0 ? (
                 <CardTitle className="chat-empty-hint">
                   Send your first message and a team member will join soon.
@@ -260,12 +260,15 @@ export default function CustomerChatWidget() {
         )}
       </CardContent>
 
-      <form onSubmit={handleSend}>
-        <FieldSet className="chat-input-wrap">
+      <form
+        onSubmit={handleSend}
+        className=" chat-input-wrap flex flex-col justify-center items-center"
+      >
+        <FieldGroup>
           <Field>
-            <FieldContent>
-              <FieldLabel htmlFor="chat-input">Type your message</FieldLabel>
-            </FieldContent>
+            <FieldTitle>
+              <FieldLabel htmlFor="chat-input">Type Your Message</FieldLabel>
+            </FieldTitle>
             <InputElement
               value={Input}
               onChange={(e) => setInput(e.target.value)}
@@ -276,7 +279,10 @@ export default function CustomerChatWidget() {
               required
             />
           </Field>
-          <FieldGroup>
+        </FieldGroup>
+        <FieldSeparator className="min-w-screen" />
+        <FieldGroup>
+          <Field>
             <Button
               className="chat-primary-btn"
               type="submit"
@@ -284,8 +290,8 @@ export default function CustomerChatWidget() {
             >
               Send
             </Button>
-          </FieldGroup>
-        </FieldSet>
+          </Field>
+        </FieldGroup>
       </form>
     </Card>
   );

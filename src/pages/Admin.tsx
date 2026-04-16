@@ -148,7 +148,7 @@ export default function Admin() {
                 Interact with customers and provide support
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-5">
               <StaffChatDashboard />
             </CardContent>
           </Card>

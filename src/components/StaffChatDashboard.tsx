@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type SubmitEvent } from "react";
 import { useConversations } from "../hooks/useConversations";
 import { useMessages } from "../hooks/useMessages";
 import type { Conversation } from "@/types/chat";
 import { useAuth } from "@/hooks/useAuth";
-
+import { titleCase } from "title-case";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -16,7 +16,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { Input } from "@/components/ui/input";
+import { Input as InputElement } from "@/components/ui/input";
+
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+  FieldTitle,
+} from "./ui/field";
 
 export default function StaffChatDashboard() {
   const [selectedId, setSelectedId] = useState<Conversation["id"] | null>(null);
@@ -55,8 +63,9 @@ export default function StaffChatDashboard() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [Messages]);
 
-  async function handleReply() {
-    if (!Session || !selected) return;
+  async function handleReply(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!Session || !selected || !Input) return;
 
     const roleFromEmail = Session.user.email?.endsWith("@tab-admin.com")
       ? "admin"
@@ -138,7 +147,7 @@ export default function StaffChatDashboard() {
               >
                 <CardHeader className="p-0">
                   <CardTitle>
-                    {conversation.customer_name || "Customer"}
+                    {titleCase(conversation.customer_name || "Customer")}
                   </CardTitle>
                   <CardDescription>Customer {index + 1}</CardDescription>
                 </CardHeader>
@@ -156,7 +165,9 @@ export default function StaffChatDashboard() {
         {selected ? (
           <Card className="min-h-screen rounded-none! p-0! bg-transparent">
             <CardHeader className="staff-chat-header">
-              <CardTitle>{selected.customer_name || "Customer"}</CardTitle>
+              <CardTitle>
+                {titleCase(selected.customer_name || "Customer")}
+              </CardTitle>
               <CardDescription>Open support conversation</CardDescription>
               <CardAction>
                 <Button
@@ -170,7 +181,7 @@ export default function StaffChatDashboard() {
             </CardHeader>
             <CardContent className="min-h-screen bg-transparent">
               {/* Messages Container */}
-              <Card className="chat-messages bg-none! rounded-none! border-none! min-h-screen">
+              <Card className="chat-messages bg-none! rounded-none! border-0! min-h-screen">
                 {Messages.map((m) => (
                   <div
                     key={m.id}
@@ -190,27 +201,45 @@ export default function StaffChatDashboard() {
                 <div ref={bottomRef} />
               </Card>
             </CardContent>
-            <div className="chat-input-wrap">
-              <input
-                value={Input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleReply()}
-                placeholder="Reply..."
-              />
-              <button
-                onClick={handleReply}
-                className="chat-primary-btn"
-                type="button"
-                disabled={!Input.trim()}
-              >
-                Send
-              </button>
-            </div>
+            <form
+              onSubmit={handleReply}
+              className="chat-input-wrap flex flex-col justify-center items-center"
+            >
+              <FieldGroup>
+                <Field>
+                  <FieldTitle>
+                    <FieldLabel htmlFor="chat-input">
+                      Type Your Reply
+                    </FieldLabel>
+                  </FieldTitle>
+                  <InputElement
+                    value={Input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Reply..."
+                    className="p-3!"
+                    required
+                  />
+                </Field>
+              </FieldGroup>
+              <FieldSeparator className="min-w-screen" />
+              <FieldGroup>
+                <Field>
+                  <Button
+                    variant="ghost"
+                    className="chat-primary-btn"
+                    type="submit"
+                    disabled={!Input.trim()}
+                  >
+                    Send
+                  </Button>
+                </Field>
+              </FieldGroup>
+            </form>
           </Card>
         ) : (
-          <div className="staff-chat-main-empty">
+          <CardTitle className="staff-chat-main-empty">
             Select a conversation from the left panel to reply.
-          </div>
+          </CardTitle>
         )}
       </Card>
     </Card>
