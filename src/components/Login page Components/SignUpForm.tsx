@@ -90,7 +90,7 @@ export function SignUpForm({
         </Field>
       </FieldGroup>
       <FieldGroup>
-        <Button type="submit" variant="default" disabled={loading}>
+        <Button type="submit" variant="default" disabled={loading} className="cursor-pointer">
           {loading ? "Signing up..." : "Sign up"}
         </Button>
       </FieldGroup>

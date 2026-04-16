@@ -71,7 +71,7 @@ export function LoginForm({
         </Field>
       </FieldGroup>
       <FieldGroup>
-        <Button type="submit" disabled={loading}>
+        <Button type="submit" disabled={loading} className="cursor-pointer">
           {loading ? "Logging in..." : "Log in"}
         </Button>
       </FieldGroup>

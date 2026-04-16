@@ -75,8 +75,8 @@ export default function Login() {
   if (AuthError) {
     return (
       <main className="min-h-screen bg-[#e6e0d8] p-4 md:p-8">
-        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white/90 text-slate-900 shadow-[0_24px_80px_rgba(15,23,42,0.16)] backdrop-blur">
-          <CardHeader className="border-b border-slate-200 bg-slate-950 text-white">
+        <Card className=" p-0! mx-auto max-w-3xl border border-slate-200 bg-white/90 text-slate-900 shadow-[0_24px_80px_rgba(15,23,42,0.16)] backdrop-blur">
+          <CardHeader className="p-5 border-b border-slate-200 bg-slate-950 text-white">
             <CardTitle className="text-2xl text-white">Error</CardTitle>
             <CardDescription className="text-slate-300">
               There has been an error while checking authentication. Please try
@@ -234,15 +234,14 @@ export default function Login() {
                   <FieldGroup>
                     <Button
                       type="button"
-                      variant="default"
-                      className="w-full justify-center gap-3 rounded-xl border border-orange-300 bg-slate-950 px-4 py-3 text-white shadow-lg shadow-slate-950/15 transition-colors hover:bg-slate-800"
+                      variant="link"
+                      className="cursor-pointer w-full justify-center gap-3 rounded-xl border border-orange-300 bg-slate-950 text-white shadow-lg shadow-slate-950/15 transition-colors hover:bg-slate-800 p-5 text-lg"
                       onClick={() => {
                         handleOAuth("google");
                       }}
                       disabled={AuthLoading}
                     >
                       <GoogleIcon />
-                      <span>Continue with Google</span>
                     </Button>
                   </FieldGroup>
                 )}

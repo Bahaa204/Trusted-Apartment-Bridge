@@ -64,7 +64,7 @@ export default function ResetPasswordForm({
         </Field>
       </FieldGroup>
       <FieldGroup>
-        <Button type="submit" disabled={loading}>
+        <Button type="submit" disabled={loading} className="cursor-pointer">
           {loading ? "Sending reset link..." : "Send reset link"}
         </Button>
       </FieldGroup>
