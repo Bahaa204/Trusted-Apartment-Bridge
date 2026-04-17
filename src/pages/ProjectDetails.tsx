@@ -15,15 +15,16 @@ import {
 } from "@react-three/drei";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
+const BASE_URL = import.meta.env.BASE_URL;
 const MODELS = [
-  "/models/162_7.glb",
-  "/models/southern_district_police_station.glb",
-  "/models/simple_low_poly_abandoned_brick_building.glb",
-  "/models/modern_villa_apartment_house_home_building.glb",
-  "/models/modern_luxury_villa_house_building.glb",
-  "/models/modern_apartment_house_building_design.glb",
-  "/models/futuristic_building.glb",
-  "/models/amelinco_office_building.glb",
+  `${BASE_URL}models/162_7.glb`,
+  `${BASE_URL}models/southern_district_police_station.glb`,
+  `${BASE_URL}models/simple_low_poly_abandoned_brick_building.glb`,
+  `${BASE_URL}models/modern_villa_apartment_house_home_building.glb`,
+  `${BASE_URL}models/modern_luxury_villa_house_building.glb`,
+  `${BASE_URL}models/modern_apartment_house_building_design.glb`,
+  `${BASE_URL}models/futuristic_building.glb`,
+  `${BASE_URL}models/amelinco_office_building.glb`,
 ];
 
 type House = {
