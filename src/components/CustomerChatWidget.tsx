@@ -164,7 +164,9 @@ export default function CustomerChatWidget() {
             </CardDescription>
           </CardHeader>
           <CardContent className="text-slate-700">{error}</CardContent>
-          <CardFooter>{new Date().toLocaleString()}</CardFooter>
+          <CardFooter className="bg-transparent">
+            {new Date().toLocaleString()}
+          </CardFooter>
         </Card>
       </main>
     );
@@ -223,7 +225,7 @@ export default function CustomerChatWidget() {
                 within a few minutes.
               </CardDescription>
             </Card>
-            <CardFooter className="flex justify-center items-center">
+            <CardFooter className="flex justify-center items-center bg-transparent">
               <CardAction>
                 <Button
                   onClick={handleStart}
@@ -247,9 +249,8 @@ export default function CustomerChatWidget() {
                   {Messages.map((message, index) => {
                     const isCustomer = message.sender_type === "customer";
                     return (
-                      <>
+                      <div key={message.id}>
                         <div
-                          key={message.id}
                           className={`chat-message-row ${isCustomer ? "mine" : "theirs"}`}
                         >
                           <Card
@@ -274,7 +275,7 @@ export default function CustomerChatWidget() {
                         </div>
                         {/* Render a Separator between each message except the last message */}
                         {index !== Messages.length - 1 && <Separator />}
-                      </>
+                      </div>
                     );
                   })}
                 </CardContent>

@@ -141,7 +141,7 @@ export default function Admin() {
                     Add, edit, and delete employee records
                   </CardDescription>
                 </CardHeader>
-                <CardFooter>
+                <CardFooter className="bg-transparent">
                   <CardAction>
                     <Button
                       variant="default"
@@ -165,7 +165,7 @@ export default function Admin() {
                     View financial reports and analytics
                   </CardDescription>
                 </CardHeader>
-                <CardFooter>
+                <CardFooter className="bg-transparent">
                   <CardAction>
                     <Button
                       variant="default"
@@ -191,7 +191,7 @@ export default function Admin() {
                 Add, edit, and delete project records
               </CardDescription>
             </CardHeader>
-            <CardFooter>
+            <CardFooter className="bg-transparent">
               <CardAction>
                 <Button
                   variant="default"
@@ -251,7 +251,7 @@ export default function Admin() {
                         autoComplete="email"
                         type="email"
                         placeholder="omar@tab-admin.com"
-                        className="border-[#c8b9a7] bg-white text-[#0f2f4f] placeholder:text-[#6b7f95]"
+                        className="border-[#c8b9a7] bg-transparent text-[#0f2f4f] placeholder:text-[#6b7f95] w-full text-[15px] p-3 rounded-lg"
                         required
                       />
                       <FieldDescription className="text-[#24507f]">
@@ -271,7 +271,7 @@ export default function Admin() {
                         autoComplete="current-password"
                         type="password"
                         placeholder="******"
-                        className="border-[#c8b9a7] bg-white text-[#0f2f4f] placeholder:text-[#6b7f95]"
+                        className="border-[#c8b9a7] bg-transparent text-[#0f2f4f] placeholder:text-[#6b7f95] w-full text-[15px] p-3 rounded-lg"
                         required
                       />
                       <FieldDescription className="text-[#24507f]">

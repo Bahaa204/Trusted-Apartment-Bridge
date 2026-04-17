@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
-import Logo from "/images/Logo.png";
+import Logo from "/images/NavBarLogo.png";
 import type { MouseEvent } from "react";
 
 export default function Header() {
@@ -39,7 +39,7 @@ export default function Header() {
     <header className="sticky top-0 z-5000 bg-white/80 backdrop-blur-md border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <img src={Logo} alt="Logo" className="h-12 w-auto" />
+          <img src={Logo} alt="Logo" className="size-18" />
         </Link>
 
         <nav className="flex items-center gap-8">
@@ -52,7 +52,7 @@ export default function Header() {
                 to={link.to}
                 end={link.to === "/"}
                 className={({ isActive }) =>
-                  `text-sm font-medium transition ${
+                  `text-[14px] font-medium transition ${
                     isActive
                       ? "text-orange-500"
                       : "text-gray-600 hover:text-orange-500"
@@ -67,7 +67,7 @@ export default function Header() {
         {!Session ? (
           <Button
             variant="link"
-            className="cursor-pointer"
+            className="cursor-pointer text-[14px]"
             onClick={() => navigate("/login")}
             disabled={AuthLoading}
           >
@@ -76,7 +76,7 @@ export default function Header() {
         ) : (
           <Button
             variant="link"
-            className="cursor-pointer"
+            className="cursor-pointer text-[14px]"
             onClick={handleClick}
             disabled={AuthLoading}
           >
