@@ -28,7 +28,6 @@ export default function Header() {
     (GetRoleFromEmail(Session.user.email) === "admin" ||
       GetRoleFromEmail(Session.user.email) === "employee");
 
-  console.log(condition, Session);
 
   async function handleClick(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
