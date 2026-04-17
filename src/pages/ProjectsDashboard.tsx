@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useBuildings } from "../hooks/useBuildings";
 import { useHouses } from "../hooks/useHouses";
@@ -17,8 +17,11 @@ import {
 } from "../components/ui/card";
 import { Spinner } from "../components/ui/spinner";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { Button } from "@/components/ui/button";
 
 export default function ProjectsDashboard() {
+  const navigate = useNavigate();
+
   const {
     Session,
     Loading: AuthLoading,
@@ -114,8 +117,20 @@ export default function ProjectsDashboard() {
 
   // Preventing unauthenticated or non-admin users from accessing the page
   if (!Session || !checkAccess(Session)) {
-    alert("You must be logged in as an admin to access this page.");
-    return <Navigate to="/admin" replace />;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <p className="text-lg text-[#10243e]">
+          You must be logged in as an admin to access this page.
+        </p>
+        <Button
+          variant="link"
+          className="cursor-pointer text-lg"
+          onClick={() => navigate("/login")}
+        >
+          Navigate to Login
+        </Button>
+      </div>
+    );
   }
 
   return (

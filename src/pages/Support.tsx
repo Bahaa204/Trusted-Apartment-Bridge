@@ -1,6 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
 import CustomerChatWidget from "../components/CustomerChatWidget";
-import { Navigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -11,9 +10,12 @@ import {
 } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export default function Support() {
   const { Session, Error, Loading } = useAuth();
+  const navigate = useNavigate();
 
   if (Error) {
     return (
@@ -46,8 +48,16 @@ export default function Support() {
   }
 
   if (!Session) {
-    alert("You must be logged in to access the support chat.");
-    return <Navigate to="/login" replace />;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-5">
+        <p className="text-lg text-[#10243e]">
+          You must be logged in to access this page.
+        </p>
+        <Button variant="link" className="cursor-pointer text-lg" onClick={() => navigate("/login")}>
+          Navigate to Login
+        </Button>
+      </div>
+    );
   }
 
   return (

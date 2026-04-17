@@ -4,7 +4,6 @@ import { useHouses } from "../hooks/useHouses";
 import { formatDate } from "../helpers/Date";
 import type { DateRange, DateString } from "../types/date";
 import { useAuth } from "../hooks/useAuth";
-import { Navigate } from "react-router-dom";
 import ChartBarInteractive from "@/components/Custom/BarChart";
 import type { ChartConfig } from "@/components/ui/chart";
 import type { ChartData } from "@/types/chart";
@@ -25,9 +24,15 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
+import { useNavigate } from "react-router-dom";
 
 export default function Finances() {
-  const { Session, Error: AuthError, Loading: AuthLoading } = useAuth();
+  const {
+    Session,
+    Error: AuthError,
+    Loading: AuthLoading,
+    GetRoleFromEmail,
+  } = useAuth();
 
   const {
     Error: HousesError,
@@ -35,6 +40,8 @@ export default function Finances() {
     getDates,
     getHousesBetweenDates,
   } = useHouses();
+
+  const navigate = useNavigate();
 
   const { minInputDate, maxInputDate } = getDates();
 
@@ -91,8 +98,17 @@ export default function Finances() {
     );
   }
 
-  if (!Session) {
-    return <Navigate to="/" replace />;
+  if (!Session || GetRoleFromEmail(Session.user.email) !== "admin") {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-5">
+        <p className="text-lg text-[#10243e]">
+          You must be logged in as an admin to access this page.
+        </p>
+        <Button variant="link" className="cursor-pointer text-lg" onClick={() => navigate("/login")}>
+          Navigate to Login
+        </Button>
+      </div>
+    );
   }
 
   async function handleClick() {

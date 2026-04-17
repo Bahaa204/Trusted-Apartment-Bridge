@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useState, type SubmitEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
@@ -72,8 +72,16 @@ export default function Admin() {
   }
 
   if (!Session || !checkAccess(Session)) {
-    alert("You must be logged in as an admin or employee to access this page.");
-    return <Navigate to="/" replace />;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-5">
+        <p className="text-lg text-[#10243e]">
+          You must be logged in as an admin or an employee to access this page.
+        </p>
+        <Button variant="link" className="cursor-pointer text-lg" onClick={() => navigate("/login")}>
+          Navigate to Login
+        </Button>
+      </div>
+    );
   }
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {

@@ -1,7 +1,30 @@
 import Breadcrumbs from "@/components/Breadcrumbs";
 import EmployeeTable from "../components/EmployeeTable";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function EmployeeDashboard() {
+  const { Session, GetRoleFromEmail } = useAuth();
+  const navigate = useNavigate();
+
+  if (!Session || GetRoleFromEmail(Session.user.email) !== "admin") {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-5">
+        <p className="text-lg text-[#10243e]">
+          You must be logged in as an admin to access this page.
+        </p>
+        <Button
+          variant="link"
+          className="cursor-pointer text-lg"
+          onClick={() => navigate("/login")}
+        >
+          Navigate to Login
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#e6e0d8] px-4 py-10 sm:px-6 lg:px-8">
       <Breadcrumbs />
