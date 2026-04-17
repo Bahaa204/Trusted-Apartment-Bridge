@@ -84,7 +84,7 @@ export default function Admin() {
 
     if (role !== "admin") {
       setFormError(
-        "Only emails ending with '@tab-admin.com' can be used to create admin accounts.",
+        "Only emails ending with '@tab-admin.com' can be used to invite admins.",
       );
       return;
     }
@@ -99,7 +99,7 @@ export default function Admin() {
       setEmail("");
       setPassword("");
       setFormError("");
-      return alert(`Admin account has been created successfully!`);
+      return alert("Admin has been invited successfully.");
     }
   }
 

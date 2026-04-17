@@ -1,6 +1,7 @@
-import { useState, type ChangeEvent, type FormEvent, type SubmitEvent } from "react";
+import { useState, type ChangeEvent, type SubmitEvent } from "react";
 import { useEmployees } from "../hooks/useEmployees";
 import type { Employee, EmployeeFormValues } from "../types/types";
+import { useAuth } from "@/hooks/useAuth";
 
 const emptyForm: EmployeeFormValues = {
   name: "",
@@ -23,6 +24,8 @@ function getEmployeeTone(employeeId: number) {
 }
 
 export default function EmployeeTable() {
+  const { Session, SignUp, GetRoleFromEmail, RestoreSession } = useAuth();
+
   const {
     Employees,
     Loading,
@@ -31,6 +34,7 @@ export default function EmployeeTable() {
     removeEmployee,
     updateEmployee,
   } = useEmployees();
+
   const [newEmployee, setNewEmployee] = useState<EmployeeFormValues>(emptyForm);
   const [editingId, setEditingId] = useState<Employee["id"] | null>(null);
   const [editValues, setEditValues] = useState<EmployeeFormValues>(emptyForm);
@@ -117,6 +121,15 @@ export default function EmployeeTable() {
     event.preventDefault();
     setActionMessage("");
 
+    const role = GetRoleFromEmail(newEmployee.email);
+
+    if (role !== "employee") {
+      setActionMessage(
+        "Only emails ending with '@tab-employee.com' can be used to add employees.",
+      );
+      return;
+    }
+
     const duplicateEmail = Employees.some(
       (employee) =>
         employee.email.trim().toLowerCase() ===
@@ -128,11 +141,21 @@ export default function EmployeeTable() {
       return;
     }
 
+    const prevSession = Session;
+
     const created = await addEmployee(newEmployee);
 
     if (created) {
-      setNewEmployee(emptyForm);
-      setActionMessage("Employee added successfully.");
+      const ok = await SignUp(newEmployee.email, "TAB@employee", "", {
+        role: role,
+        bypassRoleCheck: true,
+      });
+
+      if (ok && prevSession) {
+        await RestoreSession(prevSession);
+        setNewEmployee(emptyForm);
+        setActionMessage("Employee added successfully.");
+      }
     }
   }
 
@@ -233,7 +256,7 @@ export default function EmployeeTable() {
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.9fr)]">
-        <div className="relative overflow-hidden rounded-md bg-[linear-gradient(135deg,_#10243e,_#17365d_55%,_#f4821f)] px-7 py-8 text-white shadow-xl">
+        <div className="relative overflow-hidden rounded-md bg-[linear-gradient(135deg,#10243e,#17365d_55%,#f4821f)] px-7 py-8 text-white shadow-xl">
           <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
           <div className="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-[#ffd3ad]/30 blur-2xl" />
           <p className="relative text-sm uppercase tracking-[0.3em] text-[#ffcfaa]">
@@ -249,7 +272,7 @@ export default function EmployeeTable() {
 
           <div className="relative mt-8 flex flex-wrap items-center gap-5">
             <div
-              className={`flex h-20 w-20 items-center justify-center rounded-md border border-white/20 bg-gradient-to-br ${spotlightEmployee ? getEmployeeTone(spotlightEmployee.id!) : "from-white/50 to-white/10"} text-2xl font-semibold text-[#10243e] shadow-lg backdrop-blur`}
+              className={`flex h-20 w-20 items-center justify-center rounded-md border border-white/20 bg-linear-to-br ${spotlightEmployee ? getEmployeeTone(spotlightEmployee.id!) : "from-white/50 to-white/10"} text-2xl font-semibold text-[#10243e] shadow-lg backdrop-blur`}
             >
               {spotlightInitials}
             </div>
@@ -348,7 +371,7 @@ export default function EmployeeTable() {
               required
               className="rounded-md border border-[#d7e0ea] px-4 py-3 outline-none transition focus:border-[#f4821f]"
               name="email"
-              placeholder="sara@company.com"
+              placeholder="sara@tab-employee.com"
               type="email"
               value={newEmployee.email}
               onChange={handleNewEmployeeChange}
@@ -527,7 +550,7 @@ export default function EmployeeTable() {
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
                         <div
-                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-gradient-to-br ${getEmployeeTone(employee.id!)} text-sm font-semibold text-[#10243e] shadow-sm`}
+                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-linear-to-br ${getEmployeeTone(employee.id!)} text-sm font-semibold text-[#10243e] shadow-sm`}
                         >
                           {employee.name
                             .split(" ")
