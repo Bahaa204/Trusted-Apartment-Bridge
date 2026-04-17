@@ -1,8 +1,8 @@
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type SubmitEvent } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabaseClient } from "../lib/supabaseClient";
-import { Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
 import {
   Html,
   OrbitControls,
@@ -12,17 +12,18 @@ import {
   Bounds,
   Environment,
   ContactShadows,
-} from '@react-three/drei';
+} from "@react-three/drei";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 const MODELS = [
-  '/models/162_7.glb',
-  '/models/southern_district_police_station.glb',
-  '/models/simple_low_poly_abandoned_brick_building.glb',
-  '/models/modern_villa_apartment_house_home_building.glb',
-  '/models/modern_luxury_villa_house_building.glb',
-  '/models/modern_apartment_house_building_design.glb',
-  '/models/futuristic_building.glb',
-  '/models/amelinco_office_building.glb',
+  "/models/162_7.glb",
+  "/models/southern_district_police_station.glb",
+  "/models/simple_low_poly_abandoned_brick_building.glb",
+  "/models/modern_villa_apartment_house_home_building.glb",
+  "/models/modern_luxury_villa_house_building.glb",
+  "/models/modern_apartment_house_building_design.glb",
+  "/models/futuristic_building.glb",
+  "/models/amelinco_office_building.glb",
 ];
 
 type House = {
@@ -129,15 +130,15 @@ function Loader() {
     <Html center>
       <div
         style={{
-          padding: '12px 18px',
-          background: 'rgba(255,255,255,0.96)',
-          border: '1px solid #dbe3ea',
-          borderRadius: '12px',
-          boxShadow: '0 8px 24px rgba(15, 23, 42, 0.12)',
-          fontSize: '14px',
+          padding: "12px 18px",
+          background: "rgba(255,255,255,0.96)",
+          border: "1px solid #dbe3ea",
+          borderRadius: "12px",
+          boxShadow: "0 8px 24px rgba(15, 23, 42, 0.12)",
+          fontSize: "14px",
           fontWeight: 600,
-          color: '#1e293b',
-          whiteSpace: 'nowrap',
+          color: "#1e293b",
+          whiteSpace: "nowrap",
         }}
       >
         Loading model... {progress.toFixed(0)}%
@@ -195,7 +196,9 @@ function UnitCard({
         background: isHovered
           ? "linear-gradient(135deg, #ff5c00, #ff8c42)"
           : "#fff",
-        transform: isHovered ? "translateY(-4px) scale(1.02)" : "translateY(0) scale(1)",
+        transform: isHovered
+          ? "translateY(-4px) scale(1.02)"
+          : "translateY(0) scale(1)",
         boxShadow: isHovered
           ? "0 12px 30px rgba(255,92,0,0.3)"
           : "0 2px 10px rgba(0,0,0,0.06)",
@@ -219,7 +222,10 @@ function UnitCard({
         >
           ${house.price.toLocaleString()}
         </p>
-        <div className="flex gap-5 text-sm" style={{ color: isHovered ? "rgba(255,255,255,0.85)" : "#666" }}>
+        <div
+          className="flex gap-5 text-sm"
+          style={{ color: isHovered ? "rgba(255,255,255,0.85)" : "#666" }}
+        >
           <span>🛏 {house.nb_bedrooms} Bedrooms</span>
           <span>🚿 {house.nb_bathrooms} Bathrooms</span>
         </div>
@@ -272,7 +278,7 @@ export default function ProjectDetails() {
       const { data, error: err } = await supabaseClient
         .from("projects")
         .select(
-          "*, countries(name), buildings(id, name, houses(id, price, floor, nb_bedrooms, nb_bathrooms))"
+          "*, countries(name), buildings(id, name, houses(id, price, floor, nb_bedrooms, nb_bathrooms))",
         )
         .eq("id", projectID)
         .single();
@@ -317,7 +323,7 @@ export default function ProjectDetails() {
 
   const totalUnits = project.buildings.reduce(
     (sum, b) => sum + b.houses.length,
-    0
+    0,
   );
   const activeBldg = project.buildings.find((b) => b.id === selectedBuilding);
 
@@ -342,7 +348,7 @@ export default function ProjectDetails() {
     setPaymentError("");
   }
 
-  function handlePaymentSubmit(event: FormEvent<HTMLFormElement>) {
+  function handlePaymentSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const { cardName, cardNumber, expiry, cvc, email } = paymentForm;
     if (!cardName || !cardNumber || !expiry || !cvc || !email) {
@@ -374,6 +380,7 @@ export default function ProjectDetails() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero */}
       <div className="bg-linear-to-br from-gray-900 via-gray-800 to-orange-900 text-white py-20 px-6">
+        <Breadcrumbs name={project.name} />
         <div className="max-w-5xl mx-auto">
           <Link
             to="/projects"
@@ -461,7 +468,8 @@ export default function ProjectDetails() {
                     {building.name}
                   </p>
                   <p className="text-sm text-gray-500 mt-2">
-                    {building.houses.length} unit{building.houses.length !== 1 ? "s" : ""} available
+                    {building.houses.length} unit
+                    {building.houses.length !== 1 ? "s" : ""} available
                   </p>
                 </button>
               ))}
@@ -473,7 +481,8 @@ export default function ProjectDetails() {
                   <div>
                     <h3 className="text-xl font-bold">{activeBldg.name}</h3>
                     <p className="text-sm text-gray-400">
-                      {activeBldg.houses.length} unit{activeBldg.houses.length !== 1 ? "s" : ""} available
+                      {activeBldg.houses.length} unit
+                      {activeBldg.houses.length !== 1 ? "s" : ""} available
                     </p>
                   </div>
                 </div>
@@ -503,22 +512,41 @@ export default function ProjectDetails() {
 
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-20">
           <h2 className="text-2xl font-bold mb-4">Project 3D Previews</h2>
-          <div className={`grid gap-6 ${isSingleBuildingProject ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'}`}>
+          <div
+            className={`grid gap-6 ${isSingleBuildingProject ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}
+          >
             {project.buildings.map((building, index) => {
-              const modelPath = modelAssignments[index] ?? MODELS[index % MODELS.length];
+              const modelPath =
+                modelAssignments[index] ?? MODELS[index % MODELS.length];
               return (
                 <div key={building.id} className="bg-gray-50 rounded-2xl p-4">
-                  <h3 className="text-lg font-semibold mb-2">{building.name}</h3>
-                  <div className={`relative overflow-hidden rounded-2xl ${isSingleBuildingProject ? 'h-[700px]' : 'h-64'}`}>
+                  <h3 className="text-lg font-semibold mb-2">
+                    {building.name}
+                  </h3>
+                  <div
+                    className={`relative overflow-hidden rounded-2xl ${isSingleBuildingProject ? "h-175" : "h-64"}`}
+                  >
                     <Canvas camera={{ position: [0, 1.8, 7], fov: 42 }} shadows>
-                      <color attach="background" args={['#f8fbfd']} />
+                      <color attach="background" args={["#f8fbfd"]} />
                       <ambientLight intensity={0.8} />
-                      <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
+                      <spotLight
+                        position={[10, 10, 10]}
+                        angle={0.15}
+                        penumbra={1}
+                        intensity={1}
+                        castShadow
+                      />
 
                       <Suspense fallback={<Loader />}>
                         <Environment preset="city" />
                         <Model modelPath={modelPath} />
-                        <ContactShadows position={[0, -1, 0]} opacity={0.4} scale={20} blur={2.5} far={4.5} />
+                        <ContactShadows
+                          position={[0, -1, 0]}
+                          opacity={0.4}
+                          scale={20}
+                          blur={2.5}
+                          far={4.5}
+                        />
                       </Suspense>
 
                       <SceneControls />
@@ -562,29 +590,47 @@ export default function ProjectDetails() {
                   <div className="rounded-3xl bg-slate-50 p-5 shadow-sm">
                     <p className="text-sm text-gray-500">Selected</p>
                     <p className="mt-2 text-xl font-semibold text-slate-900">
-                      {paymentHouse ? `Unit #${paymentHouse.id} - $${paymentHouse.price.toLocaleString()}` : "No unit selected"}
+                      {paymentHouse
+                        ? `Unit #${paymentHouse.id} - $${paymentHouse.price.toLocaleString()}`
+                        : "No unit selected"}
                     </p>
                     <p className="text-sm text-gray-500 mt-2">
-                      {paymentHouse ? `${paymentHouse.nb_bedrooms} bedrooms • ${paymentHouse.nb_bathrooms} bathrooms` : "Select a unit to start."}
+                      {paymentHouse
+                        ? `${paymentHouse.nb_bedrooms} bedrooms • ${paymentHouse.nb_bathrooms} bathrooms`
+                        : "Select a unit to start."}
                     </p>
                   </div>
 
                   <form onSubmit={handlePaymentSubmit} className="space-y-5">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Cardholder name</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Cardholder name
+                      </label>
                       <input
                         value={paymentForm.cardName}
-                        onChange={(e) => setPaymentForm({ ...paymentForm, cardName: e.target.value })}
+                        onChange={(e) =>
+                          setPaymentForm({
+                            ...paymentForm,
+                            cardName: e.target.value,
+                          })
+                        }
                         className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm"
                         placeholder="John Doe"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Card number</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Card number
+                      </label>
                       <input
                         value={paymentForm.cardNumber}
-                        onChange={(e) => setPaymentForm({ ...paymentForm, cardNumber: e.target.value })}
+                        onChange={(e) =>
+                          setPaymentForm({
+                            ...paymentForm,
+                            cardNumber: e.target.value,
+                          })
+                        }
                         className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm"
                         placeholder="1234 5678 9012 3456"
                         inputMode="numeric"
@@ -593,19 +639,33 @@ export default function ProjectDetails() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">Expiry</label>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">
+                          Expiry
+                        </label>
                         <input
                           value={paymentForm.expiry}
-                          onChange={(e) => setPaymentForm({ ...paymentForm, expiry: e.target.value })}
+                          onChange={(e) =>
+                            setPaymentForm({
+                              ...paymentForm,
+                              expiry: e.target.value,
+                            })
+                          }
                           className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm"
                           placeholder="MM/YY"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">CVC</label>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">
+                          CVC
+                        </label>
                         <input
                           value={paymentForm.cvc}
-                          onChange={(e) => setPaymentForm({ ...paymentForm, cvc: e.target.value })}
+                          onChange={(e) =>
+                            setPaymentForm({
+                              ...paymentForm,
+                              cvc: e.target.value,
+                            })
+                          }
                           className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm"
                           placeholder="123"
                           inputMode="numeric"
@@ -614,10 +674,17 @@ export default function ProjectDetails() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Email</label>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Email
+                      </label>
                       <input
                         value={paymentForm.email}
-                        onChange={(e) => setPaymentForm({ ...paymentForm, email: e.target.value })}
+                        onChange={(e) =>
+                          setPaymentForm({
+                            ...paymentForm,
+                            email: e.target.value,
+                          })
+                        }
                         className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm"
                         placeholder="you@example.com"
                         type="email"
@@ -638,30 +705,45 @@ export default function ProjectDetails() {
                 </div>
 
                 <div className="rounded-3xl bg-slate-950 p-6 text-white shadow-sm">
-                  <p className="text-sm uppercase tracking-[0.2em] text-slate-400">Payment summary</p>
+                  <p className="text-sm uppercase tracking-[0.2em] text-slate-400">
+                    Payment summary
+                  </p>
                   <div className="mt-4 space-y-4">
                     <div className="rounded-3xl bg-slate-900 p-4">
                       <p className="text-sm text-slate-400">Unit</p>
-                      <p className="mt-2 text-lg font-semibold">{paymentHouse ? `#${paymentHouse.id}` : "-"}</p>
+                      <p className="mt-2 text-lg font-semibold">
+                        {paymentHouse ? `#${paymentHouse.id}` : "-"}
+                      </p>
                     </div>
                     <div className="rounded-3xl bg-slate-900 p-4">
                       <p className="text-sm text-slate-400">Price</p>
-                      <p className="mt-2 text-lg font-semibold">{paymentHouse ? `$${paymentHouse.price.toLocaleString()}` : "-"}</p>
+                      <p className="mt-2 text-lg font-semibold">
+                        {paymentHouse
+                          ? `$${paymentHouse.price.toLocaleString()}`
+                          : "-"}
+                      </p>
                     </div>
                     <div className="rounded-3xl bg-slate-900 p-4">
                       <p className="text-sm text-slate-400">Total</p>
-                      <p className="mt-2 text-lg font-semibold">{paymentHouse ? `$${paymentHouse.price.toLocaleString()}` : "-"}</p>
+                      <p className="mt-2 text-lg font-semibold">
+                        {paymentHouse
+                          ? `$${paymentHouse.price.toLocaleString()}`
+                          : "-"}
+                      </p>
                     </div>
                   </div>
 
                   {paymentSuccess && (
                     <div className="mt-6 rounded-3xl bg-emerald-50 p-4 text-emerald-900 shadow-inner">
-                      <p className="text-sm uppercase tracking-[0.2em] text-emerald-600">Success</p>
+                      <p className="text-sm uppercase tracking-[0.2em] text-emerald-600">
+                        Success
+                      </p>
                       <p className="mt-2 text-base font-semibold">
                         Payment completed successfully.
                       </p>
                       <p className="mt-2 text-sm text-slate-700">
-                        Your purchase is confirmed. Our team will contact you shortly.
+                        Your purchase is confirmed. Our team will contact you
+                        shortly.
                       </p>
                     </div>
                   )}
@@ -675,4 +757,4 @@ export default function ProjectDetails() {
   );
 }
 
-MODELS.forEach(model => useGLTF.preload(model));
+MODELS.forEach((model) => useGLTF.preload(model));

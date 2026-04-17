@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import heroImage from "../assets/home/hero-home.jpg";
-import agencyGuidanceImage from "../assets/home/agency-guidance.jpg";
-import agencyPresentationImage from "../assets/home/agency-presentation.jpg";
-import agencyTrustImage from "../assets/home/agency-trust.jpg";
-import storyImage from "../assets/home/story-home.jpg";
+import heroImage from "/images/home/hero-home.jpg";
+import agencyGuidanceImage from "/images/home/agency-guidance.jpg";
+import agencyPresentationImage from "/images/home/agency-presentation.jpg";
+import agencyTrustImage from "/images/home/agency-trust.jpg";
+import storyImage from "/images/home/story-home.jpg";
 
 const heroMetrics = [
   { value: "120+", label: "Signature properties" },
@@ -56,7 +56,7 @@ export default function Home() {
       <section className="home-hero-shell">
         <div className="home-hero-inner">
           <div className="grid lg:grid-cols-[minmax(0,0.95fr)_minmax(520px,1.05fr)]">
-            <div className="home-hero-panel animate-fade-up !py-8">
+            <div className="home-hero-panel animate-fade-up py-8!">
               <div>
                 <p className="home-eyebrow animate-fade-up-delay-1 text-[#ffd8bb]">
                   TAB Developments
@@ -94,13 +94,13 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="home-hero-image image-zoom !min-h-[420px]">
+            <div className="home-hero-image image-zoom min-h-105!">
               <img
                 alt="Luxury home exterior"
-                className="h-full min-h-[420px] w-full object-cover"
+                className="h-full min-h-105 w-full object-cover"
                 src={heroImage}
               />
-              <div className="home-hero-overlay animate-fade-up-delay-2 !py-6">
+              <div className="home-hero-overlay animate-fade-up-delay-2 py-6!">
                 <p className="text-sm uppercase tracking-[0.3em] text-[#ffd8bb]">
                   Featured destination
                 </p>
@@ -181,11 +181,11 @@ export default function Home() {
 
         <section className="home-section-divider py-0">
           <div className="relative overflow-hidden bg-[#10243e] text-white">
-            <div className="mx-auto grid max-w-[1440px] gap-6 px-6 py-5 lg:grid-cols-[minmax(320px,0.82fr)_minmax(0,1.18fr)] lg:px-10">
+            <div className="mx-auto grid max-w-360 gap-6 px-6 py-5 lg:grid-cols-[minmax(320px,0.82fr)_minmax(0,1.18fr)] lg:px-10">
               <div className="animate-fade-up">
                 <img
                   alt="Elegant home exterior"
-                  className="h-[190px] w-full object-cover shadow-[0_16px_30px_rgba(0,0,0,0.16)] sm:h-[220px]"
+                  className="h-47.5 w-full object-cover shadow-[0_16px_30px_rgba(0,0,0,0.16)] sm:h-55"
                   src={storyImage}
                 />
                 <div className="mt-3 max-w-md">

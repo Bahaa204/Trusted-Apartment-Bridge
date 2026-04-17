@@ -1,6 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
+import Logo from "/images/Logo.png";
 import type { MouseEvent } from "react";
 
 export default function Header() {
@@ -36,10 +37,10 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+    <header className="sticky top-0 z-5000 bg-white/80 backdrop-blur-md border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <img src="/images/IMG_5774.PNG" alt="Logo" className="h-12 w-auto" />
+          <img src={Logo} alt="Logo" className="h-12 w-auto" />
         </Link>
 
         <nav className="flex items-center gap-8">

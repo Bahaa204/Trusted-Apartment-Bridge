@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from "react";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { useState, type SubmitEvent } from "react";
 import { Link } from "react-router-dom";
 
 type FormValues = {
@@ -24,7 +25,7 @@ export default function Contact() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const nextErrors: FormErrors = {};
@@ -61,7 +62,8 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-[#e6e0d8] px-4 py-14 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
+      <Breadcrumbs />
+      <div className="mx-auto w-full">
         <div className="border border-[#d7e0ea] bg-white p-8 shadow-sm">
           <div className="mb-8">
             <p className="text-sm uppercase tracking-[0.3em] text-[#bf530a]">
@@ -75,7 +77,7 @@ export default function Contact() {
             </p>
           </div>
 
-          {isSubmitted ? (
+          {isSubmitted && (
             <div className="border border-[#ffd2ad] bg-[#fff0e2] px-6 py-5">
               <p className="text-lg font-semibold text-[#bf530a]">
                 Thank you for reaching to us.
@@ -92,7 +94,7 @@ export default function Contact() {
                 </Link>
               </div>
             </div>
-          ) : null}
+          )}
 
           <form className="grid gap-5 md:grid-cols-2" onSubmit={handleSubmit}>
             <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
@@ -118,11 +120,11 @@ export default function Contact() {
 
             <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
               Family name
-              {errors.familyName ? (
+              {errors.familyName && (
                 <span className="text-sm font-medium text-red-600">
                   {errors.familyName}
                 </span>
-              ) : null}
+              )}
               <input
                 className="border border-[#d7e0ea] bg-white px-4 py-3 outline-none transition focus:border-[#17365d]"
                 placeholder="Your family name"
@@ -139,11 +141,11 @@ export default function Contact() {
 
             <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
               Email address
-              {errors.email ? (
+              {errors.email && (
                 <span className="text-sm font-medium text-red-600">
                   {errors.email}
                 </span>
-              ) : null}
+              )}
               <input
                 className="border border-[#d7e0ea] bg-white px-4 py-3 outline-none transition focus:border-[#17365d]"
                 placeholder="you@example.com"
@@ -160,11 +162,11 @@ export default function Contact() {
 
             <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
               Phone number
-              {errors.phone ? (
+              {errors.phone && (
                 <span className="text-sm font-medium text-red-600">
                   {errors.phone}
                 </span>
-              ) : null}
+              )}
               <input
                 className="border border-[#d7e0ea] bg-white px-4 py-3 outline-none transition focus:border-[#17365d]"
                 placeholder="+961 ..."
@@ -183,11 +185,11 @@ export default function Contact() {
 
             <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d] md:col-span-2">
               Message
-              {errors.message ? (
+              {errors.message && (
                 <span className="text-sm font-medium text-red-600">
                   {errors.message}
                 </span>
-              ) : null}
+              )}
               <textarea
                 className="min-h-40 border border-[#d7e0ea] bg-white px-4 py-3 outline-none transition focus:border-[#17365d]"
                 placeholder="Write your message here"
@@ -203,7 +205,7 @@ export default function Contact() {
 
             <div className="md:col-span-2">
               <button
-                className="bg-[#bf530a] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#a94708]"
+                className="bg-[#bf530a] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#a94708] cursor-pointer rounded-lg"
                 type="submit"
               >
                 Submit

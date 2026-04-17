@@ -203,9 +203,8 @@ export default function Finances() {
 
   return (
     <main className="min-h-screen bg-[#e6e0d8] px-4 py-6 md:px-8 md:py-10">
+      <Breadcrumbs />
       <section className="mx-auto flex w-full max-w-7xl flex-col gap-6">
-        <Breadcrumbs />
-
         <Card className="border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
           <CardHeader>
             <CardTitle className="text-3xl text-[#0f2f4f]">Finances</CardTitle>

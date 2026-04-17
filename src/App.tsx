@@ -21,6 +21,7 @@ const router = createBrowserRouter([
     element: <MainLayout />,
     children: [
       { index: true, element: <Home /> },
+      { path: "about", element: <About /> },
       { path: "contact", element: <Contact /> },
       { path: "projects", element: <Projects /> },
       {
@@ -39,7 +40,6 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   // About page is outside MainLayout so it renders full-screen (globe)
-  { path: "about", element: <About /> },
 ]);
 
 export default function App() {

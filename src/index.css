@@ -495,12 +495,12 @@ body {
 
 .home-hero-inner {
   margin: 0 auto;
-  max-width: 96rem;
+  width: 100%;
 }
 
 .home-content {
   margin: 0 auto;
-  max-width: 1440px;
+  width: 100%;
   padding: 2.5rem 1rem;
 }
 

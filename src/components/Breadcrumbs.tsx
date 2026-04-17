@@ -7,7 +7,9 @@ type BreadcrumbItem = {
   path: string;
 };
 
-export default function Breadcrumbs() {
+type BreadCrumbProps = { name?: string };
+
+export default function Breadcrumbs({ name }: BreadCrumbProps) {
   const location = useLocation();
 
   function getBreadcrumbs(): BreadcrumbItem[] {
@@ -23,13 +25,18 @@ export default function Breadcrumbs() {
     pathnames.forEach((pathname, index) => {
       path += `/${pathname}`;
 
+      const isLastItem = index === pathnames.length - 1;
+      const hasCustomName = Boolean(name?.trim());
+
       // Convert URL path to readable label
-      const label = pathname
+      const generatedLabel = pathname
         .replace(/-/g, " ")
         .replace(/_/g, " ")
         .split(" ")
         .map((word) => titleCase(word))
         .join(" ");
+
+      const label = isLastItem && hasCustomName ? name!.trim() : generatedLabel;
 
       // Only add if not the last item (current page will be shown but not clickable)
       if (index < pathnames.length - 1) {
@@ -51,7 +58,7 @@ export default function Breadcrumbs() {
 
   return (
     <nav
-      className="flex items-center gap-2 text-sm mb-6"
+      className="flex items-center gap-2 text-sm mb-6 relative z-1000"
       aria-label="Breadcrumb"
     >
       <Link
