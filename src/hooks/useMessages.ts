@@ -43,7 +43,7 @@ export function useMessages(conversationId: string | undefined | null) {
     FetchMessages();
 
     const channel = supabaseClient
-      .channel(`messages:${conversationId}`)
+      .channel(`messages-${conversationId}`)
       .on(
         "postgres_changes",
         {
@@ -52,10 +52,57 @@ export function useMessages(conversationId: string | undefined | null) {
           table: "messages",
           filter: `conversation_id=eq.${conversationId}`,
         },
-        (payload) => setMessages((prev) => [...prev, payload.new as Message]),
+        (payload) =>
+          setMessages((prev) => {
+            const newMessage = payload.new as Message;
+            if (prev.some((message) => message.id === newMessage.id)) {
+              return prev;
+            }
+
+            return [...prev, newMessage];
+          }),
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "messages",
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload) =>
+          setMessages((prev) => {
+            const updatedMessage = payload.new as Message;
+
+            return prev.map((message) =>
+              message.id === updatedMessage.id ? updatedMessage : message,
+            );
+          }),
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "messages",
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload) =>
+          setMessages((prev) => {
+            const deletedMessage = payload.old as Message;
+
+            return prev.filter((message) => message.id !== deletedMessage.id);
+          }),
       )
       .subscribe((status) => {
         console.log(`Messages ${conversationId} channel:`, status);
+
+        if (status === "CHANNEL_ERROR") {
+          setError(
+            "Realtime channel error for messages. Check Realtime replication and RLS SELECT policies.",
+          );
+          setLoading(false);
+        }
       });
 
     return () => {

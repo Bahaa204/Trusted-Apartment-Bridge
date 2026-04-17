@@ -46,28 +46,14 @@ export function useConversations() {
   }, []);
 
   useEffect(() => {
-    async function FetchConversations() {
-      ResetStates();
-
-      const { data, error: FetchError } = await supabaseClient
-        .from("conversations")
-        .select("*")
-        .eq("status", "open")
-        .order("updated_at", { ascending: false });
-
-      if (FetchError) {
-        SetError(FetchError);
-        return;
-      }
-
-      setConversations(data ?? []);
-      setLoading(false);
+    async function LoadConversations() {
+      await FetchConversations();
     }
 
-    FetchConversations();
+    LoadConversations();
 
     const channel = supabaseClient
-      .channel("all-conversations")
+      .channel("all-conversations-feed")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "conversations" },
@@ -75,6 +61,19 @@ export function useConversations() {
       )
       .subscribe((status) => {
         console.log("Conversations channel:", status);
+
+        if (status === "CHANNEL_ERROR") {
+          SetError(
+            new PostgrestError({
+              message:
+                "Realtime channel error for conversations. Check Realtime replication and RLS SELECT policies.",
+              code: "CHANNEL_ERROR",
+              details: "",
+              hint: "",
+            }),
+          );
+          setLoading(false);
+        }
       });
 
     return () => {

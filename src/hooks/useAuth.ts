@@ -56,6 +56,11 @@ export function useAuth() {
         SetError(SessionError);
         return;
       }
+
+      if (data.session?.access_token) {
+        supabaseClient.realtime.setAuth(data.session.access_token);
+      }
+
       setSession(data.session);
       setLoading(false);
     }
@@ -64,6 +69,10 @@ export function useAuth() {
 
     const { data: authListener } = supabaseClient.auth.onAuthStateChange(
       (_event, session) => {
+        if (session?.access_token) {
+          supabaseClient.realtime.setAuth(session.access_token);
+        }
+
         setSession(session);
         setLoading(false);
       },

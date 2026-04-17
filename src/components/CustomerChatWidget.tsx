@@ -101,7 +101,7 @@ export default function CustomerChatWidget() {
     if (!conversationId) return;
 
     const channel = supabaseClient
-      .channel(`customer-conversation:${conversationId}`)
+      .channel(`customer-conversation-${conversationId}`)
       .on(
         "postgres_changes",
         {
@@ -113,7 +113,7 @@ export default function CustomerChatWidget() {
         () => {
           setConversationId(null);
           setCloseNotice("An admin or employee has closed this chat.");
-          window.setTimeout(() => setCloseNotice(""), 4500);
+          setTimeout(() => setCloseNotice(""), 4500);
         },
       )
       .subscribe();
