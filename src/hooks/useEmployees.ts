@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { supabaseClient } from "../lib/supabaseClient";
-import type { Data, Employee, EmployeeFormValues } from "../types/types";
+import type { Data } from "../types/types";
+import type { Employee, EmployeeFormValues } from "@/types/employee";
 
+/**
+ * Hook to manage employee data and operations.
+ * @returns An object containing the list of employees, loading state, error message, and functions to manage employees.
+ */
 export function useEmployees() {
   const [Employees, setEmployees] = useState<Employee[]>([]);
   const [Loading, setLoading] = useState<boolean>(true);

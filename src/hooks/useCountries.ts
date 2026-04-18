@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
-import type { Country } from "../types/types";
+import type { Data } from "../types/types";
 import { supabaseClient } from "../lib/supabaseClient";
 import type { PostgrestError } from "@supabase/supabase-js";
+import type { Country } from "@/types/country";
 
+/**
+ * Custom hook to manage countries data and operations.
+ * @returns An object containing the list of countries, loading state, error message, and functions to manage countries
+ */
 export function useCountries() {
-  const [Countries, setCountries] = useState<Country[]>([]);
+  const [Countries, setCountries] = useState<Country[]>([])
   const [Loading, setLoading] = useState<boolean>(true);
   const [Error, setError] = useState<string>("");
 
@@ -27,9 +32,9 @@ export function useCountries() {
     async function fetchCountries() {
       resetStates();
 
-      const { data, error: FetchError } = await supabaseClient
+      const { data, error: FetchError } = (await supabaseClient
         .from("countries")
-        .select("*");
+        .select("*")) as Data<Country[]>;
 
       if (FetchError) {
         SetError(FetchError);

@@ -6,21 +6,10 @@ import {
 } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { supabaseClient } from "../lib/supabaseClient";
-import type { UserRole } from "@/types/types";
+import type { SignUpOptions, UserRole } from "@/types/auth";
 
 const ADMIN_EMAIL_DOMAIN = "@tab-admin.com";
 const EMPLOYEE_EMAIL_DOMAIN = "@tab-employee.com";
-
-export function GetRoleFromEmail(email?: string | null): UserRole {
-  if (!email) return "customer";
-
-  const normalizedEmail = email.trim().toLowerCase();
-
-  if (normalizedEmail.endsWith(ADMIN_EMAIL_DOMAIN)) return "admin";
-  if (normalizedEmail.endsWith(EMPLOYEE_EMAIL_DOMAIN)) return "employee";
-
-  return "customer";
-}
 
 export function useAuth() {
   const [Session, setSession] = useState<Session | null>(null);
@@ -57,10 +46,6 @@ export function useAuth() {
         return;
       }
 
-      if (data.session?.access_token) {
-        supabaseClient.realtime.setAuth(data.session.access_token);
-      }
-
       setSession(data.session);
       setLoading(false);
     }
@@ -83,6 +68,10 @@ export function useAuth() {
     };
   }, []);
 
+  /**
+   * Gets the currently authenticated user.
+   * @returns The currently authenticated user or null if no user is authenticated.
+   */
   async function GetUser() {
     resetSates();
     const { data, error } = await supabaseClient.auth.getUser();
@@ -94,6 +83,12 @@ export function useAuth() {
     return data.user;
   }
 
+  /**
+   * Signs in a user with email and password.
+   * @param email The user's email.
+   * @param password The user's password.
+   * @returns A promise resolving to a boolean.
+   */
   async function SignInWithPassword(email: string, password: string) {
     setLoading(true);
 
@@ -113,13 +108,19 @@ export function useAuth() {
     return true;
   }
 
+  /**
+   * Signs up a new user with email and password.
+   * @param email The user's email.
+   * @param password The user's password.
+   * @param displayname The user's display name.
+   * @param options Additional sign-up options.
+   * @returns A promise resolving to a boolean.
+   */
   async function SignUp(
     email: string,
     password: string,
     displayname: string,
-    options:
-      | { role: "admin" | "employee"; bypassRoleCheck: true }
-      | { role: "customer"; bypassRoleCheck?: never } = { role: "customer" },
+    options: SignUpOptions = { role: "customer" },
   ) {
     resetSates();
 
@@ -154,6 +155,11 @@ export function useAuth() {
     return true;
   }
 
+  /**
+   * Signs in a user with an OAuth provider.
+   * @param provider The OAuth provider to sign in with (e.g., "google", "github").
+   * @returns A promise resolving to a boolean.
+   */
   async function SignInWithOAuth(provider: Provider) {
     resetSates();
 
@@ -172,6 +178,10 @@ export function useAuth() {
     return true;
   }
 
+  /**
+   * Signs out the currently authenticated user.
+   * @returns A promise resolving to a boolean
+   */
   async function SignOut() {
     resetSates();
 
@@ -184,6 +194,11 @@ export function useAuth() {
     return true;
   }
 
+  /**
+   * Resets the password for a user with the given email.
+   * @param email The user's email.
+   * @returns A promise resolving to a boolean.
+   */
   async function ResetPassword(email: string) {
     resetSates();
 
@@ -200,6 +215,11 @@ export function useAuth() {
     return true;
   }
 
+  /**
+   * Updates the password for the currently authenticated user.
+   * @param new_password The new password to be set for the currently authenticated user.
+   * @returns A promise resolving to a boolean indicating whether the password update was successful.
+   */
   async function UpdatePassword(new_password: string) {
     resetSates();
 
@@ -215,13 +235,34 @@ export function useAuth() {
     return true;
   }
 
-  async function RestoreSession(Session: Session) {
-    const { error } = await supabaseClient.auth.setSession(Session);
+  /**
+   *
+   * @param prevSession The previous session to restore.
+   * @returns A promise resolving to a boolean.
+   */
+  async function RestoreSession(prevSession: Session) {
+    const { error } = await supabaseClient.auth.setSession(prevSession);
     if (error) {
       SetError(error);
       return false;
     }
     return true;
+  }
+
+  /**
+   * Extracts the role from a user's email address.
+   * @param email The user's email address.
+   * @returns The user's role.
+   */
+  function GetRoleFromEmail(email?: string | null): UserRole {
+    if (!email) return "customer";
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (normalizedEmail.endsWith(ADMIN_EMAIL_DOMAIN)) return "admin";
+    if (normalizedEmail.endsWith(EMPLOYEE_EMAIL_DOMAIN)) return "employee";
+
+    return "customer";
   }
 
   return {

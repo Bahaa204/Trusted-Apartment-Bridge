@@ -3,6 +3,11 @@ import { useEffect, useState } from "react";
 import { supabaseClient } from "../lib/supabaseClient";
 import type { Message, SendMessageParams } from "@/types/chat";
 
+/**
+ * A custom hook for fetching and listening to messages in a specific conversation.
+ * @param conversationId - The ID of the conversation for which to fetch and listen to messages.
+ * @returns An object containing the messages, loading state, and error state.
+ */
 export function useMessages(conversationId: string | undefined | null) {
   const [Messages, setMessages] = useState<Message[]>([]);
   const [Loading, setLoading] = useState<boolean>(false);
@@ -111,12 +116,17 @@ export function useMessages(conversationId: string | undefined | null) {
     };
   }, [conversationId]);
 
+  /**
+   * Sends a new message to the specified conversation.
+   * @param param0 - An object containing the parameters for sending a message, including sender type, sender ID, message content, and an optional callback to execute after sending.
+   * @returns A promise resolving to a boolean.
+   */
   async function SendMessage({
     senderType,
     senderId,
     content,
     onAfterSend,
-  }: SendMessageParams): Promise<boolean> {
+  }: SendMessageParams){
     if (!content.trim() || !conversationId) return false;
 
     const { error: InsertError } = await supabaseClient

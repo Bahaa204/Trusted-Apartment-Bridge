@@ -2,7 +2,6 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, type SubmitEvent } from "react";
 import type { Provider } from "@supabase/supabase-js";
-import type { LoginFormData } from "@/types/types";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import { Button } from "@/components/ui/button";
 import Logo from "/images/Logo.png";
@@ -26,6 +25,7 @@ import {
 } from "@/components/ui/field";
 import { SignUpForm } from "@/components/Login page Components/SignUpForm";
 import ResetPasswordForm from "@/components/Login page Components/ResetPasswordForm";
+import type { LoginFormData } from "@/types/form";
 
 export default function Login() {
   const {

@@ -4,6 +4,10 @@ import { supabaseClient } from "../lib/supabaseClient";
 import type { Conversation } from "@/types/chat";
 import type { Data } from "@/types/types";
 
+/**
+ * Custom hook to manage conversations data and operations.
+ * @returns An object containing the list of conversations, loading state, error message, and functions to manage conversations
+ */
 export function useConversations() {
   const [Conversations, setConversations] = useState<Conversation[]>([]);
   const [Loading, setLoading] = useState<boolean>(true);
@@ -127,7 +131,7 @@ export function useConversations() {
     return data;
   }
 
-  async function CloseConversation(conversationId: string): Promise<boolean> {
+  async function CloseConversation(conversationId: string){
     ResetStates();
 
     const { error: DeleteMessagesError } = await supabaseClient
@@ -164,7 +168,7 @@ export function useConversations() {
     return true;
   }
 
-  async function BumpConversation(conversationId: string): Promise<boolean> {
+  async function BumpConversation(conversationId: string){
     const { error: UpdateError } = await supabaseClient
       .from("conversations")
       .update({ updated_at: new Date().toISOString() })

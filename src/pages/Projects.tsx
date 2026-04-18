@@ -1,7 +1,6 @@
 import { useMemo, useState, type SubmitEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import type { Building, Project, House } from "../types/types";
 import { useBuildings } from "@/hooks/useBuildings";
 import { useProjects } from "@/hooks/useProjects";
 import { useHouses } from "@/hooks/useHouses";
@@ -17,6 +16,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
+import type { Project } from "@/types/projects";
+import type { Building } from "@/types/building";
+import type { House } from "@/types/house";
 
 type SurveyForm = {
   budgetRange: string;

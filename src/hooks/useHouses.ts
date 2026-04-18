@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
-import type { Data, House } from "../types/types";
+import type { Data } from "../types/types";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { supabaseClient } from "../lib/supabaseClient";
 import { GetMinMaxDate } from "../helpers/Date";
 import type { DateReturn, DateString } from "../types/date";
+import type { House } from "@/types/house";
 
+/**
+ *
+ * This hook manages the state and operations related to houses.
+ * @returns An object containing the list of houses, loading state, error message, and functions to manage houses
+ *
+ */
 export function useHouses() {
   const [Houses, setHouses] = useState<House[]>([]);
   const [Loading, setLoading] = useState<boolean>(true);
@@ -89,6 +96,11 @@ export function useHouses() {
     };
   }, []);
 
+  /**
+   * Adds a new house to the database.
+   * @param new_house - The new house to be added to the database. It should be an object of type House containing the necessary fields.
+   * @returns A promise resolving to a boolean.
+   */
   async function AddHouse(new_house: House) {
     resetStates();
 
@@ -123,6 +135,11 @@ export function useHouses() {
     return true;
   }
 
+  /**
+   * Removes a house from the database.
+   * @param houseId - The id of the house to be removed from the database.
+   * @returns A promise resolving to a boolean.
+   */
   async function RemoveHouse(houseId: House["id"]) {
     resetStates();
 
@@ -140,6 +157,10 @@ export function useHouses() {
     return true;
   }
 
+  /**
+   * Retrieves the minimum and maximum dates from the list of houses.
+   * @returns An object containing the minimum and maximum dates from the list of houses.
+   */
   function getDates(): DateReturn {
     // Extracting the timestamps from the houses and filtering out any null or undefined values
     const timestamps: string[] = Houses.map((house) => house.added_at).filter(
@@ -151,6 +172,12 @@ export function useHouses() {
     return { minInputDate, maxInputDate };
   }
 
+  /**
+   * Retrieves houses within a specified date range.
+   * @param minDate - The minimum date to filter the houses.
+   * @param maxDate - The maximum date to filter the houses.
+   * @returns A promise resolving to an array of houses that were added between the specified dates.
+   */
   async function getHousesBetweenDates(
     minDate: DateString,
     maxDate: DateString,
@@ -178,23 +205,6 @@ export function useHouses() {
     return data;
   }
 
-  async function getHousesByBuildingID(buildingId: House["building_id"]) {
-    resetStates();
-
-    const { data, error: FetchError } = (await supabaseClient
-      .from("houses")
-      .select("*")
-      .eq("building_id", buildingId)) as Data<House[]>;
-
-    if (FetchError) {
-      SetError(FetchError);
-      return [];
-    }
-
-    setLoading(false);
-    return data || [];
-  }
-
   return {
     Houses,
     Loading,
@@ -204,6 +214,5 @@ export function useHouses() {
     RemoveHouse,
     getDates,
     getHousesBetweenDates,
-    getHousesByBuildingID,
   };
 }

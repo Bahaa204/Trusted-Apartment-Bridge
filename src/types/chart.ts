@@ -1,3 +1,7 @@
+/**
+ * This file defines the types for the chart data used in the application.
+ */
+
 import type { ChartConfig } from "@/components/ui/chart";
 import type { DateString } from "./date";
 

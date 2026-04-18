@@ -1,3 +1,7 @@
+/**
+ * This file defines the types for the date-related data used in the application.
+ */
+
 type TwoDigits = `${string}${string}`;
 
 type FourDigits = `${TwoDigits}${TwoDigits}`;
@@ -15,7 +19,7 @@ export type DateRange = {
 };
 
 export type DatePickerWithRangeProps = {
-  label: string
+  label: string;
   minDate: DateString;
   maxDate: DateString;
   selectedMinDate: DateString;

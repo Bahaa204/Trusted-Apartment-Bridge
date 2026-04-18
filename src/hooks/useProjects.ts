@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
-import type { Project } from "../types/types";
+import type { Data } from "../types/types";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { supabaseClient } from "../lib/supabaseClient";
+import type { Project } from "@/types/projects";
 
+/**
+ * Custom hook to manage projects data and operations.
+ * @returns An object containing the list of projects, loading state, error message, and functions to manage projects.
+ * @example
+ * const { Projects, Loading, Error, AddProject, UpdateProject, RemoveProject } = useProjects();
+ */
 export function useProjects() {
   const [Projects, setProjects] = useState<Project[]>([]);
   const [Loading, setLoading] = useState<boolean>(true);
@@ -24,12 +31,16 @@ export function useProjects() {
 
   // Fetching the data from the database + real time listeners to update the data
   useEffect(() => {
+    /**
+     * Fetches the list of projects from the database
+     * and updates the state accordingly. If an error occurs during fetching, it sets the error message and updates the loading state.
+     */
     async function fetchProjects() {
       resetStates();
 
-      const { data, error: FetchError } = await supabaseClient
+      const { data, error: FetchError } = (await supabaseClient
         .from("projects")
-        .select("*");
+        .select("*")) as Data<Project[]>;
 
       if (FetchError) {
         SetError(FetchError);
@@ -44,6 +55,9 @@ export function useProjects() {
 
     const channel = supabaseClient.channel("Projects-Channel");
 
+    /**
+     * Sets up real-time listeners for changes in the "projects" table.
+     */
     channel
       .on(
         "postgres_changes",
@@ -87,6 +101,11 @@ export function useProjects() {
     };
   }, []);
 
+  /**
+   * Adds a new project to the database.
+   * @param new_project - The new project to be added to the database. It should be an object of type Project containing the necessary fields.
+   * @returns A promise resolving to a boolean.
+   */
   async function AddProject(new_project: Project) {
     resetStates();
 
@@ -104,6 +123,12 @@ export function useProjects() {
     return true;
   }
 
+  /**
+   * Updates an existing project in the database.
+   * @param updated_project - The updated project data to be saved in the database. It should be an object of type Project containing the necessary fields, including the id of the project to be updated.
+   * @param projectId - The id of the project to be updated.
+   * @returns A promise resolving to a boolean.
+   */
   async function UpdateProject(
     updated_project: Project,
     projectId: Project["id"],
@@ -124,6 +149,11 @@ export function useProjects() {
     return true;
   }
 
+  /**
+   * Removes a project from the database.
+   * @param projectId - The id of the project to be removed from the database.
+   * @returns A promise resolving to a boolean.
+   */
   async function RemoveProject(projectId: Project["id"]) {
     resetStates();
 

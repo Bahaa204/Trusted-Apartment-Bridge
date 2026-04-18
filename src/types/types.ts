@@ -1,95 +1,40 @@
 import type { PostgrestError } from "@supabase/supabase-js";
 import type { Dispatch, SetStateAction } from "react";
 
-// Updater Function Type of the useState hook
+/**
+ * This file defines the common types used across the application. Types that are common between multiple files are defined here to avoid repetition and ensure consistency.
+ */
+
+/**
+ * the Type of the Updater Function used in the useState hook.
+ *
+ * @example
+ * type ChildProps = {
+ *  State: string;
+ *  setState: UpdaterFunction<string>;
+ * }
+ */
 export type UpdaterFunction<T> = Dispatch<SetStateAction<T>>;
 
-// Supabase automatically generates them
-// so no need to put place when submitting the form
+// Supabase automatically generates them, so they are optional in the types
 export type Common = {
   id?: number;
   added_at?: string;
 };
 
+// The Image type as it is stored in Supabase
 export type Image = {
   url: string;
   path: string;
 };
 
-export type Country = Omit<Common, "added_at"> & {
-  name: string;
-};
-
-export type Project = Common & {
-  name: string;
-  description: string;
-  location: string;
-  nb_visits?: number; // Supabase defaults the value to 0 so it is optional
-  country_id: Country["id"]; // Same Type as the Country id
-  images: Image[];
-};
-
-export type Building = Common & {
-  name: string;
-  block: string;
-  images: Image[];
-  project_id: Project["id"]; // Same Type as the project id
-};
-
-export type House = Common & {
-  floor: number;
-  nb_bedrooms: number;
-  nb_bathrooms: number;
-  building_id: Building["id"]; // Same Type as the building id
-  price: number;
-  is_sold?: boolean; // Defaults to False
-};
-
-export type FormData = {
-  project_name: string;
-  project_description: string;
-  project_location: string;
-  project_country_id: Country["id"]; // Same Type as the Country id
-  project_images: FileList | null;
-  buildings_name: string;
-  buildings_block: string;
-  buildings_images: FileList | null;
-  buildings_project_id: Project["id"]; // Same Type as the project id
-  house_floor: number;
-  house_nb_bedrooms: number;
-  house_nb_bathrooms: number;
-  house_building_id: Building["id"]; // Same Type as the building id
-  house_price: number;
-};
-
-// Same type as the Projects but changing the images type from Image[] to FileList or null
-export type ProjectsInput = Omit<Project, "images"> & {
-  images: FileList | null;
-};
-
-// Same type as the Building but changing the images type from Image[] to FileList or null
-export type BuildingInput = Omit<Building, "images"> & {
-  images: FileList | null;
-};
-
-export type LoginMode = "SignIn" | "SignUp" | "ResetPassword";
-
-export type Employee = Common & {
-  name: string;
-  email: string;
-  salary: number;
-};
-
+/**
+ * The Data type used in the API calls.
+ *
+ * @example
+ * const { data, error }:= await supabaseClient.from("projects").select("*") as Data<Project[]>;
+ */
 export type Data<T> =
   | { data: T; error: null }
   | { error: PostgrestError; data: null };
 
-export type UserRole = "admin" | "employee" | "customer";
-
-export type LoginFormData = {
-  email: string;
-  password: string;
-  display_name: string;
-  email_sent: boolean;
-};
-export type EmployeeFormValues = Omit<Employee, "id">;

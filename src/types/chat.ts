@@ -1,3 +1,7 @@
+/**
+ * This file defines the types for the chat data used in the application.
+ */
+
 export type Conversation = {
   id: string;
   customer_token: string;

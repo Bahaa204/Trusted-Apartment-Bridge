@@ -1,6 +1,12 @@
 import { supabaseClient } from "../lib/supabaseClient";
 import type { Image } from "../types/types";
 
+/**
+ * Uploads an image to the specified bucket.
+ * @param file The image file to upload.
+ * @param bucket The bucket to upload the image to.
+ * @returns A promise resolving to the uploaded image data or null if an error occurs.
+ */
 export async function UploadImage(
   file: File,
   bucket: "projects_images" | "buildings_images",
@@ -21,6 +27,13 @@ export async function UploadImage(
   return { url: data.publicUrl, path: path };
 }
 
+/**
+ * Deletes images from the specified bucket.
+ * @param paths An array of image paths to delete.
+ * @param bucket The bucket to delete the images from.
+ * @returns A promise resolving to a boolean indicating whether the deletion was successful.
+ */
+
 export async function DeleteImages(
   paths: string[],
   bucket: "projects_images" | "buildings_images",
@@ -30,7 +43,7 @@ export async function DeleteImages(
     .remove(paths);
 
   if (DeleteError) {
-    console.error("Error Uploading Image: ", DeleteError.message);
+    console.error("Error Deleting Image: ", DeleteError.message);
     return false;
   }
 

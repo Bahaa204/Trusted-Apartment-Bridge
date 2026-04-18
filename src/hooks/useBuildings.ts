@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { supabaseClient } from "../lib/supabaseClient";
-import type { Building, Data, Project } from "../types/types";
+import type { Data } from "../types/types";
+import type { Building } from "@/types/building";
 
+/**
+ * Custom hook to manage buildings data and operations.
+ * @returns An object containing the list of buildings, loading state, error message, and functions to manage buildings
+ */
 export function useBuildings() {
   const [Buildings, setBuildings] = useState<Building[]>([]);
   const [Loading, setLoading] = useState<boolean>(true);
@@ -27,9 +32,9 @@ export function useBuildings() {
     async function fetchBuildings() {
       resetStates();
 
-      const { data, error: FetchError } = await supabaseClient
+      const { data, error: FetchError } = (await supabaseClient
         .from("buildings")
-        .select("*");
+        .select("*")) as Data<Building[]>;
 
       if (FetchError) {
         SetError(FetchError);
@@ -87,6 +92,11 @@ export function useBuildings() {
     };
   }, []);
 
+  /**
+   * Adds a new building to the database.
+   * @param new_building - The new building to be added to the database.
+   * @returns A promise resolving to a boolean.
+   */
   async function AddBuilding(new_building: Building) {
     resetStates();
 
@@ -104,6 +114,12 @@ export function useBuildings() {
     return true;
   }
 
+  /**
+   * Updates an existing building in the database.
+   * @param updated_building - The updated building data to be saved in the database.
+   * @param buildingId - The ID of the building to be updated.
+   * @returns A promise resolving to a boolean.
+   */
   async function UpdateBuilding(
     updated_building: Building,
     buildingId: Building["id"],
@@ -124,6 +140,11 @@ export function useBuildings() {
     return true;
   }
 
+  /**
+   * Removes a building from the database.
+   * @param buildingId - The ID of the building to be removed from the database.
+   * @returns A promise resolving to a boolean.
+   */
   async function RemoveBuilding(buildingId: Building["id"]) {
     resetStates();
 
@@ -141,23 +162,6 @@ export function useBuildings() {
     return true;
   }
 
-  async function GetBuildingsByProjectID(projectId: Project["id"]) {
-    resetStates();
-
-    const { data, error: FetchError } = (await supabaseClient
-      .from("buildings")
-      .select("*")
-      .eq("project_id", projectId)) as Data<Building[]>;
-
-    if (FetchError) {
-      SetError(FetchError);
-      return [];
-    }
-
-    setLoading(false);
-    return data || [];
-  }
-
   return {
     Buildings,
     Loading,
@@ -165,6 +169,5 @@ export function useBuildings() {
     AddBuilding,
     UpdateBuilding,
     RemoveBuilding,
-    GetBuildingsByProjectID,
   };
 }

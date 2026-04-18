@@ -1,25 +1,34 @@
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-  type SubmitEvent,
-} from "react";
+import { useMemo, useState, type SubmitEvent } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabaseClient } from "../lib/supabaseClient";
 import { Suspense } from "react";
+import { useBuildings } from "@/hooks/useBuildings";
+import { useHouses } from "@/hooks/useHouses";
+import { useProjects } from "@/hooks/useProjects";
+import { useCountries } from "@/hooks/useCountries";
 import { Canvas } from "@react-three/fiber";
+import { Environment, ContactShadows } from "@react-three/drei";
+import ImageGallery from "@/components/Project Details Components/ImageGallery";
+import UnitCard from "@/components/Project Details Components/UnitCard";
+import LazyModelPreview from "@/components/Project Details Components/LazyModelPreview";
+import { Loader } from "@/components/Project Details Components/Loader";
+import Model from "@/components/Project Details Components/Model";
+import SceneControls from "@/components/Project Details Components/SceneControls";
 import {
-  Html,
-  OrbitControls,
-  useGLTF,
-  useProgress,
-  Center,
-  Bounds,
-  Environment,
-  ContactShadows,
-} from "@react-three/drei";
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import type { Building } from "@/types/building";
+import type { House } from "@/types/house";
+import type { Project } from "@/types/projects";
+import type { PaymentFormData } from "@/types/form";
+import type { Country } from "@/types/country";
 
 const MODELS = [
   "models/162_7.glb",
@@ -32,36 +41,7 @@ const MODELS = [
   "models/amelinco_office_building.glb",
 ];
 
-function resolveAssetUrl(path: string): string {
-  const base = import.meta.env.BASE_URL || "/";
-  const normalizedPath = path.replace(/^\/+/, "");
-  return `${base}${normalizedPath}`;
-}
-
-type House = {
-  id: number;
-  price: number;
-  floor: number;
-  nb_bedrooms: number;
-  nb_bathrooms: number;
-};
-
-type Building = {
-  id: number;
-  name: string;
-  houses: House[];
-};
-
-type Project = {
-  id: number;
-  name: string;
-  description: string;
-  country_id: number;
-  location: string;
-  images_url: string[];
-  countries: { name: string } | null;
-  buildings: Building[];
-};
+type BuildingWithHouses = Building & {houses: House[] };
 
 function getUniqueModelAssignments(buildingsCount: number): string[] {
   if (buildingsCount === 0) return [];
@@ -88,302 +68,279 @@ function getUniqueModelAssignments(buildingsCount: number): string[] {
   return assignments.sort(() => Math.random() - 0.5);
 }
 
-/* ─── Image Gallery ─── */
-function Gallery({ images }: { images: string[] }) {
-  const [current, setCurrent] = useState(0);
+function getProjectImageUrls(project: Project): string[] {
+  const projectWithLegacyFields = project as Project & {
+    images_url?: unknown;
+    images?: unknown;
+  };
 
-  if (images.length === 0) return null;
+  const fromImagesObjects =
+    Array.isArray(project.images) && project.images.length > 0
+      ? project.images
+          .map((image) => {
+            if (typeof image?.url === "string" && image.url.length > 0)
+              return image.url;
 
-  return (
-    <div className="relative rounded-2xl overflow-hidden shadow-lg mb-10 group">
-      <img
-        src={images[current]}
-        alt="Project"
-        className="w-full h-80 object-cover"
-      />
-      {images.length > 1 && (
-        <>
-          <button
-            onClick={() =>
-              setCurrent((p) => (p === 0 ? images.length - 1 : p - 1))
+            if (typeof image?.path === "string" && image.path.length > 0) {
+              return supabaseClient.storage
+                .from("projects_images")
+                .getPublicUrl(image.path).data.publicUrl;
             }
-            className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/60 text-white w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-lg"
-          >
-            &lt;
-          </button>
-          <button
-            onClick={() =>
-              setCurrent((p) => (p === images.length - 1 ? 0 : p + 1))
-            }
-            className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/60 text-white w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-lg"
-          >
-            &gt;
-          </button>
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
-            {images.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrent(i)}
-                className={`w-2.5 h-2.5 rounded-full transition ${
-                  i === current ? "bg-white scale-125" : "bg-white/40"
-                }`}
-              />
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
 
-function Loader() {
-  const { progress } = useProgress();
-  return (
-    <Html center>
-      <div
-        style={{
-          padding: "12px 18px",
-          background: "rgba(255,255,255,0.96)",
-          border: "1px solid #dbe3ea",
-          borderRadius: "12px",
-          boxShadow: "0 8px 24px rgba(15, 23, 42, 0.12)",
-          fontSize: "14px",
-          fontWeight: 600,
-          color: "#1e293b",
-          whiteSpace: "nowrap",
-        }}
-      >
-        Loading model... {progress.toFixed(0)}%
-      </div>
-    </Html>
-  );
-}
+            return "";
+          })
+          .filter((url): url is string => Boolean(url))
+      : [];
 
-function Model({ modelPath }: { modelPath: string }) {
-  const { scene } = useGLTF(resolveAssetUrl(modelPath));
-  return (
-    <Bounds fit clip observe margin={1.15}>
-      <Center>
-        <primitive object={scene} />
-      </Center>
-    </Bounds>
-  );
-}
+  if (fromImagesObjects.length > 0) return fromImagesObjects;
 
-function SceneControls() {
-  return (
-    <OrbitControls
-      makeDefault
-      enablePan={false}
-      enableDamping
-      dampingFactor={0.08}
-      minDistance={2}
-      maxDistance={25}
-      minPolarAngle={Math.PI / 4}
-      maxPolarAngle={Math.PI / 1.8}
-    />
-  );
-}
-
-function LazyModelPreview({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  const [isVisible, setIsVisible] = useState(false);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (isVisible) return;
-    const node = containerRef.current;
-    if (!node) return;
-
-    if (typeof IntersectionObserver === "undefined") {
-      return setIsVisible(true);
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "200px" },
+  const fromLegacyImagesUrl = projectWithLegacyFields.images_url;
+  if (Array.isArray(fromLegacyImagesUrl)) {
+    return fromLegacyImagesUrl.filter(
+      (url): url is string => typeof url === "string" && url.length > 0,
     );
+  }
 
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [isVisible]);
+  const rawImages = projectWithLegacyFields.images;
+  if (Array.isArray(rawImages)) {
+    return rawImages
+      .map((image) => {
+        if (typeof image === "string") return image;
+        if (typeof image !== "object" || image === null) return "";
 
-  return (
-    <div ref={containerRef} className={className}>
-      {isVisible ? (
-        children
-      ) : (
-        <div className="flex h-full w-full items-center justify-center rounded-2xl bg-slate-100 text-sm text-slate-400">
-          Loading preview...
-        </div>
-      )}
-    </div>
-  );
+        const imageRecord = image as { url?: unknown; path?: unknown };
+
+        if (typeof imageRecord.url === "string" && imageRecord.url.length > 0)
+          return imageRecord.url;
+
+        if (
+          typeof imageRecord.path === "string" &&
+          imageRecord.path.length > 0
+        ) {
+          return supabaseClient.storage
+            .from("projects_images")
+            .getPublicUrl(imageRecord.path).data.publicUrl;
+        }
+
+        return "";
+      })
+      .filter((url): url is string => Boolean(url));
+  }
+
+  return [];
 }
 
-/* ─── Unit Card ─── */
-function UnitCard({
-  house,
-  isHovered,
-  onHover,
-  onLeave,
-  onBuy,
-}: {
-  house: House;
-  isHovered: boolean;
-  onHover: () => void;
-  onLeave: () => void;
-  onBuy: () => void;
-}) {
-  return (
-    <div
-      onMouseEnter={onHover}
-      onMouseLeave={onLeave}
-      className="relative rounded-xl transition-all duration-300 overflow-hidden"
-      style={{
-        background: isHovered
-          ? "linear-gradient(135deg, #ff5c00, #ff8c42)"
-          : "#fff",
-        transform: isHovered
-          ? "translateY(-4px) scale(1.02)"
-          : "translateY(0) scale(1)",
-        boxShadow: isHovered
-          ? "0 12px 30px rgba(255,92,0,0.3)"
-          : "0 2px 10px rgba(0,0,0,0.06)",
-        border: isHovered ? "2px solid #ff5c00" : "2px solid #f1f1f1",
-      }}
-    >
-      {/* Floor badge */}
-      <div
-        className="px-3 py-1.5 text-xs font-bold"
-        style={{
-          background: isHovered ? "rgba(0,0,0,0.15)" : "#f8f9fa",
-          color: isHovered ? "white" : "#888",
-        }}
-      >
-        Floor {house.floor} — Unit #{house.id}
-      </div>
-      <div className="p-4">
-        <p
-          className="text-xl font-extrabold mb-3"
-          style={{ color: isHovered ? "white" : "#ff5c00" }}
-        >
-          ${house.price.toLocaleString()}
-        </p>
-        <div
-          className="flex gap-5 text-sm"
-          style={{ color: isHovered ? "rgba(255,255,255,0.85)" : "#666" }}
-        >
-          <span>🛏 {house.nb_bedrooms} Bedrooms</span>
-          <span>🚿 {house.nb_bathrooms} Bathrooms</span>
-        </div>
-        <button
-          type="button"
-          onClick={onBuy}
-          className={`mt-5 w-full rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
-            isHovered
-              ? "border-white bg-white text-orange-500 hover:bg-white/90"
-              : "border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100"
-          }`}
-        >
-          Buy this unit
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Main Component ─── */
 export default function ProjectDetails() {
   const { projectID } = useParams();
-  const [project, setProject] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [selectedBuilding, setSelectedBuilding] = useState<number | null>(null);
-  const [hoveredUnit, setHoveredUnit] = useState<number | null>(null);
-  const [showPayment, setShowPayment] = useState(false);
-  const [paymentHouse, setPaymentHouse] = useState<House | null>(null);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [paymentError, setPaymentError] = useState("");
-  const [paymentForm, setPaymentForm] = useState({
+
+  const InitialValue: PaymentFormData = {
     cardName: "",
     cardNumber: "",
     expiry: "",
     cvc: "",
     email: "",
-  });
+  };
+
+  const [selectedBuilding, setSelectedBuilding] = useState<
+    Building["id"] | null
+  >(null);
+
+  const [hoveredUnit, setHoveredUnit] = useState<House["id"] | null>(null);
+
+  const [showPayment, setShowPayment] = useState<boolean>(false);
+
+  const [paymentHouse, setPaymentHouse] = useState<House | null>(null);
+
+  const [paymentSuccess, setPaymentSuccess] = useState<boolean>(false);
+
+  const [paymentError, setPaymentError] = useState<string>("");
+
+  const [paymentForm, setPaymentForm] = useState<PaymentFormData>(InitialValue);
+
+  const {
+    Countries,
+    Loading: CountriesLoading,
+    Error: CountriesError,
+  } = useCountries();
+
+  const {
+    Projects,
+    Loading: ProjectsLoading,
+    Error: ProjectsError,
+  } = useProjects();
+
+  const {
+    Buildings,
+    Loading: BuildingsLoading,
+    Error: BuildingsError,
+  } = useBuildings();
+
+  const { Houses, Loading: HousesLoading, Error: HousesError } = useHouses();
+
+  const loading =
+    CountriesLoading || ProjectsLoading || BuildingsLoading || HousesLoading;
+
+  const errorMessage =
+    CountriesError || ProjectsError || BuildingsError || HousesError;
+
+  const countries = Countries as Country[];
+
+  const projectIdAsNumber = Number(projectID);
+
+  const project = useMemo(
+    () =>
+      Projects.find(
+        (item): item is Project & { id: number } =>
+          typeof item.id === "number" && item.id === projectIdAsNumber,
+      ) || null,
+    [Projects, projectIdAsNumber],
+  );
+
+  const countryById = useMemo(
+    () =>
+      new Map<number, Country>(
+        countries
+          .filter(
+            (country): country is Country & { id: number } =>
+              typeof country.id === "number",
+          )
+          .map((country) => [country.id, country]),
+      ),
+    [countries],
+  );
+
+  const housesByBuildingId = useMemo(() => {
+    const map = new Map<number, House[]>();
+
+    Houses.forEach((house) => {
+      if (
+        typeof house.id !== "number" ||
+        typeof house.building_id !== "number"
+      ) {
+        return;
+      }
+
+      const typedHouse: House = {
+        ...house,
+        id: house.id,
+        building_id: house.building_id,
+      };
+
+      const existing = map.get(house.building_id);
+      if (existing) {
+        existing.push(typedHouse);
+      } else {
+        map.set(house.building_id, [typedHouse]);
+      }
+    });
+
+    return map;
+  }, [Houses]);
+
+  const projectBuildings = useMemo<BuildingWithHouses[]>(() => {
+    if (!project || typeof project.id !== "number") return [];
+
+    return Buildings.filter(
+      (building): building is Building & { id: number; project_id: number } =>
+        typeof building.id === "number" &&
+        typeof building.project_id === "number" &&
+        building.project_id === project.id,
+    ).map((building) => ({
+      ...building,
+      id: building.id,
+      houses: housesByBuildingId.get(building.id) ?? [],
+    }));
+  }, [Buildings, housesByBuildingId, project]);
+
+  const projectImages = useMemo(
+    () => (project ? getProjectImageUrls(project) : []),
+    [project],
+  );
 
   const modelAssignments = useMemo(() => {
-    if (!project) return [];
-    return getUniqueModelAssignments(project.buildings.length);
-  }, [project]);
+    return getUniqueModelAssignments(projectBuildings.length);
+  }, [projectBuildings]);
 
-  const isSingleBuildingProject = project?.buildings.length === 1;
-
-  useEffect(() => {
-    async function fetchProject() {
-      setLoading(true);
-      const { data, error: err } = await supabaseClient
-        .from("projects")
-        .select(
-          "*, countries(name), buildings(id, name, houses(id, price, floor, nb_bedrooms, nb_bathrooms))",
-        )
-        .eq("id", projectID)
-        .single();
-
-      if (err || !data) {
-        setError(true);
-      } else {
-        setProject(data as Project);
-        // auto-select first building
-        if ((data as Project).buildings.length > 0) {
-          setSelectedBuilding((data as Project).buildings[0].id);
-        }
-      }
-      setLoading(false);
-    }
-    fetchProject();
-  }, [projectID]);
+  const isSingleBuildingProject = projectBuildings.length === 1;
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-gray-400 text-lg">Loading project...</p>
-      </div>
+      <main className="min-h-screen p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
+          <CardContent className="flex items-center justify-center gap-3 py-8 text-center text-[#173b67]">
+            <Spinner className="size-5 text-[#173b67]" />
+            <span>Loading Project Details...</span>
+          </CardContent>
+        </Card>
+      </main>
     );
   }
 
-  if (error || !project) {
+  if (errorMessage) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-        <p className="text-red-500 text-xl font-semibold mb-4">
-          Project not found
-        </p>
-        <Link
-          to="/projects"
-          className="text-orange-500 hover:underline font-medium"
-        >
-          ← Back to Projects
-        </Link>
-      </div>
+      <main className="min-h-screen p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-2xl text-[#0f2f4f]">Error</CardTitle>
+            <CardDescription className="text-[#24507f]">
+              We could not load Project Details. Please try again later.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-[#173b67]">{errorMessage}</CardContent>
+          <CardFooter className="bg-transparent">
+            {new Date().toLocaleString()}
+          </CardFooter>
+        </Card>
+      </main>
     );
   }
 
-  const totalUnits = project.buildings.reduce(
+  if (!project) {
+    return (
+      <main className="min-h-screen p-4 md:p-8">
+        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
+          <CardHeader>
+            <CardAction>
+              <Link
+                to="/projects"
+                className="text-orange-500 hover:underline font-medium"
+              >
+                Back to Projects
+              </Link>
+            </CardAction>
+            <CardTitle className="text-2xl text-[#0f2f4f]">Error</CardTitle>
+            <CardDescription className="text-[#24507f]">
+              Project not found. It may have been removed or the URL may be
+              incorrect.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-[#173b67]">{errorMessage}</CardContent>
+          <CardFooter className="bg-transparent">
+            {new Date().toLocaleString()}
+          </CardFooter>
+        </Card>
+      </main>
+    );
+  }
+
+  const totalUnits = projectBuildings.reduce(
     (sum, b) => sum + b.houses.length,
     0,
   );
-  const activeBldg = project.buildings.find((b) => b.id === selectedBuilding);
+
+  const effectiveSelectedBuildingId =
+    selectedBuilding &&
+    projectBuildings.some((building) => building.id === selectedBuilding)
+      ? selectedBuilding
+      : (projectBuildings[0]?.id ?? null);
+
+  const activeBldg = projectBuildings.find(
+    (building) => building.id === effectiveSelectedBuildingId,
+  );
+  const countryName =
+    typeof project.country_id === "number"
+      ? countryById.get(project.country_id)?.name
+      : undefined;
 
   function openPayment(house: House) {
     setPaymentHouse(house);
@@ -435,7 +392,7 @@ export default function ProjectDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#e6e0d8]">
       {/* Hero */}
       <div className="bg-linear-to-br from-gray-900 via-gray-800 to-orange-900 text-white py-20 px-6">
         <div className="max-w-5xl mx-auto">
@@ -451,7 +408,7 @@ export default function ProjectDetails() {
           <div className="flex flex-wrap gap-4 text-gray-300">
             <span>📍 {project.location}</span>
             <span>•</span>
-            <span>{project.countries?.name}</span>
+            <span>{countryName || "Unknown"}</span>
           </div>
         </div>
       </div>
@@ -461,7 +418,7 @@ export default function ProjectDetails() {
         <div className="grid grid-cols-3 gap-4 mb-10">
           <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
             <p className="text-3xl font-extrabold text-orange-500">
-              {project.buildings.length}
+              {projectBuildings.length}
             </p>
             <p className="text-gray-500 text-sm mt-1">Buildings</p>
           </div>
@@ -473,15 +430,15 @@ export default function ProjectDetails() {
           </div>
           <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
             <p className="text-3xl font-extrabold text-orange-500">
-              {project.countries?.name || "—"}
+              {countryName || "—"}
             </p>
             <p className="text-gray-500 text-sm mt-1">Country</p>
           </div>
         </div>
 
         {/* Gallery */}
-        {project.images_url && project.images_url.length > 0 ? (
-          <Gallery images={project.images_url} />
+        {projectImages.length > 0 ? (
+          <ImageGallery images={projectImages} />
         ) : (
           <div className="h-64 bg-linear-to-br from-orange-400 to-orange-600 rounded-2xl shadow-lg mb-10 flex items-center justify-center">
             <span className="text-white/20 text-9xl font-black">
@@ -499,7 +456,7 @@ export default function ProjectDetails() {
         </div>
 
         {/* Buildings & Units */}
-        {project.buildings.length > 0 && (
+        {projectBuildings.length > 0 && (
           <div className="mb-20">
             <h2 className="text-2xl font-bold mb-2">Buildings & Units</h2>
             <p className="text-gray-400 mb-8 text-sm">
@@ -507,7 +464,7 @@ export default function ProjectDetails() {
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-              {project.buildings.map((building) => (
+              {projectBuildings.map((building) => (
                 <button
                   key={building.id}
                   type="button"
@@ -572,7 +529,7 @@ export default function ProjectDetails() {
           <div
             className={`grid gap-6 ${isSingleBuildingProject ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}
           >
-            {project.buildings.map((building, index) => {
+            {projectBuildings.map((building, index) => {
               const modelPath =
                 modelAssignments[index] ?? MODELS[index % MODELS.length];
               return (
