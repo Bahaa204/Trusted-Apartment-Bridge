@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://Bahaa204.github.io/Trusted-Apartment-Bridge",
+  "homepage": "https://trustedappartmentbridge.app/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
