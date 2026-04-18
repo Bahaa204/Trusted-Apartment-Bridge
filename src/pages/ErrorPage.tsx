@@ -41,7 +41,7 @@ export default function ErrorPage() {
       <section className="relative z-10 mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-4 py-8 md:px-8">
         <Card className="w-full max-w-2xl overflow-hidden border border-white/70 bg-white/90 shadow-[0_30px_100px_rgba(15,23,42,0.2)] backdrop-blur p-0!">
           <CardHeader className="gap-3 border-b border-slate-200 bg-linear-to-br from-slate-950 via-slate-900 to-slate-800 px-6 py-8 text-white md:px-8">
-            <Breadcrumbs />
+            <Breadcrumbs style="light" />
             <p className="mt-4 inline-flex w-fit rounded-full border border-orange-300/40 bg-orange-400/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-orange-100">
               System Error
             </p>

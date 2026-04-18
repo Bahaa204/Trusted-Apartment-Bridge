@@ -7,4 +7,4 @@ export type BreadcrumbItem = {
   path: string;
 };
 
-export type BreadCrumbProps = { name?: string };
+export type BreadCrumbProps = { name: string; style: "light" };

@@ -29,6 +29,7 @@ import type { House } from "@/types/house";
 import type { Project } from "@/types/projects";
 import type { PaymentFormData } from "@/types/form";
 import type { Country } from "@/types/country";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 const MODELS = [
   "models/162_7.glb",
@@ -41,7 +42,7 @@ const MODELS = [
   "models/amelinco_office_building.glb",
 ];
 
-type BuildingWithHouses = Building & {houses: House[] };
+type BuildingWithHouses = Building & { houses: House[] };
 
 function getUniqueModelAssignments(buildingsCount: number): string[] {
   if (buildingsCount === 0) return [];
@@ -279,6 +280,7 @@ export default function ProjectDetails() {
   if (errorMessage) {
     return (
       <main className="min-h-screen p-4 md:p-8">
+        <Breadcrumbs name={project?.name} />
         <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
           <CardHeader>
             <CardTitle className="text-2xl text-[#0f2f4f]">Error</CardTitle>
@@ -298,6 +300,7 @@ export default function ProjectDetails() {
   if (!project) {
     return (
       <main className="min-h-screen p-4 md:p-8">
+        <Breadcrumbs name="Project Details" style="light" />
         <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
           <CardHeader>
             <CardAction>
@@ -396,12 +399,7 @@ export default function ProjectDetails() {
       {/* Hero */}
       <div className="bg-linear-to-br from-gray-900 via-gray-800 to-orange-900 text-white py-20 px-6">
         <div className="max-w-5xl mx-auto">
-          <Link
-            to="/projects"
-            className="text-orange-400 hover:text-orange-300 text-sm font-medium mb-6 inline-block"
-          >
-            ← Back to Projects
-          </Link>
+          <Breadcrumbs name={project.name} style="light" />
           <h1 className="text-4xl md:text-5xl font-extrabold mb-3">
             {project.name}
           </h1>

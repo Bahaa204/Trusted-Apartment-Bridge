@@ -432,7 +432,7 @@ export default function Projects() {
   return (
     <div className="bg-[#e6e0d8]">
       <div className="bg-linear-to-br from-gray-900 via-gray-800 to-orange-900 text-white py-20 px-6">
-        <Breadcrumbs />
+        <Breadcrumbs style="light" />
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
             Our Projects

@@ -3,7 +3,7 @@ import { ChevronRight, Home } from "lucide-react";
 import { titleCase } from "title-case";
 import type { BreadcrumbItem, BreadCrumbProps } from "@/types/breadcrumb";
 
-export default function Breadcrumbs({ name }: BreadCrumbProps) {
+export default function Breadcrumbs({ name, style }: Partial<BreadCrumbProps>) {
   const location = useLocation();
 
   function getBreadcrumbs(): BreadcrumbItem[] {
@@ -57,7 +57,7 @@ export default function Breadcrumbs({ name }: BreadCrumbProps) {
     >
       <Link
         to="/"
-        className="text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-1"
+        className={`${style === "light" ? "text-slate-400 hover:text-slate-600" : "text-slate-900 hover:text-slate-700"} transition-colors flex items-center gap-1`}
         title="Home"
       >
         <Home size={18} className="text-orange-600" />
@@ -74,12 +74,14 @@ export default function Breadcrumbs({ name }: BreadCrumbProps) {
           {index < breadcrumbs.length - 2 ? (
             <Link
               to={breadcrumb.path}
-              className="text-slate-600 hover:text-slate-900 transition-colors hover:underline"
+              className={`${style === "light" ? "text-slate-400 hover:text-slate-600" : "text-slate-900 hover:text-slate-700"} transition-colors hover:underline`}
             >
               {breadcrumb.label}
             </Link>
           ) : (
-            <span className="text-slate-900 font-medium">
+            <span
+              className={`${style === "light" ? "text-slate-500" : "text-slate-900"} font-medium`}
+            >
               {breadcrumb.label}
             </span>
           )}
