@@ -3,7 +3,7 @@ import type { Country } from "../types/types";
 import { supabaseClient } from "../lib/supabaseClient";
 import type { PostgrestError } from "@supabase/supabase-js";
 
-export default function useCountries() {
+export function useCountries() {
   const [Countries, setCountries] = useState<Country[]>([]);
   const [Loading, setLoading] = useState<boolean>(true);
   const [Error, setError] = useState<string>("");

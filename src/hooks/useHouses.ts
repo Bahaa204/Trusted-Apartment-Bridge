@@ -178,6 +178,23 @@ export function useHouses() {
     return data;
   }
 
+  async function getHousesByBuildingID(buildingId: House["building_id"]) {
+    resetStates();
+
+    const { data, error: FetchError } = (await supabaseClient
+      .from("houses")
+      .select("*")
+      .eq("building_id", buildingId)) as Data<House[]>;
+
+    if (FetchError) {
+      SetError(FetchError);
+      return [];
+    }
+
+    setLoading(false);
+    return data || [];
+  }
+
   return {
     Houses,
     Loading,
@@ -187,5 +204,6 @@ export function useHouses() {
     RemoveHouse,
     getDates,
     getHousesBetweenDates,
+    getHousesByBuildingID,
   };
 }

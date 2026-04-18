@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { supabaseClient } from "../lib/supabaseClient";
-import type { Building } from "../types/types";
+import type { Building, Data, Project } from "../types/types";
 
 export function useBuildings() {
   const [Buildings, setBuildings] = useState<Building[]>([]);
@@ -141,6 +141,23 @@ export function useBuildings() {
     return true;
   }
 
+  async function GetBuildingsByProjectID(projectId: Project["id"]) {
+    resetStates();
+
+    const { data, error: FetchError } = (await supabaseClient
+      .from("buildings")
+      .select("*")
+      .eq("project_id", projectId)) as Data<Building[]>;
+
+    if (FetchError) {
+      SetError(FetchError);
+      return [];
+    }
+
+    setLoading(false);
+    return data || [];
+  }
+
   return {
     Buildings,
     Loading,
@@ -148,5 +165,6 @@ export function useBuildings() {
     AddBuilding,
     UpdateBuilding,
     RemoveBuilding,
+    GetBuildingsByProjectID,
   };
 }

@@ -1,36 +1,22 @@
-import { useEffect, useMemo, useState, type SubmitEvent } from "react";
+import { useMemo, useState, type SubmitEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { supabaseClient } from "../lib/supabaseClient";
 import Breadcrumbs from "@/components/Breadcrumbs";
-
-type House = {
-  price: number;
-  floor?: number;
-  nb_bedrooms?: number;
-  nb_bathrooms?: number;
-};
-
-type Building = {
-  id: number;
-  name: string;
-  houses?: House[];
-};
-
-type Project = {
-  id: number;
-  name: string;
-  description: string;
-  country_id: number;
-  location: string;
-  images_url: string[];
-  countries: { name: string } | null;
-  buildings?: Building[];
-};
-
-type Country = {
-  id: number;
-  name: string;
-};
+import type { Building, Project, House } from "../types/types";
+import { useBuildings } from "@/hooks/useBuildings";
+import { useProjects } from "@/hooks/useProjects";
+import { useHouses } from "@/hooks/useHouses";
+import { useCountries } from "@/hooks/useCountries";
+import ImageGallery from "@/components/ImageGallery";
+import { supabaseClient } from "@/lib/supabaseClient";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 
 type SurveyForm = {
   budgetRange: string;
@@ -69,67 +55,66 @@ const cardGradients = [
   "from-lime-400 to-emerald-500",
 ];
 
-function ImageGallery({ images }: { images: string[] }) {
-  const [current, setCurrent] = useState(0);
-
-  if (images.length === 0) return null;
-
-  return (
-    <div className="relative h-48 overflow-hidden group/gallery">
-      <img
-        src={images[current]}
-        alt="Project"
-        className="w-full h-full object-cover transition-transform duration-500 group-hover/gallery:scale-105"
-      />
-      {images.length > 1 && (
-        <>
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              setCurrent((p) => (p === 0 ? images.length - 1 : p - 1));
-            }}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover/gallery:opacity-100 transition text-sm"
-          >
-            &lt;
-          </button>
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              setCurrent((p) => (p === images.length - 1 ? 0 : p + 1));
-            }}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover/gallery:opacity-100 transition text-sm"
-          >
-            &gt;
-          </button>
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
-            {images.map((_, i) => (
-              <span
-                key={i}
-                className={`w-2 h-2 rounded-full transition ${
-                  i === current ? "bg-white" : "bg-white/40"
-                }`}
-              />
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-function getPriceRange(project: Project) {
-  const prices = project.buildings?.flatMap(
-    (building) => building.houses?.map((house) => house.price) ?? [],
-  );
-  const validPrices =
-    prices?.filter((price) => typeof price === "number") ?? [];
-  if (validPrices.length === 0) {
-    return { min: 0, max: 0 };
-  }
-  return {
-    min: Math.min(...validPrices),
-    max: Math.max(...validPrices),
+function getProjectImageUrls(project: Project): string[] {
+  const projectWithLegacyFields = project as Project & {
+    images_url?: unknown;
+    images?: unknown;
   };
+
+  const fromImagesObjects =
+    Array.isArray(project.images) && project.images.length > 0
+      ? project.images
+          .map((image) => {
+            if (typeof image?.url === "string" && image.url.length > 0)
+              return image.url;
+
+            if (typeof image?.path === "string" && image.path.length > 0) {
+              return supabaseClient.storage
+                .from("projects_images")
+                .getPublicUrl(image.path).data.publicUrl;
+            }
+
+            return "";
+          })
+          .filter((url): url is string => Boolean(url))
+      : [];
+
+  if (fromImagesObjects.length > 0) return fromImagesObjects;
+
+  const fromLegacyImagesUrl = projectWithLegacyFields.images_url;
+  if (Array.isArray(fromLegacyImagesUrl)) {
+    return fromLegacyImagesUrl.filter(
+      (url): url is string => typeof url === "string" && url.length > 0,
+    );
+  }
+
+  const rawImages = projectWithLegacyFields.images;
+  if (Array.isArray(rawImages)) {
+    return rawImages
+      .map((image) => {
+        if (typeof image === "string") return image;
+        if (typeof image !== "object" || image === null) return "";
+
+        const imageRecord = image as { url?: unknown; path?: unknown };
+
+        if (typeof imageRecord.url === "string" && imageRecord.url.length > 0)
+          return imageRecord.url;
+
+        if (
+          typeof imageRecord.path === "string" &&
+          imageRecord.path.length > 0
+        ) {
+          return supabaseClient.storage
+            .from("projects_images")
+            .getPublicUrl(imageRecord.path).data.publicUrl;
+        }
+
+        return "";
+      })
+      .filter((url): url is string => Boolean(url));
+  }
+
+  return [];
 }
 
 function scoreCandidate(candidate: Recommendation, form: SurveyForm) {
@@ -210,9 +195,6 @@ function scoreCandidate(candidate: Recommendation, form: SurveyForm) {
 }
 
 export default function Projects() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const [showSurvey, setShowSurvey] = useState(false);
   const [recommendation, setRecommendation] = useState<Recommendation | null>(
@@ -230,50 +212,150 @@ export default function Projects() {
     bedrooms: "",
   });
 
+  const {
+    Countries,
+    Loading: CountriesLoading,
+    Error: CountriesError,
+  } = useCountries();
+  const {
+    Projects: AllProjects,
+    Loading: ProjectsLoading,
+    Error: ProjectsError,
+  } = useProjects();
+  const {
+    Buildings,
+    Loading: BuildingsLoading,
+    Error: BuildingsError,
+  } = useBuildings();
+  const { Houses, Loading: HousesLoading, Error: HousesError } = useHouses();
+
+  const loading =
+    CountriesLoading || ProjectsLoading || BuildingsLoading || HousesLoading;
+  const error =
+    CountriesError || ProjectsError || BuildingsError || HousesError;
+
+  const countries = Countries;
+
   const selectedCountry = searchParams.get("country");
   const activeCountryId = form.countryId || selectedCountry || "";
 
-  const overallPrices = useMemo(() => {
-    const allPrices = projects.flatMap(
-      (project) =>
-        project.buildings?.flatMap(
-          (building) => building.houses?.map((house) => house.price) ?? [],
-        ) ?? [],
-    );
-    const validPrices = allPrices.filter((price) => typeof price === "number");
-    return {
-      min: validPrices.length ? Math.min(...validPrices) : 0,
-      max: validPrices.length ? Math.max(...validPrices) : 0,
-    };
+  const projects = useMemo(
+    () =>
+      AllProjects.filter(
+        (project): project is Project & { id: number } =>
+          typeof project.id === "number" &&
+          (!selectedCountry || String(project.country_id) === selectedCountry),
+      ),
+    [AllProjects, selectedCountry],
+  );
+
+  const projectImagesById = useMemo(() => {
+    const map = new Map<number, string[]>();
+
+    projects.forEach((project) => {
+      map.set(project.id, getProjectImageUrls(project));
+    });
+
+    return map;
   }, [projects]);
 
-  useEffect(() => {
-    async function fetchCountries() {
-      const { data } = await supabaseClient.from("countries").select("*");
-      if (data) setCountries(data);
-    }
-    fetchCountries();
-  }, []);
+  const countryById = useMemo(
+    () => new Map(countries.map((country) => [country.id, country])),
+    [countries],
+  );
 
-  useEffect(() => {
-    async function fetchProjects() {
-      setLoading(true);
-      let query = supabaseClient
-        .from("projects")
-        .select(
-          "*, countries(name), buildings(id, name, houses(price, floor, nb_bedrooms, nb_bathrooms))",
-        );
+  const housesByBuildingId = useMemo(() => {
+    const map = new Map<number, House[]>();
 
-      if (selectedCountry) {
-        query = query.eq("country_id", selectedCountry);
+    Houses.forEach((house) => {
+      if (typeof house.building_id !== "number") return;
+      const existing = map.get(house.building_id);
+      if (existing) {
+        existing.push(house);
+      } else {
+        map.set(house.building_id, [house]);
+      }
+    });
+
+    return map;
+  }, [Houses]);
+
+  const buildingsByProjectId = useMemo(() => {
+    const map = new Map<number, Building[]>();
+
+    Buildings.forEach((building) => {
+      if (typeof building.project_id !== "number") return;
+      const existing = map.get(building.project_id);
+      if (existing) {
+        existing.push(building);
+      } else {
+        map.set(building.project_id, [building]);
+      }
+    });
+
+    return map;
+  }, [Buildings]);
+
+  const projectPriceRanges = useMemo(() => {
+    const map = new Map<number, { min: number; max: number }>();
+
+    projects.forEach((project) => {
+      const projectBuildings = buildingsByProjectId.get(project.id) ?? [];
+      const prices = projectBuildings.flatMap(
+        (building) =>
+          housesByBuildingId
+            .get((building.id as number) ?? -1)
+            ?.map((house) => house.price)
+            .filter((price): price is number => typeof price === "number") ??
+          [],
+      );
+
+      if (prices.length === 0) {
+        map.set(project.id, { min: 0, max: 0 });
+        return;
       }
 
-      const { data } = await query;
-      if (data) setProjects(data as Project[]);
-      setLoading(false);
-    }
-    fetchProjects();
-  }, [selectedCountry]);
+      map.set(project.id, {
+        min: Math.min(...prices),
+        max: Math.max(...prices),
+      });
+    });
+
+    return map;
+  }, [projects, buildingsByProjectId, housesByBuildingId]);
+
+  function getPriceRange(projectId: number) {
+    return projectPriceRanges.get(projectId) ?? { min: 0, max: 0 };
+  }
+
+  const allVisiblePrices = useMemo(
+    () =>
+      Array.from(projectPriceRanges.values()).flatMap((range) =>
+        range.min > 0 && range.max > 0 ? [range.min, range.max] : [],
+      ),
+    [projectPriceRanges],
+  );
+
+  const overallPrices = useMemo(() => {
+    return {
+      min: allVisiblePrices.length ? Math.min(...allVisiblePrices) : 0,
+      max: allVisiblePrices.length ? Math.max(...allVisiblePrices) : 0,
+    };
+  }, [allVisiblePrices]);
+
+  const recommendationCandidates = useMemo(() => {
+    return AllProjects.flatMap((project) => {
+      if (typeof project.id !== "number") return [];
+      const projectBuildings = buildingsByProjectId.get(project.id) ?? [];
+
+      return projectBuildings.flatMap((building) => {
+        if (typeof building.id !== "number") return [];
+        const buildingHouses = housesByBuildingId.get(building.id) ?? [];
+
+        return buildingHouses.map((house) => ({ project, building, house }));
+      });
+    });
+  }, [AllProjects, buildingsByProjectId, housesByBuildingId]);
 
   function handleFilter(countryId: string | null) {
     if (countryId) {
@@ -307,16 +389,7 @@ export default function Projects() {
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const candidates: Recommendation[] = projects.flatMap(
-      (project) =>
-        project.buildings?.flatMap(
-          (building) =>
-            building.houses?.map((house) => ({ project, building, house })) ??
-            [],
-        ) ?? [],
-    );
-
-    const validCandidates = candidates.filter((candidate) => {
+    const validCandidates = recommendationCandidates.filter((candidate) => {
       return (
         !activeCountryId ||
         Number(activeCountryId) === candidate.project.country_id
@@ -355,7 +428,7 @@ export default function Projects() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-[#e6e0d8]">
       <div className="bg-linear-to-br from-gray-900 via-gray-800 to-orange-900 text-white py-20 px-6">
         <Breadcrumbs />
         <div className="max-w-6xl mx-auto text-center">
@@ -420,72 +493,102 @@ export default function Projects() {
           ))}
         </div>
 
+        {error && (
+          <main className="min-h-screen p-4 md:p-8">
+            <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-2xl text-[#0f2f4f]">Error</CardTitle>
+                <CardDescription className="text-[#24507f]">
+                  We could not load the projects. Please try again later.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="text-[#173b67]">{error}</CardContent>
+              <CardFooter className="bg-transparent">
+                {new Date().toLocaleString()}
+              </CardFooter>
+            </Card>
+          </main>
+        )}
+
         {loading ? (
-          <p className="text-center text-gray-400 py-20">Loading projects...</p>
+          <main className="min-h-screen p-4 md:p-8">
+            <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
+              <CardContent className="flex items-center justify-center gap-3 py-8 text-center text-[#173b67]">
+                <Spinner className="size-5 text-[#173b67]" />
+                <span>Loading Projects...</span>
+              </CardContent>
+            </Card>
+          </main>
         ) : projects.length === 0 ? (
           <p className="text-center text-gray-400 py-20">No projects found.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
-            {projects.map((project, i) => (
-              <Link
-                to={`/projects/${project.id}`}
-                key={project.id}
-                className="group text-left bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-              >
-                {project.images_url && project.images_url.length > 0 ? (
-                  <ImageGallery images={project.images_url} />
-                ) : (
-                  <div
-                    className={`h-48 bg-linear-to-br ${cardGradients[i % cardGradients.length]} flex items-center justify-center relative`}
-                  >
-                    <span className="text-white/20 text-8xl font-black">
-                      {project.name[0]}
-                    </span>
-                  </div>
-                )}
+            {projects.map((project, i) => {
+              const projectImages = projectImagesById.get(project.id) ?? [];
 
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    {project.countries &&
-                      countryFlags[project.countries.name] && (
-                        <img
-                          src={`https://flagcdn.com/w40/${countryFlags[project.countries.name]}.png`}
-                          alt=""
-                          className="w-5 h-4 object-cover rounded-sm"
-                        />
-                      )}
-                    <span className="text-xs text-gray-400">
-                      {project.countries?.name}
-                    </span>
+              return (
+                <Link
+                  to={`/projects/${project.id}`}
+                  key={project.id}
+                  className="group text-left bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                >
+                  {projectImages.length > 0 ? (
+                    <ImageGallery images={projectImages} />
+                  ) : (
+                    <div
+                      className={`h-48 bg-linear-to-br ${cardGradients[i % cardGradients.length]} flex items-center justify-center relative`}
+                    >
+                      <span className="text-white/20 text-8xl font-black">
+                        {project.name[0]}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      {countryById.get(project.country_id) &&
+                        countryFlags[
+                          countryById.get(project.country_id)?.name || ""
+                        ] && (
+                          <img
+                            src={`https://flagcdn.com/w40/${countryFlags[countryById.get(project.country_id)?.name || ""]}.png`}
+                            alt=""
+                            className="w-5 h-4 object-cover rounded-sm"
+                          />
+                        )}
+                      <span className="text-xs text-gray-400">
+                        {countryById.get(project.country_id)?.name || "Unknown"}
+                      </span>
+                    </div>
+                    <h2 className="text-lg font-bold mb-2 group-hover:text-orange-500 transition">
+                      {project.name}
+                    </h2>
+                    <p className="text-gray-500 text-sm line-clamp-2 mb-4">
+                      {project.description}
+                    </p>
+                    <div className="flex items-center justify-between text-sm text-gray-400">
+                      <span>📍 {project.location}</span>
+                      <span>
+                        {getPriceRange(project.id).min > 0
+                          ? `$${getPriceRange(project.id).min.toLocaleString()} - $${getPriceRange(project.id).max.toLocaleString()}`
+                          : "Price available"}
+                      </span>
+                    </div>
                   </div>
-                  <h2 className="text-lg font-bold mb-2 group-hover:text-orange-500 transition">
-                    {project.name}
-                  </h2>
-                  <p className="text-gray-500 text-sm line-clamp-2 mb-4">
-                    {project.description}
-                  </p>
-                  <div className="flex items-center justify-between text-sm text-gray-400">
-                    <span>📍 {project.location}</span>
-                    <span>
-                      {getPriceRange(project).min > 0
-                        ? `$${getPriceRange(project).min.toLocaleString()} - $${getPriceRange(project).max.toLocaleString()}`
-                        : "Price available"}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
 
       {showSurvey && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          className="fixed inset-0 z-9000 flex items-center justify-center bg-black/50 p-4"
           onMouseDown={closeSurvey}
         >
           <div
-            className="w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-[2rem] bg-[#e6e0d8] shadow-2xl"
+            className="w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-[2rem] bg-[#e6e0d8] shadow-2xl no-scrollbar"
             onMouseDown={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between flex-wrap gap-4 bg-orange-500 px-6 py-5 text-white">
