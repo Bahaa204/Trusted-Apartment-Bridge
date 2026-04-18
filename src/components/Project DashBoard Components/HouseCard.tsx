@@ -1,5 +1,4 @@
 import { useState } from "react";
-import type { Building, House } from "../../types/types";
 import Modal from "./Modal";
 import {
   Card,
@@ -18,13 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-
-type HouseCardsProps = {
-  house: House;
-  Buildings: Building[];
-  UpdateHouse: (updated_house: House, houseId: House["id"]) => Promise<boolean>;
-  RemoveHouse: (houseId: House["id"]) => Promise<boolean>;
-};
+import type { House, HouseCardsProps } from "@/types/house";
 
 export default function HouseCard({
   Buildings,

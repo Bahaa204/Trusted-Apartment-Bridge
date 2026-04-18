@@ -1,4 +1,3 @@
-import type { Project } from "../../types/types";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
@@ -16,19 +15,7 @@ import {
   FieldLegend,
   FieldSet,
 } from "../ui/field";
-
-type BuildingData = {
-  buildings_name: string;
-  buildings_block: string;
-  buildings_images: FileList | null;
-  buildings_project_id: Project["id"];
-};
-
-type BuildingFormProps = BuildingData & {
-  loading: boolean;
-  updateFields: (fields: Partial<BuildingData>) => void;
-  Options: Project[];
-};
+import type { BuildingFormProps } from "@/types/form";
 
 export default function BuildingForm({
   loading,

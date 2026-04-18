@@ -1,4 +1,3 @@
-import type { Building } from "../../types/types";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
@@ -16,20 +15,7 @@ import {
   FieldLegend,
   FieldSet,
 } from "../ui/field";
-
-type HouseData = {
-  house_floor: number;
-  house_nb_bedrooms: number;
-  house_nb_bathrooms: number;
-  house_building_id: Building["id"];
-  house_price: number;
-};
-
-type HouseFormProps = HouseData & {
-  loading: boolean;
-  updateFields: (fields: Partial<HouseData>) => void;
-  Options: Building[];
-};
+import type { HouseFormProps } from "@/types/form";
 
 export default function HouseForm({
   loading,

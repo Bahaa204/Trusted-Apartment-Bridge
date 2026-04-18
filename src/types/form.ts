@@ -2,9 +2,10 @@
  * This file defines the types for the form data used in the application.
  */
 
-import type { Building } from "./building";
+import type { Building, BuildingData } from "./building";
 import type { Country } from "./country";
-import type { Project } from "./projects";
+import type { HouseData } from "./house";
+import type { Project, ProjectsData } from "./projects";
 
 export type FormData = {
   project_name: string;
@@ -36,4 +37,22 @@ export type LoginFormData = {
   password: string;
   display_name: string;
   email_sent: boolean;
+};
+
+export type ProjectFormProps = ProjectsData & {
+  loading: boolean;
+  updateFields: (fields: Partial<ProjectsData>) => void;
+  Options: Country[];
+};
+
+export type HouseFormProps = HouseData & {
+  loading: boolean;
+  updateFields: (fields: Partial<HouseData>) => void;
+  Options: Building[];
+};
+
+export type BuildingFormProps = BuildingData & {
+  loading: boolean;
+  updateFields: (fields: Partial<BuildingData>) => void;
+  Options: Project[];
 };

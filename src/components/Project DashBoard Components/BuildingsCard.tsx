@@ -1,10 +1,4 @@
 import { useState } from "react";
-import type {
-  Building,
-  BuildingInput,
-  Image,
-  Project,
-} from "../../types/types";
 import { DeleteImages, UploadImage } from "../../services/imageServices";
 import Modal from "./Modal";
 import {
@@ -25,18 +19,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-
-type BuildingsCardProps = {
-  Building: Building;
-  Projects: Project[];
-  IsHouseOpen: boolean;
-  ToggleHouseShow: (buildingId: Building["id"]) => void;
-  UpdateBuilding: (
-    updated_building: Building,
-    buildingId: Building["id"],
-  ) => Promise<boolean>;
-  RemoveBuilding: (buildingId: Building["id"]) => Promise<boolean>;
-};
+import type {
+  Building,
+  BuildingInput,
+  BuildingsCardProps,
+} from "@/types/building";
+import type { Image } from "@/types/types";
 
 export default function BuildingsCard({
   Building,

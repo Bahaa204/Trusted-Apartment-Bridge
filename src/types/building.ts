@@ -16,3 +16,22 @@ export type Building = Common & {
 export type BuildingInput = Omit<Building, "images"> & {
   images: FileList | null;
 };
+
+export type BuildingsCardProps = {
+  Building: Building;
+  Projects: Project[];
+  IsHouseOpen: boolean;
+  ToggleHouseShow: (buildingId: Building["id"]) => void;
+  UpdateBuilding: (
+    updated_building: Building,
+    buildingId: Building["id"],
+  ) => Promise<boolean>;
+  RemoveBuilding: (buildingId: Building["id"]) => Promise<boolean>;
+};
+
+export type BuildingData = {
+  buildings_name: string;
+  buildings_block: string;
+  buildings_images: FileList | null;
+  buildings_project_id: Project["id"];
+};

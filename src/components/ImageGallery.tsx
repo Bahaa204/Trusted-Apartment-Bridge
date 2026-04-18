@@ -1,8 +1,5 @@
+import type { ImageGalleryProps } from "@/types/projects";
 import { useState } from "react";
-
-type ImageGalleryProps = {
-  images: string[];
-};
 
 export default function ImageGallery({ images }: ImageGalleryProps) {
   const [current, setCurrent] = useState(0);

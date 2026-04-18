@@ -1,19 +1,10 @@
 import { useState, type SubmitEvent } from "react";
-import type {
-  Building,
-  Country,
-  FormData,
-  House,
-  Image,
-  Project,
-} from "@/types/types";
 import { useMultistepForm } from "@/hooks/useMultistepForm";
 import ProjectForm from "./ProjectForm";
 import BuildingForm from "./BuildingForm";
 import HouseForm from "./HouseForm";
 import { UploadImage } from "@/services/imageServices";
 import { Button } from "../ui/button";
-
 import {
   FieldDescription,
   FieldGroup,
@@ -21,6 +12,12 @@ import {
   FieldSeparator,
   FieldSet,
 } from "../ui/field";
+import type { FormData } from "@/types/form";
+import type { Country } from "@/types/country";
+import type { Project } from "@/types/projects";
+import type { Building } from "@/types/building";
+import type { House } from "@/types/house";
+import type { Image } from "@/types/types";
 
 const InitialData: FormData = {
   project_name: "",

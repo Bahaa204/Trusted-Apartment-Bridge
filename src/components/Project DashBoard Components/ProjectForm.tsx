@@ -1,4 +1,3 @@
-import type { Country } from "../../types/types";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
@@ -17,20 +16,7 @@ import {
   FieldLegend,
   FieldSet,
 } from "../ui/field";
-
-type ProjectsData = {
-  project_name: string;
-  project_description: string;
-  project_location: string;
-  project_images: FileList | null;
-  project_country_id: Country["id"];
-};
-
-type ProjectFormProps = ProjectsData & {
-  loading: boolean;
-  updateFields: (fields: Partial<ProjectsData>) => void;
-  Options: Country[];
-};
+import type { ProjectFormProps } from "@/types/form";
 
 export default function ProjectForm({
   loading,

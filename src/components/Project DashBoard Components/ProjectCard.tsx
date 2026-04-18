@@ -1,6 +1,4 @@
 import { useState } from "react";
-import type { Country, Image, Project, ProjectsInput } from "../../types/types";
-import { DeleteImages, UploadImage } from "../../services/imageServices";
 import Modal from "./Modal";
 import {
   Card,
@@ -22,18 +20,9 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
-
-type ProjectCardsProps = {
-  project: Project;
-  Countries: Country[];
-  IsBuildingOpen: boolean;
-  ToggleBuildingShow: (projectId: Project["id"]) => void;
-  UpdateProject: (
-    updated_project: Project,
-    projectId: Project["id"],
-  ) => Promise<boolean>;
-  RemoveProject: (projectId: Project["id"]) => Promise<boolean>;
-};
+import type { Project, ProjectCardsProps, ProjectsInput } from "@/types/projects";
+import type { Image } from "@/types/types";
+import { DeleteImages, UploadImage } from "@/services/imageServices";
 
 export default function ProjectCard({
   project,
@@ -43,6 +32,7 @@ export default function ProjectCard({
   RemoveProject,
   UpdateProject,
 }: ProjectCardsProps) {
+
   const PROJECT_PLACEHOLDER_IMAGE =
     "https://placehold.co/820x360/1f2937/e5e7eb?text=No+Project+Image";
 

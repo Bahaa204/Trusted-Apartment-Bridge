@@ -1,31 +1,10 @@
 import { useState } from "react";
-import type { Building, Country, House, Project } from "../../types/types";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import BuildingsCard from "./BuildingsCard";
 import HouseCard from "./HouseCard";
 import ProjectCard from "./ProjectCard";
-
-type Functions = {
-  UpdateProject: (
-    updated_project: Project,
-    projectId: Project["id"],
-  ) => Promise<boolean>;
-  RemoveProject: (projectId: Project["id"]) => Promise<boolean>;
-  UpdateBuilding: (
-    updated_building: Building,
-    buildingId: Building["id"],
-  ) => Promise<boolean>;
-  RemoveBuilding: (buildingId: Building["id"]) => Promise<boolean>;
-  UpdateHouse: (updated_house: House, houseId: House["id"]) => Promise<boolean>;
-  RemoveHouse: (houseId: House["id"]) => Promise<boolean>;
-};
-
-type ProjectsDashBoardDisplayProps = {
-  Countries: Country[];
-  Projects: Project[];
-  Buildings: Building[];
-  Houses: House[];
-} & Functions;
+import type { Project, ProjectsDashBoardDisplayProps } from "@/types/projects";
+import type { Building } from "@/types/building";
 
 // Temp Styling
 export default function ProjectsDashBoardDisplay({

@@ -13,3 +13,18 @@ export type House = Common & {
   price: number;
   is_sold?: boolean; // Defaults to False
 };
+
+export type HouseData = {
+  house_floor: number;
+  house_nb_bedrooms: number;
+  house_nb_bathrooms: number;
+  house_building_id: Building["id"];
+  house_price: number;
+};
+
+export type HouseCardsProps = {
+  house: House;
+  Buildings: Building[];
+  UpdateHouse: (updated_house: House, houseId: House["id"]) => Promise<boolean>;
+  RemoveHouse: (houseId: House["id"]) => Promise<boolean>;
+};

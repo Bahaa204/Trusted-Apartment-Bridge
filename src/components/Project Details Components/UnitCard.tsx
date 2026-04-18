@@ -1,12 +1,4 @@
-import type { House } from "@/types/types";
-
-type UnitCardProps = {
-  house: House;
-  isHovered: boolean;
-  onHover: () => void;
-  onLeave: () => void;
-  onBuy: () => void;
-};
+import type { UnitCardProps } from "@/types/projects";
 
 export default function UnitCard({
   house,

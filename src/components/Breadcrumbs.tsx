@@ -1,13 +1,7 @@
 import { useLocation, Link } from "react-router-dom";
 import { ChevronRight, Home } from "lucide-react";
 import { titleCase } from "title-case";
-
-type BreadcrumbItem = {
-  label: string;
-  path: string;
-};
-
-type BreadCrumbProps = { name?: string };
+import type { BreadcrumbItem, BreadCrumbProps } from "@/types/breadcrumb";
 
 export default function Breadcrumbs({ name }: BreadCrumbProps) {
   const location = useLocation();

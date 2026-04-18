@@ -1,16 +1,13 @@
 import { useState, type ChangeEvent, type SubmitEvent } from "react";
 import { useEmployees } from "../hooks/useEmployees";
-import type { Employee, EmployeeFormValues } from "../types/types";
 import { useAuth } from "@/hooks/useAuth";
+import type { Employee, EmployeeFormValues, SortDirection, SortKey } from "@/types/employee";
 
 const emptyForm: EmployeeFormValues = {
   name: "",
   email: "",
   salary: 0,
 };
-
-type SortKey = "name" | "email" | "salary";
-type SortDirection = "asc" | "desc";
 
 function getEmployeeTone(employeeId: number) {
   const tones = [
