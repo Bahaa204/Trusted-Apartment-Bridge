@@ -1,4 +1,5 @@
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useState, type SubmitEvent } from "react";
 import { Link } from "react-router-dom";
 
@@ -21,6 +22,9 @@ const initialValues: FormValues = {
 };
 
 export default function Contact() {
+
+  useDocumentTitle("Contact Us")
+
   const [formValues, setFormValues] = useState<FormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitted, setIsSubmitted] = useState(false);

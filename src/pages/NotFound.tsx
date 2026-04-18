@@ -8,9 +8,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useNavigate } from "react-router-dom";
 
 export default function NotFound() {
+
+  useDocumentTitle("Not Found")
+
   const navigate = useNavigate();
 
   return (

@@ -30,6 +30,7 @@ import type { Project } from "@/types/projects";
 import type { PaymentFormData } from "@/types/form";
 import type { Country } from "@/types/country";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const MODELS = [
   "models/162_7.glb",
@@ -201,6 +202,8 @@ export default function ProjectDetails() {
       ) || null,
     [Projects, projectIdAsNumber],
   );
+
+  useDocumentTitle(project!.name || "Project Details");
 
   const countryById = useMemo(
     () =>

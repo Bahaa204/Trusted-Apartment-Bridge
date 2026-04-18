@@ -18,8 +18,12 @@ import {
 import { Spinner } from "../components/ui/spinner";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Button } from "@/components/ui/button";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function ProjectsDashboard() {
+
+  useDocumentTitle("Projects Dashboard")
+
   const navigate = useNavigate();
 
   const {

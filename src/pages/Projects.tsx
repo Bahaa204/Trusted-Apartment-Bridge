@@ -19,6 +19,7 @@ import { Spinner } from "@/components/ui/spinner";
 import type { Project } from "@/types/projects";
 import type { Building } from "@/types/building";
 import type { House } from "@/types/house";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 type SurveyForm = {
   budgetRange: string;
@@ -197,6 +198,8 @@ function scoreCandidate(candidate: Recommendation, form: SurveyForm) {
 }
 
 export default function Projects() {
+  useDocumentTitle("Projects");
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [showSurvey, setShowSurvey] = useState(false);
   const [recommendation, setRecommendation] = useState<Recommendation | null>(

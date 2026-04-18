@@ -4,6 +4,7 @@ import agencyGuidanceImage from "/images/home/agency-guidance.jpg";
 import agencyPresentationImage from "/images/home/agency-presentation.jpg";
 import agencyTrustImage from "/images/home/agency-trust.jpg";
 import storyImage from "/images/home/story-home.jpg";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const heroMetrics = [
   { value: "120+", label: "Signature properties" },
@@ -51,6 +52,9 @@ const agencyStory = [
 ];
 
 export default function Home() {
+
+  useDocumentTitle("Home")
+
   return (
     <div className="home-page">
       <section className="home-hero-shell">

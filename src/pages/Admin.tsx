@@ -25,8 +25,12 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Field, Input } from "@headlessui/react";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function Admin() {
+
+  useDocumentTitle("Admin");
+
   const navigate = useNavigate();
 
   const [Email, setEmail] = useState<string>("");

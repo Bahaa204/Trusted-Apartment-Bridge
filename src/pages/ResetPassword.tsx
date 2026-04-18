@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 type PasswordInput = {
   password: string;
@@ -27,6 +28,9 @@ type PasswordInput = {
 };
 
 export default function ResetPassword() {
+
+  useDocumentTitle("Reset Password")
+
   const InitialValue: PasswordInput = { password: "", confirm_password: "" };
 
   const [FormInput, setFormInput] = useState<PasswordInput>(InitialValue);

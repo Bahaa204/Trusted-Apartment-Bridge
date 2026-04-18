@@ -12,8 +12,11 @@ import { Spinner } from "@/components/ui/spinner";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function Support() {
+  useDocumentTitle("Support");
+
   const { Session, Error, Loading } = useAuth();
   const navigate = useNavigate();
 
@@ -53,7 +56,11 @@ export default function Support() {
         <p className="text-lg text-[#10243e]">
           You must be logged in to access this page.
         </p>
-        <Button variant="link" className="cursor-pointer text-lg" onClick={() => navigate("/login")}>
+        <Button
+          variant="link"
+          className="cursor-pointer text-lg"
+          onClick={() => navigate("/login")}
+        >
           Navigate to Login
         </Button>
       </div>

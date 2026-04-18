@@ -3,8 +3,11 @@ import EmployeeTable from "../components/EmployeeTable";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function EmployeeDashboard() {
+  useDocumentTitle("Employee Dashboard");
+
   const { Session, GetRoleFromEmail } = useAuth();
   const navigate = useNavigate();
 

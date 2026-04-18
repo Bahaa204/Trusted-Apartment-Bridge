@@ -25,8 +25,12 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { useNavigate } from "react-router-dom";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function Finances() {
+
+  useDocumentTitle("Finances")
+
   const {
     Session,
     Error: AuthError,

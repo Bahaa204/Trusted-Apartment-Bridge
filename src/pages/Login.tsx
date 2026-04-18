@@ -26,6 +26,7 @@ import {
 import { SignUpForm } from "@/components/Login page Components/SignUpForm";
 import ResetPasswordForm from "@/components/Login page Components/ResetPasswordForm";
 import type { LoginFormData } from "@/types/form";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function Login() {
   const {
@@ -65,6 +66,15 @@ export default function Login() {
       UpdateFields={UpdateFields}
     />,
   ]);
+
+  const title =
+    CurrentStepIndex == 0
+      ? "Login"
+      : CurrentStepIndex == 1
+        ? "Sign Up"
+        : "Forgot Password";
+
+  useDocumentTitle(title);
 
   function UpdateFields(fields: Partial<LoginFormData>) {
     setFormData((prev) => {

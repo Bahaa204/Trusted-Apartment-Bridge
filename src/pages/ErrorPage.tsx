@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import {
   isRouteErrorResponse,
   useNavigate,
@@ -15,6 +16,9 @@ import {
 } from "react-router-dom";
 
 export default function ErrorPage() {
+
+  useDocumentTitle("Error")
+
   const error = useRouteError();
   const navigate = useNavigate();
 

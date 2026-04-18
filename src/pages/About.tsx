@@ -4,6 +4,7 @@ import Globe from "react-globe.gl";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabaseClient } from "../lib/supabaseClient";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const countryInfo: Record<
   string,
@@ -44,6 +45,8 @@ type CountryDisplay = DBCountry & {
 };
 
 export default function About() {
+  useDocumentTitle("About Us");
+
   const globeRef = useRef<any>(null);
   const navigate = useNavigate();
   const location = useLocation();
