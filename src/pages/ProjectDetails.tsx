@@ -203,7 +203,7 @@ export default function ProjectDetails() {
     [Projects, projectIdAsNumber],
   );
 
-  useDocumentTitle(project!.name || "Project Details");
+  useDocumentTitle(project?.name || "Project Details");
 
   const countryById = useMemo(
     () =>
