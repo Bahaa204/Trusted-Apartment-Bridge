@@ -176,7 +176,12 @@ export default function ProjectDetails() {
     Error: BuildingsError,
   } = useBuildings();
 
-  const { Houses, Loading: HousesLoading, Error: HousesError } = useHouses();
+  const {
+    Houses,
+    Loading: HousesLoading,
+    Error: HousesError,
+    UpdateHouse,
+  } = useHouses();
 
   const loading =
     CountriesLoading || ProjectsLoading || BuildingsLoading || HousesLoading;
@@ -349,13 +354,7 @@ export default function ProjectDetails() {
     setPaymentHouse(house);
     setPaymentSuccess(false);
     setPaymentError("");
-    setPaymentForm({
-      cardName: "",
-      cardNumber: "",
-      expiry: "",
-      cvc: "",
-      email: "",
-    });
+    setPaymentForm(InitialValue);
     setShowPayment(true);
   }
 
@@ -366,8 +365,14 @@ export default function ProjectDetails() {
     setPaymentError("");
   }
 
-  function handlePaymentSubmit(event: SubmitEvent<HTMLFormElement>) {
+  async function handlePaymentSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!paymentHouse) {
+      setPaymentError("No unit selected for payment.");
+      return;
+    }
+
     const { cardName, cardNumber, expiry, cvc, email } = paymentForm;
     if (!cardName || !cardNumber || !expiry || !cvc || !email) {
       setPaymentError("Please fill in all fields to complete the payment.");
@@ -375,20 +380,22 @@ export default function ProjectDetails() {
     }
 
     const normalizedNumber = cardNumber.replace(/\s+/g, "");
-    if (!/^\d{16}$/.test(normalizedNumber)) {
-      setPaymentError("Enter a valid 16-digit card number.");
-      return;
-    }
+    if (!/^\d{16}$/.test(normalizedNumber))
+      return setPaymentError("Enter a valid 16-digit card number.");
 
-    if (!/^\d{2}\/\d{2}$/.test(expiry)) {
-      setPaymentError("Expiry must be in MM/YY format.");
-      return;
-    }
+    if (!/^\d{2}\/\d{2}$/.test(expiry))
+      return setPaymentError("Expiry must be in MM/YY format.");
 
-    if (!/^\d{3,4}$/.test(cvc)) {
-      setPaymentError("Enter a valid CVC code.");
-      return;
-    }
+    if (!/^\d{3,4}$/.test(cvc))
+      return setPaymentError("Enter a valid CVC code.");
+
+    if (paymentHouse.is_sold)
+      return setPaymentError("Sorry, this unit has already been sold.");
+
+    const ok = await UpdateHouse({ is_sold: true }, paymentHouse.id);
+
+    if (!ok)
+      return setPaymentError("Failed to Process Payment. Please try again.");
 
     setPaymentError("");
     setPaymentSuccess(true);
@@ -573,11 +580,11 @@ export default function ProjectDetails() {
 
       {showPayment && (
         <div
-          className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-black/50 p-4"
+          className="fixed inset-0 z-9000 overflow-y-auto flex items-center justify-center bg-black/50 p-4"
           onMouseDown={closePayment}
         >
           <div
-            className="w-full max-w-2xl max-h-[90vh] rounded-[2rem] bg-white shadow-2xl overflow-y-auto"
+            className="w-full max-w-2xl max-h-[90vh] rounded-[2rem] bg-white shadow-2xl overflow-y-auto no-scrollbar"
             onMouseDown={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between flex-wrap gap-4 bg-orange-500 px-6 py-5 text-white">

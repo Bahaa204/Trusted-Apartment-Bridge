@@ -118,7 +118,10 @@ export function useHouses() {
     return true;
   }
 
-  async function UpdateHouse(updated_house: House, houseId: House["id"]) {
+  async function UpdateHouse(
+    updated_house: Partial<House>,
+    houseId: House["id"],
+  ) {
     resetStates();
 
     const { error: UpdateError } = await supabaseClient
