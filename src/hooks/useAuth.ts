@@ -163,12 +163,17 @@ export function useAuth() {
   async function SignInWithOAuth(provider: Provider) {
     resetSates();
 
-    const { error: OAuthError } = await supabaseClient.auth.signInWithOAuth({
-      provider: provider,
-      options: {
-        redirectTo: `${window.location.origin}/`,
-      },
-    });
+    const { data, error: OAuthError } =
+      await supabaseClient.auth.signInWithOAuth({
+        provider: provider,
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
+
+    // console.log(data.url);
+
+    if (data.url) return window.location.replace(data.url);
 
     if (OAuthError) {
       SetError(OAuthError);

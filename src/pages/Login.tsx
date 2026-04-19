@@ -243,7 +243,7 @@ export default function Login() {
                 {CurrentStepIndex !== 2 && (
                   <FieldGroup className="flex-row">
                     {providers.map((provider) => (
-                      <Field>
+                      <Field key={provider.provider}>
                         <Button
                           type="button"
                           variant="link"
