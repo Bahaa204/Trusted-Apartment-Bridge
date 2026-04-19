@@ -28,7 +28,7 @@ import { SignUpForm } from "@/components/Login page Components/SignUpForm";
 import ResetPasswordForm from "@/components/Login page Components/ResetPasswordForm";
 import type { LoginFormData } from "@/types/form";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import FacebookIcon from "@/components/icons/FacebookIcon";
+import GithubIcon from "@/components/icons/GithubIcon";
 
 export default function Login() {
   const {
@@ -177,8 +177,8 @@ export default function Login() {
       icon: <GoogleIcon />,
     },
     {
-      provider: "facebook",
-      icon: <FacebookIcon />,
+      provider: "github",
+      icon: <GithubIcon />,
     },
   ];
 
