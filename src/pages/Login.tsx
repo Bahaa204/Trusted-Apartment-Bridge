@@ -1,6 +1,6 @@
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { useState, type SubmitEvent } from "react";
+import { useState, type ReactNode, type SubmitEvent } from "react";
 import type { Provider } from "@supabase/supabase-js";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useMultistepForm } from "@/hooks/useMultistepForm";
 import { LoginForm } from "@/components/Login page Components/LoginForm";
 import {
+  Field,
   FieldError,
   FieldGroup,
   FieldSeparator,
@@ -27,6 +28,7 @@ import { SignUpForm } from "@/components/Login page Components/SignUpForm";
 import ResetPasswordForm from "@/components/Login page Components/ResetPasswordForm";
 import type { LoginFormData } from "@/types/form";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import FacebookIcon from "@/components/icons/FacebookIcon";
 
 export default function Login() {
   const {
@@ -124,7 +126,7 @@ export default function Login() {
 
   async function handleOAuth(provider: Provider) {
     const ok = await SignInWithOAuth(provider);
-    if (ok) navigate("/");
+    if (ok) navigate(-1);
   }
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
@@ -167,20 +169,18 @@ export default function Login() {
       default:
         break;
     }
-
-    // if (Mode === "ResetPassword") {
-    //   setEmailSent(true);
-    //   return await ResetPassword(Email);
-    // }
-
-    // if (Mode === "SignIn") {
-    //   const ok = await SignInWithPassword(Email, Password);
-    //   if (ok) navigate("/");
-    // } else {
-    //   const ok = await SignUp(Email, Password, DisplayName);
-    //   if (ok) navigate("/");
-    // }
   }
+
+  const providers: { provider: Provider; icon: ReactNode }[] = [
+    {
+      provider: "google",
+      icon: <GoogleIcon />,
+    },
+    {
+      provider: "facebook",
+      icon: <FacebookIcon />,
+    },
+  ];
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#e6e0d8] text-slate-900">
@@ -241,18 +241,22 @@ export default function Login() {
                 <FieldSeparator className="my-1 **:data-[slot=separator]:bg-linear-to-r **:data-[slot=separator]:from-transparent **:data-[slot=separator]:via-orange-300 **:data-[slot=separator]:to-transparent" />
 
                 {CurrentStepIndex !== 2 && (
-                  <FieldGroup>
-                    <Button
-                      type="button"
-                      variant="link"
-                      className="cursor-pointer w-full justify-center gap-3 rounded-xl border border-orange-300 bg-slate-950 text-white shadow-lg shadow-slate-950/15 transition-colors hover:bg-slate-800 p-5 text-lg"
-                      onClick={() => {
-                        handleOAuth("google");
-                      }}
-                      disabled={AuthLoading}
-                    >
-                      <GoogleIcon />
-                    </Button>
+                  <FieldGroup className="flex-row">
+                    {providers.map((provider) => (
+                      <Field>
+                        <Button
+                          type="button"
+                          variant="link"
+                          className="cursor-pointer w-full justify-center gap-3 rounded-xl border border-orange-300 bg-slate-950 text-white shadow-lg shadow-slate-950/15 transition-colors hover:bg-slate-800 p-5 text-lg"
+                          onClick={() => {
+                            handleOAuth(provider.provider);
+                          }}
+                          disabled={AuthLoading}
+                        >
+                          {provider.icon}
+                        </Button>
+                      </Field>
+                    ))}
                   </FieldGroup>
                 )}
 
