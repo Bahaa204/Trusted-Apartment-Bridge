@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 export default function Header() {
   const navigate = useNavigate();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [showLogoutNotice, setShowLogoutNotice] = useState<boolean>(false);
 
   const NAVLINKS = [
