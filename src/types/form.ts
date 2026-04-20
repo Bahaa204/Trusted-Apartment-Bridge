@@ -56,3 +56,12 @@ export type BuildingFormProps = BuildingData & {
   updateFields: (fields: Partial<BuildingData>) => void;
   Options: Project[];
 };
+
+export type SurveyForm = {
+  budgetRange: string;
+  countryId: string;
+  areaType: string;
+  location: string;
+  priority: string;
+  bedrooms: string;
+};

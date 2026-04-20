@@ -50,7 +50,7 @@ export type ImageGalleryProps = {
 export type UnitCardProps = {
   house: House;
   isHovered: boolean;
-  LoginNotice: boolean
+  LoginNotice: boolean;
   onHover: () => void;
   onLeave: () => void;
   onBuy: () => void;
@@ -74,4 +74,10 @@ export type ProjectCardsProps = {
     projectId: Project["id"],
   ) => Promise<boolean>;
   RemoveProject: (projectId: Project["id"]) => Promise<boolean>;
+};
+
+export type Recommendation = {
+  project: Project;
+  building: Building;
+  house: House;
 };

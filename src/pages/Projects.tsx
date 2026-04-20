@@ -9,6 +9,7 @@ import ImageGallery from "@/components/ImageGallery";
 import { supabaseClient } from "@/lib/supabaseClient";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -16,25 +17,24 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
-import type { Project } from "@/types/projects";
+import type { Project, Recommendation } from "@/types/projects";
 import type { Building } from "@/types/building";
 import type { House } from "@/types/house";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-
-type SurveyForm = {
-  budgetRange: string;
-  countryId: string;
-  areaType: string;
-  location: string;
-  priority: string;
-  bedrooms: string;
-};
-
-type Recommendation = {
-  project: Project;
-  building: Building;
-  house: House;
-};
+import { Button } from "@/components/ui/button";
+import { Field } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import type { SurveyForm } from "@/types/form";
 
 const countryFlags: Record<string, string> = {
   Egypt: "eg",
@@ -588,40 +588,43 @@ export default function Projects() {
       </div>
 
       {showSurvey && (
-        <div
+        <Card
           className="fixed inset-0 z-9000 flex items-center justify-center bg-black/50 p-4"
           onMouseDown={closeSurvey}
         >
-          <div
-            className="w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-[2rem] bg-[#e6e0d8] shadow-2xl no-scrollbar"
+          <Card
+            className="min-w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-[2rem] bg-[#e6e0d8] shadow-2xl no-scrollbar p-0!"
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between flex-wrap gap-4 bg-orange-500 px-6 py-5 text-white">
+            <CardHeader className="flex items-center justify-between flex-wrap gap-4 bg-orange-500 px-6 py-5 text-white">
               <div>
-                <h2 className="text-2xl font-bold">
+                <CardTitle className="text-[27px] font-bold">
                   Find your perfect building
-                </h2>
-                <p className="mt-2 text-sm text-orange-100">
+                </CardTitle>
+                <CardDescription className="mt-2 text-sm text-orange-100">
                   Answer a few quick questions and we'll recommend the best
                   building from our current projects.
-                </p>
+                </CardDescription>
               </div>
-              <button
-                type="button"
-                onClick={closeSurvey}
-                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
-              >
-                Close
-              </button>
-            </div>
+              <CardAction>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={closeSurvey}
+                  className="rounded-full border border-white/20 bg-white/10 p-5 text-sm font-semibold text-white transition hover:bg-white/20 cursor-pointer"
+                >
+                  Close
+                </Button>
+              </CardAction>
+            </CardHeader>
 
-            <div className="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr] gap-6 p-6">
-              <div>
-                <div className="rounded-3xl bg-slate-50 p-6 shadow-sm mb-6">
-                  <p className="text-sm text-gray-500 mb-2">
+            <CardContent className="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr] gap-6 p-6">
+              <Card className="p-5 bg-transparent ring-0!">
+                <CardHeader className="rounded-3xl bg-slate-50 p-6 shadow-sm mb-6">
+                  <CardTitle className="text-sm text-gray-500 mb-2">
                     Available price range
-                  </p>
-                  <p className="text-2xl font-semibold text-slate-900">
+                  </CardTitle>
+                  <CardDescription className="text-2xl font-semibold text-slate-900">
                     {overallPrices.min
                       ? `$${overallPrices.min.toLocaleString()}`
                       : "N/A"}{" "}
@@ -629,211 +632,270 @@ export default function Projects() {
                     {overallPrices.max
                       ? `$${overallPrices.max.toLocaleString()}`
                       : "N/A"}
-                  </p>
-                  <p className="text-sm text-gray-500 mt-3">
+                  </CardDescription>
+                  <CardFooter className="text-sm text-gray-500 mt-3 bg-transparent border-t-0! p-0!">
                     This survey uses existing prices from our projects database.
-                  </p>
-                </div>
+                  </CardFooter>
+                </CardHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <Field>
+                    <Label className="block text-sm font-semibold text-slate-700 mb-2">
                       What price is in mind?
-                    </label>
-                    <select
+                    </Label>
+                    <Select
                       value={form.budgetRange}
-                      onChange={(e) =>
-                        setForm({ ...form, budgetRange: e.target.value })
-                      }
-                      className="w-full rounded-3xl border border-slate-200 bg-white p-3 text-sm shadow-sm"
-                    >
-                      <option value="any">Any budget</option>
-                      <option value="low">Up to 200K</option>
-                      <option value="mid">200K - 800K</option>
-                      <option value="high">800K+</option>
-                    </select>
-                  </div>
+                      onValueChange={(value) => {
+                        console.log(value);
 
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        setForm({ ...form, budgetRange: value });
+                      }}
+                    >
+                      <SelectTrigger className="w-full rounded-3xl border border-slate-200 bg-white p-5 text-sm shadow-sm cursor-pointer">
+                        <SelectValue placeholder="Select Your Budget" />
+                      </SelectTrigger>
+                      <SelectContent className="z-9001">
+                        <SelectGroup>
+                          <SelectLabel>Select Your Budget</SelectLabel>
+                          <SelectItem value="any">Any budget</SelectItem>
+                          <SelectItem value="low">Up to 200K</SelectItem>
+                          <SelectItem value="mid">200K - 800K</SelectItem>
+                          <SelectItem value="high">800K+</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </Field>
+
+                  <Field>
+                    <Label className="block text-sm font-semibold text-slate-700 mb-2">
                       Which country do you prefer?
-                    </label>
-                    <select
+                    </Label>
+                    <Select
                       value={form.countryId}
-                      onChange={(e) =>
-                        setForm({ ...form, countryId: e.target.value })
+                      onValueChange={(value) =>
+                        setForm({ ...form, countryId: value })
                       }
-                      className="w-full rounded-3xl border border-slate-200 bg-white p-3 text-sm shadow-sm"
                     >
-                      <option value="">Same country or any</option>
-                      {countries.map((country) => (
-                        <option key={country.id} value={country.id}>
-                          {country.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                      <SelectTrigger className="w-full rounded-3xl border border-slate-200 bg-white p-5 text-sm shadow-sm cursor-pointer">
+                        <SelectValue placeholder="Select Your Country" />
+                      </SelectTrigger>
+                      <SelectContent className="z-9001">
+                        <SelectGroup>
+                          <SelectLabel>Select Your Country</SelectLabel>
+                          {countries.map((country) => (
+                            <SelectItem
+                              key={country.id}
+                              value={String(country.id!)}
+                            >
+                              {country.name}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </Field>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <Field>
+                    <Label className="block text-sm font-semibold text-slate-700 mb-2">
                       Do you prefer a calm or busy area?
-                    </label>
-                    <select
+                    </Label>
+                    <Select
                       value={form.areaType}
-                      onChange={(e) =>
-                        setForm({ ...form, areaType: e.target.value })
+                      onValueChange={(value) =>
+                        setForm({ ...form, areaType: value })
                       }
-                      className="w-full rounded-3xl border border-slate-200 bg-white p-3 text-sm shadow-sm"
                     >
-                      <option value="calm">Calm area</option>
-                      <option value="busy">Busy area</option>
-                    </select>
-                  </div>
+                      <SelectTrigger className="w-full rounded-3xl border border-slate-200 bg-white p-5 text-sm shadow-sm cursor-pointer">
+                        <SelectValue placeholder="Calm or Busy?" />
+                      </SelectTrigger>
+                      <SelectContent className="z-9001">
+                        <SelectGroup>
+                          <SelectLabel> Calm or Busy?</SelectLabel>
+                          <SelectItem value="calm">Calm area</SelectItem>
+                          <SelectItem value="busy">Busy area</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </Field>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <Field>
+                    <Label className="block text-sm font-semibold text-slate-700 mb-2">
                       What location do you have in mind?
-                    </label>
-                    <input
+                    </Label>
+                    <Input
                       value={form.location}
                       onChange={(e) =>
                         setForm({ ...form, location: e.target.value })
                       }
                       placeholder="e.g. city center, beach, quiet neighborhood"
-                      className="w-full rounded-3xl border border-slate-200 bg-white p-3 text-sm shadow-sm"
+                      className="w-full rounded-3xl border border-slate-200 bg-white p-5 text-sm shadow-sm"
                     />
-                  </div>
+                  </Field>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <Field>
+                    <Label className="block text-sm font-semibold text-slate-700 mb-2">
                       What matters most?
-                    </label>
-                    <select
+                    </Label>
+                    <Select
                       value={form.priority}
-                      onChange={(e) =>
-                        setForm({ ...form, priority: e.target.value })
+                      onValueChange={(value) =>
+                        setForm({ ...form, priority: value })
                       }
-                      className="w-full rounded-3xl border border-slate-200 bg-white p-3 text-sm shadow-sm"
                     >
-                      <option value="City living">City living</option>
-                      <option value="Beachfront">Beachfront</option>
-                      <option value="Family">Family friendly</option>
-                      <option value="Luxury">Luxury experience</option>
-                      <option value="Investment">Investment potential</option>
-                    </select>
-                  </div>
+                      <SelectTrigger className="w-full rounded-3xl border border-slate-200 bg-white p-5 text-sm shadow-sm cursor-pointer">
+                        <SelectValue placeholder="What Matters Most?" />
+                      </SelectTrigger>
+                      <SelectContent className="z-9001">
+                        <SelectGroup>
+                          <SelectLabel>What Matters Most?</SelectLabel>
+                          <SelectItem value="City living">
+                            City living
+                          </SelectItem>
+                          <SelectItem value="Beachfront">Beachfront</SelectItem>
+                          <SelectItem value="Family">
+                            Family friendly
+                          </SelectItem>
+                          <SelectItem value="Luxury">
+                            Luxury experience
+                          </SelectItem>
+                          <SelectItem value="Investment">
+                            Investment potential
+                          </SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </Field>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <Field>
+                    <Label className="block text-sm font-semibold text-slate-700 mb-2">
                       How many bedrooms do you prefer?
-                    </label>
-                    <select
+                    </Label>
+                    <Select
                       value={form.bedrooms}
-                      onChange={(e) =>
-                        setForm({ ...form, bedrooms: e.target.value })
+                      onValueChange={(value) =>
+                        setForm({ ...form, bedrooms: value })
                       }
-                      className="w-full rounded-3xl border border-slate-200 bg-white p-3 text-sm shadow-sm"
                     >
-                      <option value="">No preference</option>
-                      <option value="1">1 bedroom</option>
-                      <option value="2">2 bedrooms</option>
-                      <option value="3">3 bedrooms</option>
-                      <option value="4">4+ bedrooms</option>
-                    </select>
-                  </div>
+                      <SelectTrigger className="w-full rounded-3xl border border-slate-200 bg-white p-5 text-sm shadow-sm cursor-pointer">
+                        <SelectValue placeholder="No preference" />
+                      </SelectTrigger>
+                      <SelectContent className="z-9001">
+                        <SelectGroup>
+                          <SelectLabel>Preferences</SelectLabel>
+                          <SelectItem value="1">1 bedroom</SelectItem>
+                          <SelectItem value="2">2 bedrooms</SelectItem>
+                          <SelectItem value="3">3 bedrooms</SelectItem>
+                          <SelectItem value="4">4+ bedrooms</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </Field>
 
-                  <button
-                    type="submit"
-                    className="w-full rounded-3xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition"
-                  >
-                    Get recommendation
-                  </button>
+                  <Field>
+                    <Button
+                      type="submit"
+                      variant="secondary"
+                      className="w-full rounded-3xl bg-orange-500 p-5 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition cursor-pointer"
+                    >
+                      Get recommendation
+                    </Button>
+                  </Field>
                 </form>
-              </div>
+              </Card>
 
-              <div className="rounded-3xl bg-slate-950 p-6 text-white shadow-sm">
-                <div className="mb-6">
-                  <h3 className="text-xl font-semibold">
+              <Card className="rounded-3xl bg-slate-950 p-5 text-white shadow-sm">
+                <CardHeader className="mb-6">
+                  <CardTitle className="text-xl font-semibold">
                     Your current preferences
-                  </h3>
-                  <p className="text-slate-300 mt-2">
-                    Country:{" "}
+                  </CardTitle>
+                  <CardDescription className="text-slate-300 mt-2">
+                    Country:
                     {activeCountryId
                       ? countries.find(
                           (item) => String(item.id) === activeCountryId,
                         )?.name
                       : "Any"}
-                  </p>
-                  <p className="text-slate-300 mt-1">
-                    Location: {form.location || "Any"}
-                  </p>
-                </div>
+                    <p className="text-slate-300 mt-1">
+                      Location: {form.location || "Any"}
+                    </p>
+                  </CardDescription>
+                </CardHeader>
 
-                <div className="space-y-4">
-                  <div className="rounded-3xl bg-slate-900 p-4">
-                    <p className="text-sm uppercase tracking-[0.2em] text-slate-400">
-                      Budget range
-                    </p>
-                    <p className="mt-2 text-lg font-semibold text-slate-100">
-                      {form.budgetRange}
-                    </p>
-                  </div>
-                  <div className="rounded-3xl bg-slate-900 p-4">
-                    <p className="text-sm uppercase tracking-[0.2em] text-slate-400">
-                      Area type
-                    </p>
-                    <p className="mt-2 text-lg font-semibold text-slate-100">
-                      {form.areaType}
-                    </p>
-                  </div>
-                  <div className="rounded-3xl bg-slate-900 p-4">
-                    <p className="text-sm uppercase tracking-[0.2em] text-slate-400">
-                      Preference
-                    </p>
-                    <p className="mt-2 text-lg font-semibold text-slate-100">
-                      {form.priority}
-                    </p>
-                  </div>
-                </div>
+                <CardContent className="space-y-4">
+                  <Card className="rounded-3xl bg-slate-900 p-4">
+                    <CardHeader className="text-sm uppercase tracking-[0.2em] text-slate-400">
+                      <CardTitle>Budget range</CardTitle>
+                      <CardDescription className="mt-2 text-lg font-semibold text-slate-100">
+                        {form.budgetRange}
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                  <Card className="rounded-3xl bg-slate-900 p-4">
+                    <CardHeader className="text-sm uppercase tracking-[0.2em] text-slate-400">
+                      <CardTitle>Area type</CardTitle>
+                      <CardDescription className="mt-2 text-lg font-semibold text-slate-100">
+                        {form.areaType}
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                  <Card className="rounded-3xl bg-slate-900 p-4">
+                    <CardHeader className="text-sm uppercase tracking-[0.2em] text-slate-400">
+                      <CardTitle>Preference</CardTitle>
+                      <CardDescription className="mt-2 text-lg font-semibold text-slate-100">
+                        {form.priority}
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                </CardContent>
 
-                <div className="mt-8 rounded-3xl bg-white p-5 text-slate-900 shadow-lg">
-                  <p className="text-sm uppercase tracking-[0.2em] text-orange-500">
-                    Recommendation
-                  </p>
-                  <p className="mt-3 text-sm text-slate-600">
+                <Card className="mt-8 rounded-3xl bg-white p-5 text-slate-900 shadow-lg">
+                  <CardHeader className="text-sm uppercase tracking-[0.2em] text-orange-500">
+                    <CardTitle>Recommendation</CardTitle>
+                  </CardHeader>
+                  <CardDescription className="text-sm! text-slate-600!">
                     {recommendationText}
-                  </p>
-                  {recommendation && (
-                    <div className="mt-5 rounded-3xl bg-orange-50 p-4 text-slate-900">
-                      <p className="text-sm uppercase tracking-[0.2em] text-orange-500">
-                        Best building
-                      </p>
-                      <h4 className="mt-2 text-xl font-bold">
-                        {recommendation.building.name}
-                      </h4>
-                      <p className="mt-2 text-sm text-slate-700">
-                        Project: {recommendation.project.name}
-                      </p>
-                      <p className="mt-1 text-sm text-slate-700">
-                        Price: ${recommendation.house.price.toLocaleString()}
-                      </p>
-                      <p className="mt-1 text-sm text-slate-700">
-                        Bedrooms: {recommendation.house.nb_bedrooms ?? "N/A"}
-                      </p>
-                      <Link
-                        to={`/projects/${recommendation.project.id}`}
-                        onClick={closeSurvey}
-                        className="inline-flex mt-4 items-center rounded-2xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 transition"
-                      >
-                        View project details
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  </CardDescription>
+                  <CardContent>
+                    {recommendation && (
+                      <Card className="mt-5 rounded-3xl bg-orange-50 p-4 text-slate-900">
+                        <CardHeader className="text-sm uppercase tracking-[0.2em] text-orange-500">
+                          <CardTitle>Best building</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <Card className="p-3 bg-transparent ring-0! ">
+                            <CardHeader className="mt-2 text-xl font-bold">
+                              {recommendation.building.name}
+                            </CardHeader>
+                            <CardContent>
+                              <p className="mt-2 text-sm text-slate-700">
+                                Project: {recommendation.project.name}
+                              </p>
+                              <p className="mt-1 text-sm text-slate-700">
+                                Price: $
+                                {recommendation.house.price.toLocaleString()}
+                              </p>
+                              <p className="mt-1 text-sm text-slate-700">
+                                Bedrooms:{" "}
+                                {recommendation.house.nb_bedrooms ?? "N/A"}
+                              </p>
+                              <Link
+                                to={`/projects/${recommendation.project.id}`}
+                                onClick={closeSurvey}
+                                className="inline-flex mt-4 items-center rounded-2xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 transition"
+                              >
+                                View project details
+                              </Link>
+                            </CardContent>
+                          </Card>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </CardContent>
+                </Card>
+              </Card>
+            </CardContent>
+          </Card>
+        </Card>
       )}
     </div>
   );
