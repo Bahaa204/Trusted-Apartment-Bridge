@@ -461,7 +461,7 @@ export default function Projects() {
           <button
             type="button"
             onClick={openSurvey}
-            className="inline-flex items-center justify-center rounded-3xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition"
+            className="inline-flex items-center justify-center rounded-3xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition cursor-pointer"
           >
             Open recommendation survey
           </button>
@@ -470,7 +470,7 @@ export default function Projects() {
         <div className="bg-white rounded-2xl shadow-lg p-4 flex flex-wrap justify-center gap-3 mb-10">
           <button
             onClick={() => handleFilter(null)}
-            className={`px-6 py-2.5 rounded-full text-sm font-semibold transition ${
+            className={`px-6 py-2.5 rounded-full text-sm font-semibold transition cursor-pointer ${
               !selectedCountry
                 ? "bg-orange-500 text-white shadow-md shadow-orange-500/30"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -482,7 +482,7 @@ export default function Projects() {
             <button
               key={c.id}
               onClick={() => handleFilter(String(c.id))}
-              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition flex items-center gap-2 ${
+              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition flex items-center gap-2 cursor-pointer ${
                 selectedCountry === String(c.id)
                   ? "bg-orange-500 text-white shadow-md shadow-orange-500/30"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"

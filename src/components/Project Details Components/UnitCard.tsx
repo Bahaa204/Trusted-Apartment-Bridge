@@ -6,6 +6,7 @@ export default function UnitCard({
   onHover,
   onLeave,
   onBuy,
+  LoginNotice,
 }: UnitCardProps) {
   return (
     <div
@@ -51,14 +52,15 @@ export default function UnitCard({
         </div>
         <button
           type="button"
-          onClick={onBuy}
-          className={`mt-5 w-full rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+          onClick={LoginNotice ? onBuy : () => {}}
+          className={`mt-5 w-full rounded-2xl border px-4 py-3 text-sm font-semibold transition cursor-pointer disabled:cursor-not-allowed ${
             isHovered
               ? "border-white bg-white text-orange-500 hover:bg-white/90"
               : "border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100"
           }`}
+          disabled={LoginNotice}
         >
-          Buy this unit
+          {LoginNotice ? "Login in to buy this unit" : "Buy this unit"}
         </button>
       </div>
     </div>

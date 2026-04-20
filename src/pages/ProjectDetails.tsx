@@ -31,6 +31,8 @@ import type { PaymentFormData } from "@/types/form";
 import type { Country } from "@/types/country";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { ValidatePayment } from "@/helpers/helpers";
+import { useAuth } from "@/hooks/useAuth";
 
 const MODELS = [
   "models/162_7.glb",
@@ -159,6 +161,8 @@ export default function ProjectDetails() {
 
   const [paymentForm, setPaymentForm] = useState<PaymentFormData>(InitialValue);
 
+  const { Session, Loading: AuthLoading, Error: AuthError } = useAuth();
+
   const {
     Countries,
     Loading: CountriesLoading,
@@ -185,10 +189,18 @@ export default function ProjectDetails() {
   } = useHouses();
 
   const loading =
-    CountriesLoading || ProjectsLoading || BuildingsLoading || HousesLoading;
+    CountriesLoading ||
+    ProjectsLoading ||
+    BuildingsLoading ||
+    HousesLoading ||
+    AuthLoading;
 
-  const errorMessage =
-    CountriesError || ProjectsError || BuildingsError || HousesError;
+  const error =
+    CountriesError ||
+    ProjectsError ||
+    BuildingsError ||
+    HousesError ||
+    AuthError;
 
   const countries = Countries as Country[];
 
@@ -272,6 +284,9 @@ export default function ProjectDetails() {
 
   const isSingleBuildingProject = projectBuildings.length === 1;
 
+  const LoginNotice = Session ? false : true;
+  console.log("Login Notice: ", LoginNotice);
+
   if (loading) {
     return (
       <main className="min-h-screen p-4 md:p-8">
@@ -285,7 +300,7 @@ export default function ProjectDetails() {
     );
   }
 
-  if (errorMessage) {
+  if (error) {
     return (
       <main className="min-h-screen p-4 md:p-8">
         <Breadcrumbs name={project?.name} />
@@ -296,7 +311,7 @@ export default function ProjectDetails() {
               We could not load Project Details. Please try again later.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-[#173b67]">{errorMessage}</CardContent>
+          <CardContent className="text-[#173b67]">{error}</CardContent>
           <CardFooter className="bg-transparent">
             {new Date().toLocaleString()}
           </CardFooter>
@@ -325,7 +340,7 @@ export default function ProjectDetails() {
               incorrect.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-[#173b67]">{errorMessage}</CardContent>
+          <CardContent className="text-[#173b67]">{error}</CardContent>
           <CardFooter className="bg-transparent">
             {new Date().toLocaleString()}
           </CardFooter>
@@ -371,31 +386,10 @@ export default function ProjectDetails() {
   async function handlePaymentSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!paymentHouse) {
-      setPaymentError("No unit selected for payment.");
-      return;
-    }
+    const message = ValidatePayment(paymentForm, paymentHouse);
+    if (message) return setPaymentError(message);
 
-    const { cardName, cardNumber, expiry, cvc, email } = paymentForm;
-    if (!cardName || !cardNumber || !expiry || !cvc || !email) {
-      setPaymentError("Please fill in all fields to complete the payment.");
-      return;
-    }
-
-    const normalizedNumber = cardNumber.replace(/\s+/g, "");
-    if (!/^\d{16}$/.test(normalizedNumber))
-      return setPaymentError("Enter a valid 16-digit card number.");
-
-    if (!/^\d{2}\/\d{2}$/.test(expiry))
-      return setPaymentError("Expiry must be in MM/YY format.");
-
-    if (!/^\d{3,4}$/.test(cvc))
-      return setPaymentError("Enter a valid CVC code.");
-
-    if (paymentHouse.is_sold)
-      return setPaymentError("Sorry, this unit has already been sold.");
-
-    const ok = await UpdateHouse({ is_sold: true }, paymentHouse.id);
+    const ok = await UpdateHouse({ is_sold: true }, paymentHouse!.id);
 
     if (!ok)
       return setPaymentError("Failed to Process Payment. Please try again.");
@@ -518,6 +512,7 @@ export default function ProjectDetails() {
                       .map((house) => (
                         <UnitCard
                           key={house.id}
+                          LoginNotice={LoginNotice}
                           house={house}
                           isHovered={hoveredUnit === house.id}
                           onHover={() => setHoveredUnit(house.id)}
