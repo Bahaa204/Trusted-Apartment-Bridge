@@ -29,7 +29,7 @@ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function Admin() {
 
-  useDocumentTitle("Admin");
+  useDocumentTitle("Staff");
 
   const navigate = useNavigate();
 
@@ -52,7 +52,7 @@ export default function Admin() {
           <CardHeader>
             <CardTitle className="text-2xl text-[#0f2f4f]">Error</CardTitle>
             <CardDescription className="text-[#24507f]">
-              We could not load the admin dashboard. Please try again later.
+              We could not load the staff dashboard. Please try again later.
             </CardDescription>
           </CardHeader>
           <CardContent className="text-[#173b67]">{Error}</CardContent>
@@ -122,7 +122,7 @@ export default function Admin() {
         <Card className="border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-bold text-[#0f2f4f]">
-              Welcome to the Admin Page
+              Welcome to the Staff Page
             </CardTitle>
             <CardDescription className="text-base text-[#24507f] md:text-lg">
               {`See Your options below to ${GetRoleFromEmail(Session.user.email) === "admin" ? "manage employees, finances, and" : "manage"} projects.`}
@@ -134,7 +134,7 @@ export default function Admin() {
           {GetRoleFromEmail(Session.user.email) === "admin" && (
             <>
               <Card
-                onClick={() => navigate("/admin/employees")}
+                onClick={() => navigate("/staff/employees")}
                 className="cursor-pointer border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-sm transition hover:border-[#f3a342] hover:shadow-md"
               >
                 <CardHeader>
@@ -158,7 +158,7 @@ export default function Admin() {
               </Card>
 
               <Card
-                onClick={() => navigate("/admin/finances")}
+                onClick={() => navigate("/staff/finances")}
                 className="cursor-pointer border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-sm transition hover:border-[#f3a342] hover:shadow-md"
               >
                 <CardHeader>
@@ -184,7 +184,7 @@ export default function Admin() {
           )}
 
           <Card
-            onClick={() => navigate("/admin/projects")}
+            onClick={() => navigate("/staff/projects")}
             className="cursor-pointer border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-sm transition hover:border-[#f3a342] hover:shadow-md"
           >
             <CardHeader>

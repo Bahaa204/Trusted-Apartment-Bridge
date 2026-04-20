@@ -1,24 +1,43 @@
 import { useState, type ChangeEvent, type SubmitEvent } from "react";
 import { useEmployees } from "../hooks/useEmployees";
 import { useAuth } from "@/hooks/useAuth";
-import type { Employee, EmployeeFormValues, SortDirection, SortKey } from "@/types/employee";
-
-const emptyForm: EmployeeFormValues = {
-  name: "",
-  email: "",
-  salary: 0,
-};
-
-function getEmployeeTone(employeeId: number) {
-  const tones = [
-    "from-[#ffe0c2] via-[#fff0e2] to-white",
-    "from-[#d8e3f0] via-[#eef4fb] to-white",
-    "from-[#ffd3ad] via-[#fff2e7] to-white",
-    "from-[#dce7f5] via-[#f7f9fc] to-white",
-  ];
-
-  return tones[Math.abs(employeeId) % tones.length];
-}
+import type {
+  Employee,
+  EmployeeFormValues,
+  SortDirection,
+  SortKey,
+} from "@/types/employee";
+import { titleCase } from "title-case";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Field } from "./ui/field";
+import { Button } from "./ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
 
 export default function EmployeeTable() {
   const { Session, SignUp, GetRoleFromEmail, RestoreSession } = useAuth();
@@ -32,6 +51,22 @@ export default function EmployeeTable() {
     updateEmployee,
   } = useEmployees();
 
+  const emptyForm: EmployeeFormValues = {
+    name: "",
+    email: "",
+    salary: 0,
+  };
+
+  function getEmployeeTone(employeeId: number) {
+    const tones = [
+      "from-[#ffe0c2] via-[#fff0e2] to-white",
+      "from-[#d8e3f0] via-[#eef4fb] to-white",
+      "from-[#ffd3ad] via-[#fff2e7] to-white",
+      "from-[#dce7f5] via-[#f7f9fc] to-white",
+    ];
+
+    return tones[Math.abs(employeeId) % tones.length];
+  }
   const [newEmployee, setNewEmployee] = useState<EmployeeFormValues>(emptyForm);
   const [editingId, setEditingId] = useState<Employee["id"] | null>(null);
   const [editValues, setEditValues] = useState<EmployeeFormValues>(emptyForm);
@@ -225,224 +260,270 @@ export default function EmployeeTable() {
   }
 
   return (
-    <section className="space-y-8">
+    <section className="space-y-8 p-5">
       <div className="grid gap-4 md:grid-cols-3">
+        <Card className="rounded-md border border-[#d7e0ea] bg-white p-5 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg text-[#5f7490]">
+              People in view
+            </CardTitle>
+            <CardDescription className="mt-2 text-3xl font-semibold text-[#10243e]">
+              {filteredEmployees.length}
+            </CardDescription>
+          </CardHeader>
+        </Card>
+        <Card className="rounded-md border border-[#d7e0ea] bg-white p-5 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg text-[#5f7490]">
+              Current payroll view
+            </CardTitle>
+            <CardDescription className="mt-2 text-3xl font-semibold text-[#10243e]">
+              ${totalPayroll.toLocaleString()}
+            </CardDescription>
+          </CardHeader>
+        </Card>
         <div className="rounded-md border border-[#d7e0ea] bg-white p-5 shadow-sm">
-          <p className="text-sm text-[#5f7490]">People in view</p>
-          <p className="mt-2 text-3xl font-semibold text-[#10243e]">
-            {filteredEmployees.length}
-          </p>
-        </div>
-        <div className="rounded-md border border-[#d7e0ea] bg-white p-5 shadow-sm">
-          <p className="text-sm text-[#5f7490]">Current payroll view</p>
-          <p className="mt-2 text-3xl font-semibold text-[#10243e]">
-            ${totalPayroll.toLocaleString()}
-          </p>
-        </div>
-        <div className="rounded-md border border-[#d7e0ea] bg-white p-5 shadow-sm">
-          <p className="text-sm text-[#5f7490]">Highest salary</p>
-          <p className="mt-2 text-2xl font-semibold text-[#10243e]">
-            {highestPaidEmployee
-              ? `${highestPaidEmployee.name} - $${highestPaidEmployee.salary.toLocaleString()}`
-              : "No employees yet"}
-          </p>
-          <p className="mt-2 text-sm text-[#5f7490]">
+          <CardHeader>
+            <CardTitle className="text-lg text-[#5f7490]">
+              Highest salary
+            </CardTitle>
+            <CardDescription className="mt-2 text-2xl font-semibold text-[#10243e]">
+              {highestPaidEmployee
+                ? `${titleCase(highestPaidEmployee.name)} - $${highestPaidEmployee.salary.toLocaleString()}`
+                : "No employees yet"}
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="mt-2 text-sm text-[#5f7490] bg-transparent">
             Average salary: ${Math.round(averageSalary).toLocaleString()}
-          </p>
+          </CardFooter>
         </div>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.9fr)]">
+      <Card className="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.9fr)] p-5 bg-transparent">
         <div className="relative overflow-hidden rounded-md bg-[linear-gradient(135deg,#10243e,#17365d_55%,#f4821f)] px-7 py-8 text-white shadow-xl">
           <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
           <div className="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-[#ffd3ad]/30 blur-2xl" />
-          <p className="relative text-sm uppercase tracking-[0.3em] text-[#ffcfaa]">
-            Meet The Team
-          </p>
-          <h3 className="relative mt-3 text-3xl font-semibold tracking-tight">
-            {spotlightEmployee ? spotlightEmployee.name : "Your team preview"}
-          </h3>
-          <p className="relative mt-3 max-w-xl text-sm leading-6 text-[#e8eef6]">
-            A warmer snapshot of the people behind the work. Click any employee
-            below to bring their profile forward here.
-          </p>
+          <CardHeader>
+            <CardTitle className="relative text-sm uppercase tracking-[0.3em] text-[#ffcfaa]">
+              Meet The Team
+            </CardTitle>
+            <CardDescription className="text-white">
+              <h3 className="relative mt-3 text-3xl font-semibold tracking-tight">
+                {spotlightEmployee
+                  ? spotlightEmployee.name
+                  : "Your team preview"}
+              </h3>
+              <p className="relative mt-3 max-w-xl text-sm leading-6 text-[#e8eef6]">
+                A warmer snapshot of the people behind the work. Click any
+                employee below to bring their profile forward here.
+              </p>
+            </CardDescription>
+          </CardHeader>
 
-          <div className="relative mt-8 flex flex-wrap items-center gap-5">
-            <div
-              className={`flex h-20 w-20 items-center justify-center rounded-md border border-white/20 bg-linear-to-br ${spotlightEmployee ? getEmployeeTone(spotlightEmployee.id!) : "from-white/50 to-white/10"} text-2xl font-semibold text-[#10243e] shadow-lg backdrop-blur`}
-            >
-              {spotlightInitials}
-            </div>
-
-            <div className="grid gap-2">
-              <div className="inline-flex w-fit rounded-md bg-white/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-[#ffcfaa]">
-                Team profile
+          <CardContent>
+            <div className="relative mt-8 flex flex-wrap items-center gap-5">
+              <div
+                className={`flex h-20 w-20 items-center justify-center rounded-md border border-white/20 bg-linear-to-br ${spotlightEmployee ? getEmployeeTone(spotlightEmployee.id!) : "from-white/50 to-white/10"} text-2xl font-semibold text-[#10243e] shadow-lg backdrop-blur`}
+              >
+                {spotlightInitials}
               </div>
-              <p className="text-lg font-medium text-white/95">
-                {spotlightEmployee
-                  ? spotlightEmployee.email
-                  : "Select an employee to preview details."}
-              </p>
-              <p className="text-sm text-[#ffddb8]">
-                {spotlightEmployee
-                  ? `Monthly salary: $${spotlightEmployee.salary.toLocaleString()}`
-                  : "Use the employee table below to highlight someone here."}
-              </p>
-              <p className="text-sm text-[#d9e4f0]">
-                {spotlightEmployee
-                  ? "A valued member of the care and operations team."
-                  : "This area helps the page feel more personal and welcoming."}
-              </p>
+              <Card className="grid gap-2 bg-transparent p-5 border-none! outline-none!">
+                <CardTitle className="inline-flex w-fit rounded-md bg-white/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-[#ffcfaa]">
+                  Team profile
+                </CardTitle>
+                <CardDescription className="text-lg font-medium text-white/95">
+                  {spotlightEmployee
+                    ? spotlightEmployee.email
+                    : "Select an employee to preview details."}
+                </CardDescription>
+                <CardContent>
+                  <p className="text-sm text-[#ffddb8]">
+                    {spotlightEmployee
+                      ? `Monthly salary: $${spotlightEmployee.salary.toLocaleString()}`
+                      : "Use the employee table below to highlight someone here."}
+                  </p>
+                  <p className="text-sm text-[#d9e4f0]">
+                    {spotlightEmployee
+                      ? "A valued member of the care and operations team."
+                      : "This area helps the page feel more personal and welcoming."}
+                  </p>
+                </CardContent>
+              </Card>
             </div>
-          </div>
+          </CardContent>
         </div>
 
-        <div className="rounded-md border border-[#d7e0ea] bg-white p-6 shadow-sm">
-          <p className="text-sm uppercase tracking-[0.3em] text-[#ea6a12]">
-            Team Mood
-          </p>
-          <h3 className="mt-3 text-2xl font-semibold text-[#10243e]">
-            A softer overview
-          </h3>
-          <div className="mt-6 grid gap-3">
-            <div className="rounded-md bg-[#f7f9fc] p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-[#5f7490]">
-                What you are seeing
-              </p>
-              <p className="mt-2 text-xl font-semibold text-[#10243e]">
-                {filteredEmployees.length} people in the current view
-              </p>
-            </div>
-            <div className="rounded-md bg-[#fff0e2] p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-[#ea6a12]">
-                Leading salary
-              </p>
-              <p className="mt-2 text-xl font-semibold text-[#10243e]">
-                {highestPaidEmployee
-                  ? `${highestPaidEmployee.name}`
-                  : "No one selected yet"}
-              </p>
-            </div>
-            <div className="rounded-md bg-[#e8eef6] p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-[#17365d]">
-                Average salary
-              </p>
-              <p className="mt-2 text-xl font-semibold text-[#10243e]">
-                ${Math.round(averageSalary).toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+        <Card className="rounded-md border border-[#d7e0ea] bg-white p-6 shadow-sm">
+          <CardHeader>
+            <CardDescription className="text-sm uppercase tracking-[0.3em] text-[#ea6a12]">
+              Team Mood
+            </CardDescription>
+            <CardTitle className="mt-3 text-2xl font-semibold text-[#10243e]">
+              A softer overview
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Card className="mt-6 grid gap-3 p-5 bg-transparent">
+              <Card className="rounded-md bg-[#f7f9fc] p-4">
+                <CardHeader>
+                  <CardTitle className="text-xs uppercase tracking-[0.2em] text-[#5f7490]">
+                    What you are seeing
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-xl font-semibold text-[#10243e]">
+                    {filteredEmployees.length} people in the current view
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+              <Card className="rounded-md bg-[#fff0e2] p-4">
+                <CardHeader>
+                  <CardTitle className="text-xs uppercase tracking-[0.2em] text-[#ea6a12]">
+                    Leading salary
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-xl font-semibold text-[#10243e]">
+                    {highestPaidEmployee
+                      ? `${highestPaidEmployee.name}`
+                      : "No one selected yet"}
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+              <Card className="rounded-md bg-[#e8eef6] p-4">
+                <CardHeader>
+                  <CardTitle className="text-xs uppercase tracking-[0.2em] text-[#17365d]">
+                    Average salary
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-xl font-semibold text-[#10243e]">
+                    ${Math.round(averageSalary).toLocaleString()}
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Card>
+          </CardContent>
+        </Card>
+      </Card>
 
-      <div className="rounded-md border border-[#d7e0ea] bg-white p-6 shadow-sm">
-        <div className="mb-6 flex flex-col gap-2">
-          <h2 className="text-2xl font-semibold text-[#10243e]">
+      <Card className="rounded-md border border-[#d7e0ea] bg-white p-6 shadow-sm">
+        <CardHeader className="mb-6 flex flex-col gap-2">
+          <CardTitle className="text-2xl font-semibold text-[#10243e]">
             Add employee
-          </h2>
-          <p className="text-sm text-[#5f7490]">
+          </CardTitle>
+          <CardDescription className="text-[16px] text-[#5f7490]">
             Add a new team member with the details you want to keep on hand.
-          </p>
-        </div>
+          </CardDescription>
+        </CardHeader>
 
-        <form
-          className="grid gap-4 md:grid-cols-2 xl:grid-cols-4"
-          onSubmit={handleAddEmployee}
-        >
-          <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
-            Full name
-            <input
-              required
-              className="rounded-md border border-[#d7e0ea] px-4 py-3 outline-none transition focus:border-[#f4821f]"
-              name="name"
-              placeholder="Sara Ahmad"
-              type="text"
-              value={newEmployee.name}
-              onChange={handleNewEmployeeChange}
-            />
-          </label>
+        <CardContent>
+          <form
+            className="grid gap-4 md:grid-cols-2 xl:grid-cols-4"
+            onSubmit={handleAddEmployee}
+          >
+            <Field orientation="responsive">
+              <Label className="text-sm font-medium text-[#17365d]">
+                Full name
+              </Label>
+              <Input
+                required
+                className="rounded-md! border-2! border-[#d7e0ea]! p-5!"
+                name="name"
+                placeholder="Sara Ahmad"
+                type="text"
+                value={newEmployee.name}
+                onChange={handleNewEmployeeChange}
+              />
+            </Field>
+            <Field>
+              <Label className="text-sm font-medium text-[#17365d]">
+                Email
+              </Label>
+              <Input
+                required
+                className="rounded-md! border-2! border-[#d7e0ea]! p-5!"
+                name="email"
+                placeholder="sara@tab-employee.com"
+                type="email"
+                value={newEmployee.email}
+                onChange={handleNewEmployeeChange}
+              />
+            </Field>
+            <Field>
+              <Label className="text-sm font-medium text-[#17365d]">
+                Salary
+              </Label>
+              <Input
+                required
+                min="0"
+                className="rounded-md! border-2! border-[#d7e0ea]! p-5!"
+                name="salary"
+                placeholder="2500"
+                type="number"
+                value={newEmployee.salary || ""}
+                onChange={handleNewEmployeeChange}
+              />
+            </Field>
+            <Field className="flex justify-end">
+              <Button
+                className="w-full rounded-md bg-[#10243e] p-5! text-sm font-semibold text-white transition hover:bg-[#17365d] disabled:cursor-not-allowed disabled:bg-[#5f7490] cursor-pointer"
+                disabled={Loading}
+                type="submit"
+                variant="secondary"
+              >
+                {Loading ? "Saving..." : "Add employee"}
+              </Button>
+            </Field>
+          </form>
+        </CardContent>
+      </Card>
 
-          <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
-            Email
-            <input
-              required
-              className="rounded-md border border-[#d7e0ea] px-4 py-3 outline-none transition focus:border-[#f4821f]"
-              name="email"
-              placeholder="sara@tab-employee.com"
-              type="email"
-              value={newEmployee.email}
-              onChange={handleNewEmployeeChange}
-            />
-          </label>
-
-          <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
-            Salary
-            <input
-              required
-              min="0"
-              className="rounded-md border border-[#d7e0ea] px-4 py-3 outline-none transition focus:border-[#f4821f]"
-              name="salary"
-              placeholder="2500"
-              type="number"
-              value={newEmployee.salary || ""}
-              onChange={handleNewEmployeeChange}
-            />
-          </label>
-
-          <div className="flex items-end">
-            <button
-              className="w-full rounded-md bg-[#10243e] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#17365d] disabled:cursor-not-allowed disabled:bg-[#5f7490]"
-              disabled={Loading}
-              type="submit"
-            >
-              {Loading ? "Saving..." : "Add employee"}
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <div className="rounded-md border border-[#d7e0ea] bg-white p-6 shadow-sm">
-        <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold text-[#10243e]">
-              Employee list
-            </h2>
-            <p className="text-sm text-[#5f7490]">
-              Browse your team, update details inline, and keep everything tidy.
-            </p>
-          </div>
-          <div className="rounded-md bg-[#e8eef6] px-4 py-2 text-sm font-medium text-[#17365d]">
+      <Card className="rounded-md border border-[#d7e0ea] bg-white p-6 shadow-sm">
+        <CardHeader className="min-w-full">
+          <CardTitle className="text-2xl font-semibold text-[#10243e]">
+            Employee list
+          </CardTitle>
+          <CardDescription className="text-sm text-[#5f7490]">
+            Browse your team, update details inline, and keep everything tidy.
+          </CardDescription>
+          <CardAction className="rounded-md bg-[#e8eef6] px-4 py-2 text-sm font-medium text-[#17365d]">
             {Employees.length} employee{Employees.length === 1 ? "" : "s"}
-          </div>
-        </div>
+          </CardAction>
+        </CardHeader>
 
-        <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto]">
-          <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
-            Search employees
-            <input
-              className="rounded-md border border-[#d7e0ea] px-4 py-3 outline-none transition focus:border-[#f4821f]"
+        <CardContent className="mt-6 mb-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto]">
+          <Field>
+            <Label className="text-sm font-medium text-[#17365d]">
+              Search employees
+            </Label>
+            <Input
+              className="rounded-md! border-2! border-[#d7e0ea]! p-5!"
               placeholder="Search by name, email, or salary"
               type="text"
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
             />
-          </label>
+          </Field>
 
-          <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
-            Sort by
-            <select
-              className="rounded-md border border-[#d7e0ea] px-4 py-3 outline-none transition focus:border-[#f4821f]"
+          <Field>
+            <Label className="text-sm font-medium text-[#17365d]">
+              Sort by
+            </Label>
+            <Select
               value={sortKey}
-              onChange={(event) => toggleSort(event.target.value as SortKey)}
+              onValueChange={(value) => toggleSort(value as SortKey)}
             >
-              <option value="name">Name</option>
-              <option value="email">Email</option>
-              <option value="salary">Salary</option>
-            </select>
-          </label>
-        </div>
+              <SelectTrigger className="rounded-md! border-2! border-[#d7e0ea]! p-5!">
+                <SelectValue placeholder="Sort By" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel> Sort By</SelectLabel>
+                  <SelectItem value="name">Name</SelectItem>
+                  <SelectItem value="email">Email</SelectItem>
+                  <SelectItem value="salary">Salary</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </Field>
+        </CardContent>
 
-        {actionMessage ? (
+        {actionMessage && (
           <div
             className={`mb-4 rounded-md px-4 py-3 text-sm ${
               actionMessage.includes("already exists")
@@ -452,99 +533,100 @@ export default function EmployeeTable() {
           >
             {actionMessage}
           </div>
-        ) : null}
+        )}
 
-        {Error ? (
+        {Error && (
           <div className="mb-4 rounded-md border border-[#ffd2ad] bg-[#fff0e2] px-4 py-3 text-sm text-[#ea6a12]">
             {Error}
           </div>
-        ) : null}
+        )}
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full border-separate border-spacing-y-3">
-            <thead>
-              <tr className="text-left text-xs uppercase tracking-[0.2em] text-[#5f7490]">
-                <th className="px-4 py-2">
-                  <button
-                    className="transition hover:text-[#ea6a12]"
+        <Card className="overflow-x-auto">
+          <Table className="min-w-full border-separate border-spacing-y-3">
+            <TableHeader>
+              <TableRow className="text-left text-xs uppercase tracking-[0.2em] text-[#5f7490]">
+                <TableHead className="px-4 py-2">
+                  <Button
+                    className="transition hover:text-[#ea6a12] cursor-pointer"
                     type="button"
+                    variant="link"
                     onClick={() => toggleSort("name")}
                   >
                     Name
-                  </button>
-                </th>
-                <th className="px-4 py-2">
-                  <button
-                    className="transition hover:text-[#ea6a12]"
+                  </Button>
+                </TableHead>
+                <TableHead className="px-4 py-2">
+                  <Button
+                    className="transition hover:text-[#ea6a12] cursor-pointer"
                     type="button"
+                    variant="link"
                     onClick={() => toggleSort("email")}
                   >
                     Email
-                  </button>
-                </th>
-                <th className="px-4 py-2">
-                  <button
-                    className="transition hover:text-[#ea6a12]"
+                  </Button>
+                </TableHead>
+                <TableHead className="px-4 py-2">
+                  <Button
+                    className="transition hover:text-[#ea6a12] cursor-pointer"
                     type="button"
+                    variant="link"
                     onClick={() => toggleSort("salary")}
                   >
                     Salary
-                  </button>
-                </th>
-                <th className="px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Loading && sortedEmployees.length === 0 ? (
-                <tr>
-                  <td
+                  </Button>
+                </TableHead>
+                <TableHead className="px-4 py-2">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Loading && sortedEmployees.length === 0 && (
+                <TableRow>
+                  <TableCell
                     className="rounded-md bg-[#f7f9fc] px-4 py-6 text-center text-sm text-[#5f7490]"
                     colSpan={4}
                   >
                     Loading employees...
-                  </td>
-                </tr>
-              ) : null}
+                  </TableCell>
+                </TableRow>
+              )}
 
-              {!Loading && Employees.length === 0 ? (
-                <tr>
-                  <td
+              {Employees.length === 0 && (
+                <TableRow>
+                  <TableCell
                     className="rounded-md bg-[#f7f9fc] px-4 py-6 text-center text-sm text-[#5f7490]"
                     colSpan={4}
                   >
                     No employees found yet. Add your first employee above.
-                  </td>
-                </tr>
-              ) : null}
+                  </TableCell>
+                </TableRow>
+              )}
 
-              {!Loading &&
-              Employees.length > 0 &&
-              sortedEmployees.length === 0 ? (
-                <tr>
-                  <td
+              {sortedEmployees.length === 0 && (
+                <TableRow>
+                  <TableCell
                     className="rounded-md bg-[#f7f9fc] px-4 py-6 text-center text-sm text-[#5f7490]"
                     colSpan={4}
                   >
                     No employees match your current search.
-                  </td>
-                </tr>
-              ) : null}
+                  </TableCell>
+                </TableRow>
+              )}
 
               {sortedEmployees.map((employee) => {
                 const isEditing = editingId === employee.id;
                 const isSelected = spotlightEmployee?.id === employee.id;
 
                 return (
-                  <tr
+                  <TableRow
                     key={employee.id}
                     className={`transition ${
                       isSelected
-                        ? "bg-[#fff0e2] ring-1 ring-[#ffd2ad]"
-                        : "bg-[#f7f9fc]"
+                        ? "bg-[#fff0e2] ring-1 ring-[#ffd2ad] hover:bg-[#fff0e2]!"
+                        : "bg-[#f7f9fc] hover:bg-[#f7f9fc]!"
                     }`}
                     onClick={() => setSelectedEmployeeId(employee.id)}
                   >
-                    <td className="px-4 py-4">
+                    <TableCell className="px-4 py-4">
                       <div className="flex items-center gap-3">
                         <div
                           className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-linear-to-br ${getEmployeeTone(employee.id!)} text-sm font-semibold text-[#10243e] shadow-sm`}
@@ -577,9 +659,9 @@ export default function EmployeeTable() {
                           )}
                         </div>
                       </div>
-                    </td>
+                    </TableCell>
 
-                    <td className="px-4 py-4 text-[#17365d]">
+                    <TableCell className="px-4 py-4 text-[#17365d]">
                       {isEditing ? (
                         <input
                           className="w-full rounded-md border border-[#d7e0ea] bg-white px-3 py-2 outline-none focus:border-[#f4821f]"
@@ -591,9 +673,9 @@ export default function EmployeeTable() {
                       ) : (
                         employee.email
                       )}
-                    </td>
+                    </TableCell>
 
-                    <td className="px-4 py-4 text-[#17365d]">
+                    <TableCell className="px-4 py-4 text-[#17365d]">
                       {isEditing ? (
                         <input
                           className="w-full rounded-md border border-[#d7e0ea] bg-white px-3 py-2 outline-none focus:border-[#f4821f]"
@@ -606,36 +688,38 @@ export default function EmployeeTable() {
                       ) : (
                         `$${employee.salary.toLocaleString()}`
                       )}
-                    </td>
+                    </TableCell>
 
-                    <td className="px-4 py-4">
+                    <TableCell className="px-4 py-4">
                       <div className="flex flex-wrap gap-2">
                         {isEditing ? (
                           <>
-                            <button
-                              className="rounded-md bg-[#10243e] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#17365d]"
+                            <Button
+                              className="rounded-md bg-[#10243e] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#17365d] cursor-pointer"
                               type="button"
                               onClick={() => handleUpdateEmployee(employee.id)}
                             >
                               Save
-                            </button>
-                            <button
-                              className="rounded-md border border-[#d7e0ea] px-3 py-2 text-sm font-medium text-[#17365d] transition hover:bg-[#f7f9fc]"
+                            </Button>
+                            <Button
+                              className="rounded-md border border-[#d7e0ea] px-3 py-2 text-sm font-medium text-[#17365d] transition hover:bg-[#f7f9fc] cursor-pointer"
                               type="button"
+                              variant="secondary"
                               onClick={cancelEditing}
                             >
                               Cancel
-                            </button>
+                            </Button>
                           </>
                         ) : (
                           <>
-                            <button
-                              className="rounded-md border border-[#d7e0ea] px-3 py-2 text-sm font-medium text-[#17365d] transition hover:bg-[#f7f9fc]"
+                            <Button
+                              className="rounded-md border border-[#d7e0ea] px-3 py-2 text-sm font-medium text-[#17365d] transition hover:bg-[#f7f9fc] cursor-pointer"
                               type="button"
+                              variant="secondary"
                               onClick={() => startEditing(employee)}
                             >
                               Edit
-                            </button>
+                            </Button>
                             <button
                               className="rounded-md bg-[#ea6a12] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#f4821f]"
                               type="button"
@@ -646,14 +730,14 @@ export default function EmployeeTable() {
                           </>
                         )}
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </TableBody>
+          </Table>
+        </Card>
+      </Card>
     </section>
   );
 }

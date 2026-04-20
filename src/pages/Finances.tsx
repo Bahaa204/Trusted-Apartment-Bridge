@@ -28,8 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function Finances() {
-
-  useDocumentTitle("Finances")
+  useDocumentTitle("Finances");
 
   const {
     Session,
@@ -108,7 +107,11 @@ export default function Finances() {
         <p className="text-lg text-[#10243e]">
           You must be logged in as an admin to access this page.
         </p>
-        <Button variant="link" className="cursor-pointer text-lg" onClick={() => navigate("/login")}>
+        <Button
+          variant="link"
+          className="cursor-pointer text-lg"
+          onClick={() => navigate("/login")}
+        >
           Navigate to Login
         </Button>
       </div>
@@ -222,13 +225,15 @@ export default function Finances() {
   const profit = Income - expenses;
 
   return (
-    <main className="min-h-screen bg-[#e6e0d8] px-4 py-6 md:px-8 md:py-10">
+    <main className="bg-[#e6e0d8] px-4 py-6 md:px-8 md:py-10">
       <Breadcrumbs />
       <section className="mx-auto flex w-full max-w-7xl flex-col gap-6">
         <Card className="border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
           <CardHeader>
-            <CardTitle className="text-3xl text-[#0f2f4f]">Finances</CardTitle>
-            <CardDescription className="text-[#24507f]">
+            <CardTitle className="text-4xl text-[#0f2f4f] text-center">
+              Finances
+            </CardTitle>
+            <CardDescription className="text-[#24507f] text-center text-lg">
               Manage your financial overview
             </CardDescription>
           </CardHeader>
@@ -260,34 +265,34 @@ export default function Finances() {
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <Card className="border border-[#d2c5b7] bg-[#fff9f2] text-center">
-                <CardContent className="py-6">
-                  <h3 className="text-lg font-semibold text-[#173b67]">
+                <CardHeader className="py-6">
+                  <CardTitle className="text-lg font-semibold text-[#173b67]">
                     Income
-                  </h3>
-                  <p className="mt-2 text-2xl font-bold text-[#0f2f4f]">
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-2xl font-bold text-[#0f2f4f]">
                     {Income.toLocaleString()}$
-                  </p>
-                </CardContent>
+                  </CardDescription>
+                </CardHeader>
               </Card>
               <Card className="border border-[#f3a342]/60 bg-[#fff4e5] text-center">
-                <CardContent className="py-6">
-                  <h3 className="text-lg font-semibold text-[#173b67]">
+                <CardHeader className="py-6">
+                  <CardTitle className="text-lg font-semibold text-[#173b67]">
                     Profit
-                  </h3>
-                  <p className="mt-2 text-2xl font-bold text-[#0f2f4f]">
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-2xl font-bold text-[#0f2f4f]">
                     {profit < 0 ? 0 : profit.toLocaleString()}$
-                  </p>
-                </CardContent>
+                  </CardDescription>
+                </CardHeader>
               </Card>
               <Card className="border border-[#d2c5b7] bg-[#fff9f2] text-center">
-                <CardContent className="py-6">
-                  <h3 className="text-lg font-semibold text-[#173b67]">
+                <CardHeader className="py-6">
+                  <CardTitle className="text-lg font-semibold text-[#173b67]">
                     Expenses
-                  </h3>
-                  <p className="mt-2 text-2xl font-bold text-[#0f2f4f]">
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-2xl font-bold text-[#0f2f4f]">
                     {expenses.toLocaleString()}$
-                  </p>
-                </CardContent>
+                  </CardDescription>
+                </CardHeader>
               </Card>
             </div>
 

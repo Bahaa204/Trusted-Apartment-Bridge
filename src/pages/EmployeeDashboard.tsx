@@ -4,6 +4,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import type { Action } from "@/types/employee";
 
 export default function EmployeeDashboard() {
   useDocumentTitle("Employee Dashboard");
@@ -28,46 +36,55 @@ export default function EmployeeDashboard() {
     );
   }
 
+  const actions: Action[] = [
+    {
+      title: "Core Actions",
+      description: "Create, update, and delete employees",
+    },
+    {
+      title: "Data Source",
+      description: "Synced with Supabase employees table",
+    },
+    {
+      title: "Editing Style",
+      description: "Realtime updates and edits",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#e6e0d8] px-4 py-10 sm:px-6 lg:px-8">
+    <main className="bg-[#e6e0d8] px-4 py-6 md:px-8 md:py-10">
       <Breadcrumbs />
-      <div className="mx-auto w-full">
-        <div className="mb-8 rounded-[2rem] bg-[linear-gradient(135deg,#10243e,#17365d_65%,#bf530a)] px-8 py-10 text-white shadow-xl">
-          <p className="mb-3 text-sm uppercase tracking-[0.3em] text-[#ffe0c2]">
-            Admin workspace
-          </p>
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-            Manage employees
-          </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-[#d9e4f0] sm:text-base">
-            Add team members, keep employee records up to date, and remove
-            entries that are no longer active.
-          </p>
-        </div>
+      <section className="mx-auto flex w-full max-w-7xl flex-col gap-6">
+        <Card className="border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-4xl text-[#0f2f4f] text-center">
+              Manage employees
+            </CardTitle>
+            <CardDescription className="text-[#24507f] text-center text-lg">
+              Add team members, keep employee records up to date, and fire
+              inactive employees
+            </CardDescription>
+          </CardHeader>
 
-        <div className="grid gap-4 pb-8 md:grid-cols-3">
-          <div className="rounded-3xl border border-[#ffd2ad] bg-[linear-gradient(180deg,#ffffff_0%,#fff8f2_100%)] p-5 shadow-sm">
-            <p className="text-sm text-[#5f7490]">Core actions</p>
-            <p className="mt-2 text-lg font-semibold text-[#10243e]">
-              Create, update, and delete employees
-            </p>
-          </div>
-          <div className="rounded-3xl border border-[#ffd2ad] bg-[linear-gradient(180deg,#ffffff_0%,#fff8f2_100%)] p-5 shadow-sm">
-            <p className="text-sm text-[#5f7490]">Data source</p>
-            <p className="mt-2 text-lg font-semibold text-[#10243e]">
-              Synced with Supabase employees table
-            </p>
-          </div>
-          <div className="rounded-3xl border border-[#ffd2ad] bg-[linear-gradient(180deg,#ffffff_0%,#fff8f2_100%)] p-5 shadow-sm">
-            <p className="text-sm text-[#5f7490]">Editing style</p>
-            <p className="mt-2 text-lg font-semibold text-[#10243e]">
-              Inline updates with instant refresh
-            </p>
-          </div>
-        </div>
-
-        <EmployeeTable />
-      </div>
-    </div>
+          <CardContent>
+            <div className="grid gap-4 pb-8 md:grid-cols-3">
+              {actions.map((action) => (
+                <Card className="rounded-3xl border border-[#ffd2ad] bg-[linear-gradient(180deg,#ffffff_0%,#fff8f2_100%)] p-5 shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="text-lg text-[#5f7490]">
+                      {action.title}
+                    </CardTitle>
+                    <CardDescription className="mt-2 text-sm font-semibold text-[#10243e]">
+                      {action.description}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              ))}
+            </div>
+            <EmployeeTable />
+          </CardContent>
+        </Card>
+      </section>
+    </main>
   );
 }

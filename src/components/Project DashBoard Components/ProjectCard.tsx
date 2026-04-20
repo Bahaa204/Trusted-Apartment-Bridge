@@ -243,7 +243,7 @@ export default function ProjectCard({
             </p>
           )}
         </CardContent>
-        <CardFooter>
+        <CardFooter className="bg-transparent">
           <Button
             variant="default"
             size="lg"
