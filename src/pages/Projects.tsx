@@ -16,7 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
 import type { Project, Recommendation } from "@/types/projects";
 import type { Building } from "@/types/building";
 import type { House } from "@/types/house";
@@ -35,6 +34,8 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import type { SurveyForm } from "@/types/form";
+import ErrorCard from "@/components/ErrorCard";
+import LoadingCard from "@/components/LoadingCard";
 
 const countryFlags: Record<string, string> = {
   Egypt: "eg",
@@ -499,31 +500,14 @@ export default function Projects() {
         </div>
 
         {error && (
-          <main className="min-h-screen p-4 md:p-8">
-            <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-2xl text-[#0f2f4f]">Error</CardTitle>
-                <CardDescription className="text-[#24507f]">
-                  We could not load the projects. Please try again later.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="text-[#173b67]">{error}</CardContent>
-              <CardFooter className="bg-transparent">
-                {new Date().toLocaleString()}
-              </CardFooter>
-            </Card>
-          </main>
+          <ErrorCard
+            message="We could not load the projects. Please try again later."
+            error={error}
+          />
         )}
 
         {loading ? (
-          <main className="min-h-screen p-4 md:p-8">
-            <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
-              <CardContent className="flex items-center justify-center gap-3 py-8 text-center text-[#173b67]">
-                <Spinner className="size-5 text-[#173b67]" />
-                <span>Loading Projects...</span>
-              </CardContent>
-            </Card>
-          </main>
+          <LoadingCard message="Loading Projects..." />
         ) : projects.length === 0 ? (
           <p className="text-center text-gray-400 py-20">No projects found.</p>
         ) : (

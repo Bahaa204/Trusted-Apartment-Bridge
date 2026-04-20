@@ -1,7 +1,13 @@
 import { useState, type ChangeEvent, type SubmitEvent } from "react";
 import { useEmployees } from "../hooks/useEmployees";
 import { useAuth } from "@/hooks/useAuth";
-import type { Employee, EmployeeFormValues, SortDirection, SortKey } from "@/types/employee";
+import type {
+  Employee,
+  EmployeeFormValues,
+  SortDirection,
+  SortKey,
+} from "@/types/employee";
+import ErrorCard from "./ErrorCard";
 
 const emptyForm: EmployeeFormValues = {
   name: "",
@@ -454,11 +460,12 @@ export default function EmployeeTable() {
           </div>
         ) : null}
 
-        {Error ? (
-          <div className="mb-4 rounded-md border border-[#ffd2ad] bg-[#fff0e2] px-4 py-3 text-sm text-[#ea6a12]">
-            {Error}
-          </div>
-        ) : null}
+        {Error && (
+          <ErrorCard
+            message="We could not load Employee Table. Please try again later."
+            error={Error}
+          />
+        )}
 
         <div className="overflow-x-auto">
           <table className="min-w-full border-separate border-spacing-y-3">

@@ -25,6 +25,8 @@ import {
   FieldSeparator,
   FieldTitle,
 } from "./ui/field";
+import ErrorCard from "./ErrorCard";
+import LoadingCard from "./LoadingCard";
 
 export default function StaffChatDashboard() {
   const [selectedId, setSelectedId] = useState<Conversation["id"] | null>(null);
@@ -111,18 +113,10 @@ export default function StaffChatDashboard() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-slate-100 p-4 md:p-8">
-        <Card className="mx-auto max-w-3xl border border-slate-200 bg-white text-slate-900 shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl text-slate-900">Error</CardTitle>
-            <CardDescription className="text-slate-600">
-              We could not load the support chat. Please try again later.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-slate-700">{error}</CardContent>
-          <CardFooter>{new Date().toLocaleString()}</CardFooter>
-        </Card>
-      </main>
+      <ErrorCard
+        message="We could not load the support chat. Please try again later."
+        error={error}
+      />
     );
   }
 
@@ -137,9 +131,9 @@ export default function StaffChatDashboard() {
 
         <CardContent className="p-0">
           {loading ? (
-            <div className="staff-chat-loading">
-              {AuthLoading ? "Checking Authentication" : "Loading chats"}...
-            </div>
+            <LoadingCard
+              message={`${AuthLoading ? "Checking Authentication" : "Loading chats"}...`}
+            />
           ) : Conversations.length === 0 ? (
             <div className="staff-chat-empty-list">
               No open conversations yet.

@@ -14,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import { useState, type SubmitEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
 import StaffChatDashboard from "@/components/StaffChatDashboard";
-import { Spinner } from "@/components/ui/spinner";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import {
   FieldDescription,
@@ -26,10 +25,11 @@ import {
 } from "@/components/ui/field";
 import { Field, Input } from "@headlessui/react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import ErrorCard from "@/components/ErrorCard";
+import LoadingCard from "@/components/LoadingCard";
 
 export default function Admin() {
-
-  useDocumentTitle("Admin");
+  useDocumentTitle("Staff");
 
   const navigate = useNavigate();
 
@@ -45,35 +45,15 @@ export default function Admin() {
     return role === "admin" || role === "employee";
   }
 
-  if (Error) {
+  if (Error)
     return (
-      <main className="min-h-screen bg-[#e6e0d8] p-4 md:p-8">
-        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl text-[#0f2f4f]">Error</CardTitle>
-            <CardDescription className="text-[#24507f]">
-              We could not load the admin dashboard. Please try again later.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-[#173b67]">{Error}</CardContent>
-          <CardFooter>{new Date().toLocaleString()}</CardFooter>
-        </Card>
-      </main>
+      <ErrorCard
+        message="We could not load the admin dashboard. Please try again later."
+        error={Error}
+      />
     );
-  }
 
-  if (Loading) {
-    return (
-      <main className="min-h-screen bg-[#e6e0d8] p-4 md:p-8">
-        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
-          <CardContent className="flex items-center justify-center gap-3 py-8 text-center text-[#173b67]">
-            <Spinner className="size-5 text-[#173b67]" />
-            <span>Checking Authentication...</span>
-          </CardContent>
-        </Card>
-      </main>
-    );
-  }
+  if (Loading) return <LoadingCard message="Checking Authentication..." />;
 
   if (!Session || !checkAccess(Session)) {
     return (
@@ -81,7 +61,11 @@ export default function Admin() {
         <p className="text-lg text-[#10243e]">
           You must be logged in as an admin or an employee to access this page.
         </p>
-        <Button variant="link" className="cursor-pointer text-lg" onClick={() => navigate("/login")}>
+        <Button
+          variant="link"
+          className="cursor-pointer text-lg"
+          onClick={() => navigate("/login")}
+        >
           Navigate to Login
         </Button>
       </div>
@@ -122,7 +106,7 @@ export default function Admin() {
         <Card className="border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-bold text-[#0f2f4f]">
-              Welcome to the Admin Page
+              Welcome to the Staff Page
             </CardTitle>
             <CardDescription className="text-base text-[#24507f] md:text-lg">
               {`See Your options below to ${GetRoleFromEmail(Session.user.email) === "admin" ? "manage employees, finances, and" : "manage"} projects.`}
@@ -134,7 +118,7 @@ export default function Admin() {
           {GetRoleFromEmail(Session.user.email) === "admin" && (
             <>
               <Card
-                onClick={() => navigate("/admin/employees")}
+                onClick={() => navigate("/staff/employees")}
                 className="cursor-pointer border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-sm transition hover:border-[#f3a342] hover:shadow-md"
               >
                 <CardHeader>
@@ -158,7 +142,7 @@ export default function Admin() {
               </Card>
 
               <Card
-                onClick={() => navigate("/admin/finances")}
+                onClick={() => navigate("/staff/finances")}
                 className="cursor-pointer border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-sm transition hover:border-[#f3a342] hover:shadow-md"
               >
                 <CardHeader>
@@ -184,7 +168,7 @@ export default function Admin() {
           )}
 
           <Card
-            onClick={() => navigate("/admin/projects")}
+            onClick={() => navigate("/staff/projects")}
             className="cursor-pointer border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-sm transition hover:border-[#f3a342] hover:shadow-md"
           >
             <CardHeader>

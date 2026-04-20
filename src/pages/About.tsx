@@ -143,7 +143,7 @@ export default function About() {
         </div>
       </section>
       {/* Stats */}
-      <section className="bg-white py-16 px-6">
+      <section className="py-16 px-6">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {[
             { num: "8+", label: "Projects" },
@@ -161,7 +161,7 @@ export default function About() {
         </div>
       </section>
       {/* Featured Projects */}
-      <section className="bg-gray-50 py-20 px-6">
+      <section className="py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
             Featured Projects
@@ -174,7 +174,7 @@ export default function About() {
               <Link
                 key={project.id}
                 to={`/projects/${project.id}`}
-                className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                className="group rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               >
                 <div className="h-48 bg-linear-to-br from-orange-400 to-orange-600 flex items-center justify-center">
                   <span className="text-white text-6xl font-bold opacity-20">

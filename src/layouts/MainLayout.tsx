@@ -6,7 +6,7 @@ export default function MainLayout() {
   return (
     <>
       <Header />
-      <main className="min-h-screen">
+      <main className="min-h-screen bg-[#e6e0d8]!">
         <Outlet />
       </main>
       <Footer />

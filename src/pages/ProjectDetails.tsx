@@ -23,7 +23,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
 import type { Building } from "@/types/building";
 import type { House } from "@/types/house";
 import type { Project } from "@/types/projects";
@@ -33,6 +32,8 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { ValidatePayment } from "@/helpers/helpers";
 import { useAuth } from "@/hooks/useAuth";
+import ErrorCard from "@/components/ErrorCard";
+import LoadingCard from "@/components/LoadingCard";
 
 const MODELS = [
   "models/162_7.glb",
@@ -288,35 +289,15 @@ export default function ProjectDetails() {
   console.log("Login Notice: ", LoginNotice);
 
   if (loading) {
-    return (
-      <main className="min-h-screen p-4 md:p-8">
-        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
-          <CardContent className="flex items-center justify-center gap-3 py-8 text-center text-[#173b67]">
-            <Spinner className="size-5 text-[#173b67]" />
-            <span>Loading Project Details...</span>
-          </CardContent>
-        </Card>
-      </main>
-    );
+    return <LoadingCard message="Loading Project Details..." />;
   }
 
   if (error) {
     return (
-      <main className="min-h-screen p-4 md:p-8">
-        <Breadcrumbs name={project?.name} />
-        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl text-[#0f2f4f]">Error</CardTitle>
-            <CardDescription className="text-[#24507f]">
-              We could not load Project Details. Please try again later.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-[#173b67]">{error}</CardContent>
-          <CardFooter className="bg-transparent">
-            {new Date().toLocaleString()}
-          </CardFooter>
-        </Card>
-      </main>
+      <ErrorCard
+        message="We could not load Project Details. Please try again later."
+        error={error}
+      />
     );
   }
 
