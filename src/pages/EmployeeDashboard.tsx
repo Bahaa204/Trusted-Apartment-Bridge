@@ -58,7 +58,7 @@ export default function EmployeeDashboard() {
         <Card className="border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
           <CardHeader>
             <CardTitle className="text-4xl text-[#0f2f4f] text-center">
-              Manage employees
+              Manage Employees
             </CardTitle>
             <CardDescription className="text-[#24507f] text-center text-lg">
               Add team members, keep employee records up to date, and fire
