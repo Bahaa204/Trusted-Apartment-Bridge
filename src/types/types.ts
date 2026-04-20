@@ -37,3 +37,4 @@ export type Image = {
 export type Data<T> =
   | { data: T; error: null }
   | { error: PostgrestError; data: null };
+

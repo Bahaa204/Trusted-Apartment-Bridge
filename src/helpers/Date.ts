@@ -35,6 +35,8 @@ export function GetMinMaxDate(timestamps: string[]): DateReturn {
   const minDate = new Date(Math.min(...times));
   const maxDate = new Date(Math.max(...times));
 
+  minDate.setMonth(minDate.getMonth() - 1);
+
   return {
     minInputDate: formatDate(minDate),
     maxInputDate: formatDate(maxDate),

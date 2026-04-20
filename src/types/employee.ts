@@ -14,5 +14,3 @@ export type EmployeeFormValues = Omit<Employee, "id">;
 
 export type SortKey = "name" | "email" | "salary";
 export type SortDirection = "asc" | "desc";
-
-export type Action = { title: string; description: string };

@@ -66,7 +66,7 @@ export default function ProjectsDashBoardDisplay({
           Here you can view, edit, and delete all projects, buildings, and
           houses.
         </CardDescription>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-center items-center gap-4 w-full">
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-center items-start gap-4 w-full">
           {Projects.length === 0 ? (
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-slate-700">
               We currently have no projects.
@@ -75,19 +75,19 @@ export default function ProjectsDashBoardDisplay({
             <>
               {Projects.map((project) =>
                 (() => {
-                  // if (typeof project.id !== "number") return null;
+                  if (typeof project.id !== "number") return null;
 
                   return (
                     <div
-                      key={project.id!}
+                      key={project.id}
                       className={
-                        OpenProjectIDs.includes(project.id!)
+                        OpenProjectIDs.includes(project.id)
                           ? "md:col-span-2 xl:col-span-3"
                           : ""
                       }
                     >
-                      {OpenProjectIDs.includes(project.id!) ? (
-                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 items-start">
+                      {OpenProjectIDs.includes(project.id) ? (
+                        <div className="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-3 items-start">
                           <ProjectCard
                             IsBuildingOpen={true}
                             ToggleBuildingShow={ToggleBuildingShow}
@@ -112,7 +112,7 @@ export default function ProjectsDashBoardDisplay({
                                 No buildings found for this project.
                               </p>
                             ) : (
-                              <div className="grid grid-cols-[auto] gap-3">
+                              <div className="grid grid-cols-1 gap-3">
                                 {Buildings.filter(
                                   (building) =>
                                     building.project_id === project.id,

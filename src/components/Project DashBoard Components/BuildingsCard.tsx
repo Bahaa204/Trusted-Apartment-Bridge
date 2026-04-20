@@ -227,7 +227,7 @@ export default function BuildingsCard({
           </p>
         </CardContent>
 
-        <CardFooter className="bg-transparent">
+        <CardFooter>
           <Button
             variant="default"
             size="lg"

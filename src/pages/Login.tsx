@@ -126,7 +126,7 @@ export default function Login() {
 
   async function handleOAuth(provider: Provider) {
     const ok = await SignInWithOAuth(provider);
-    if (ok) navigate("/");
+    if (ok) navigate(-1);
   }
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
@@ -138,7 +138,7 @@ export default function Login() {
 
         const ok = await SignInWithPassword(FormData.email, FormData.password);
 
-        if (ok) return navigate("/");
+        if (ok) return navigate(-1);
 
         break;
       }
@@ -151,7 +151,7 @@ export default function Login() {
           FormData.display_name,
         );
 
-        if (ok) return navigate("/");
+        if (ok) return navigate(-1);
 
         break;
       }
