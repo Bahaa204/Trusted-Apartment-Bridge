@@ -52,7 +52,7 @@ export default function UnitCard({
         </div>
         <button
           type="button"
-          onClick={LoginNotice ? onBuy : () => {}}
+          onClick={onBuy}
           className={`mt-5 w-full rounded-2xl border px-4 py-3 text-sm font-semibold transition cursor-pointer disabled:cursor-not-allowed ${
             isHovered
               ? "border-white bg-white text-orange-500 hover:bg-white/90"
