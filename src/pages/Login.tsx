@@ -138,7 +138,7 @@ export default function Login() {
 
         const ok = await SignInWithPassword(FormData.email, FormData.password);
 
-        if (ok) return navigate(-1);
+        if (ok) return navigate("/");
 
         break;
       }
@@ -151,7 +151,7 @@ export default function Login() {
           FormData.display_name,
         );
 
-        if (ok) return navigate(-1);
+        if (ok) return navigate("/");
 
         break;
       }
@@ -184,10 +184,7 @@ export default function Login() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#e6e0d8] text-slate-900">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(15,23,42,0.15),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(245,158,11,0.16),transparent_32%),linear-gradient(180deg,rgba(255,255,255,0.36),rgba(255,255,255,0.12))]" />
-      <div className="absolute -left-20 top-20 h-56 w-56 rounded-full bg-slate-950/10 blur-3xl" />
-      <div className="absolute -bottom-12 -right-16 h-64 w-64 rounded-full bg-orange-400/15 blur-3xl" />
-
+      <div className="absolute inset-0 bg-[#e6e0d8]" />
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-4 py-8 md:px-8">
         <Card className="w-full max-w-4xl overflow-hidden border border-white/60 bg-white/85 text-slate-900 shadow-[0_30px_100px_rgba(15,23,42,0.2)] backdrop-blur p-0!">
           <CardHeader className="rounded-none! gap-6 border-b border-slate-200 bg-linear-to-br from-slate-950 via-slate-900 to-slate-800 px-6 py-8 text-white md:px-10">
