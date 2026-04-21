@@ -72,7 +72,7 @@ export default function Header() {
           </div>
           <PopoverGroup className="hidden lg:flex lg:gap-x-12">
             {NAVLINKS.map((link, index) => {
-              if (link.label === "Admin" && !condition) return;
+              if (link.label === "Staff" && !condition) return;
 
               return (
                 <NavLink
