@@ -37,11 +37,11 @@ export default function EmployeeDashboard() {
             Admin workspace
           </p>
           <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-            Manage employees
+            Manage Employees
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-[#d9e4f0] sm:text-base">
-            Add team members, keep employee records up to date, and remove
-            entries that are no longer active.
+            Add team members, keep employee records up to date, and fire
+            inactive employees.
           </p>
         </div>
 
@@ -55,7 +55,7 @@ export default function EmployeeDashboard() {
           <div className="rounded-3xl border border-[#ffd2ad] bg-[linear-gradient(180deg,#ffffff_0%,#fff8f2_100%)] p-5 shadow-sm">
             <p className="text-sm text-[#5f7490]">Data source</p>
             <p className="mt-2 text-lg font-semibold text-[#10243e]">
-              Synced with Supabase employees table
+              Synced with the Database
             </p>
           </div>
           <div className="rounded-3xl border border-[#ffd2ad] bg-[linear-gradient(180deg,#ffffff_0%,#fff8f2_100%)] p-5 shadow-sm">

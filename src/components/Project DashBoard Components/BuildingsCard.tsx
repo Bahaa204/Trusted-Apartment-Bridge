@@ -98,7 +98,7 @@ export default function BuildingsCard({
         <img
           src={buildingImageSrc}
           alt={`${Building.name} image`}
-          className="w-full h-62.5 object-center bg-no-repeat bg-cover italic"
+          className="size-full object-center bg-no-repeat bg-cover italic"
           onError={(event) => {
             event.currentTarget.src = BUILDING_PLACEHOLDER_IMAGE;
           }}
@@ -111,6 +111,7 @@ export default function BuildingsCard({
                 type="text"
                 className="border-slate-300 bg-white text-slate-900"
                 value={BuildingsInput.name}
+                placeholder="Building Name"
                 onChange={(event) => {
                   setBuildingsInput((prev) => ({
                     ...prev,
@@ -123,12 +124,13 @@ export default function BuildingsCard({
             )}
           </CardTitle>
 
-          <CardDescription>
+          <CardDescription className="text-slate-900">
             {EditMode ? (
               <Input
                 type="text"
                 className="border-slate-300 bg-white text-slate-900"
                 value={BuildingsInput.block}
+                placeholder="Building Block"
                 onChange={(event) => {
                   setBuildingsInput((prev) => ({
                     ...prev,
@@ -137,7 +139,9 @@ export default function BuildingsCard({
                 }}
               />
             ) : (
-              Building.block
+              <>
+                <strong>Building Block:</strong> {Building.block}
+              </>
             )}
           </CardDescription>
 
@@ -161,6 +165,16 @@ export default function BuildingsCard({
             >
               {EditMode ? "Submit Edits" : "Edit Building"}
             </Button>
+            {EditMode && (
+              <Button
+                variant="secondary"
+                size="lg"
+                className="cursor-pointer border border-slate-300 bg-slate-100 text-slate-900 hover:bg-slate-200"
+                onClick={() => setEditMode(false)}
+              >
+                Cancel Edits
+              </Button>
+            )}
           </CardAction>
         </CardHeader>
 
@@ -227,16 +241,18 @@ export default function BuildingsCard({
           </p>
         </CardContent>
 
-        <CardFooter>
-          <Button
-            variant="default"
-            size="lg"
-            className="w-full cursor-pointer bg-[#173b67] font-semibold text-white hover:bg-[#24507f]"
-            onClick={() => ToggleHouseShow(Building.id)}
-          >
-            {IsHouseOpen ? "Hide Houses" : "See Houses"}
-          </Button>
-        </CardFooter>
+        {!EditMode && (
+          <CardFooter>
+            <Button
+              variant="default"
+              size="lg"
+              className="w-full cursor-pointer bg-[#173b67] font-semibold text-white hover:bg-[#24507f]"
+              onClick={() => ToggleHouseShow(Building.id)}
+            >
+              {IsHouseOpen ? "Hide Houses" : "See Houses"}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
 
       <Modal

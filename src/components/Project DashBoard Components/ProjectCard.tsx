@@ -20,7 +20,11 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
-import type { Project, ProjectCardsProps, ProjectsInput } from "@/types/projects";
+import type {
+  Project,
+  ProjectCardsProps,
+  ProjectsInput,
+} from "@/types/projects";
 import type { Image } from "@/types/types";
 import { DeleteImages, UploadImage } from "@/services/imageServices";
 
@@ -32,7 +36,6 @@ export default function ProjectCard({
   RemoveProject,
   UpdateProject,
 }: ProjectCardsProps) {
-
   const PROJECT_PLACEHOLDER_IMAGE =
     "https://placehold.co/820x360/1f2937/e5e7eb?text=No+Project+Image";
 
@@ -93,11 +96,11 @@ export default function ProjectCard({
 
   return (
     <>
-      <Card className="border border-slate-200 bg-white text-slate-900 shadow-lg">
+      <Card className="border border-slate-200 bg-white text-slate-900 shadow-lg h-150">
         <img
           src={projectImageSrc}
           alt={`${project.name} image`}
-          className="w-full h-62.5 object-center bg-no-repeat bg-cover italic"
+          className="size-full object-center bg-no-repeat bg-cover italic"
           onError={(event) => {
             event.currentTarget.src = PROJECT_PLACEHOLDER_IMAGE;
           }}
@@ -108,6 +111,7 @@ export default function ProjectCard({
               <Input
                 type="text"
                 className="border-slate-300 bg-white text-slate-900"
+                placeholder="Project Name"
                 value={ProjectsInput.name}
                 onChange={(event) => {
                   setProjectsInput((prev) => ({
@@ -125,6 +129,7 @@ export default function ProjectCard({
               <Textarea
                 className="border-slate-300 bg-white text-slate-900"
                 value={ProjectsInput.description}
+                placeholder="Project Description"
                 onChange={(event) => {
                   setProjectsInput((prev) => ({
                     ...prev,
@@ -156,6 +161,16 @@ export default function ProjectCard({
             >
               {EditMode ? "Submit Edits" : "Edit Project"}
             </Button>
+            {EditMode && (
+              <Button
+                variant="secondary"
+                size="lg"
+                className="cursor-pointer border border-slate-300 bg-slate-100 text-slate-900 hover:bg-slate-200"
+                onClick={() => setEditMode(false)}
+              >
+                Cancel Edits
+              </Button>
+            )}
           </CardAction>
         </CardHeader>
 
@@ -167,6 +182,7 @@ export default function ProjectCard({
                 type="text"
                 className="mt-1 border-slate-300 bg-white text-slate-900"
                 value={ProjectsInput.location}
+                placeholder="Project Location"
                 onChange={(event) => {
                   setProjectsInput((prev) => ({
                     ...prev,
@@ -243,16 +259,18 @@ export default function ProjectCard({
             </p>
           )}
         </CardContent>
-        <CardFooter>
-          <Button
-            variant="default"
-            size="lg"
-            className="w-full cursor-pointer bg-[#173b67] font-semibold text-white hover:bg-[#24507f]"
-            onClick={() => ToggleBuildingShow(project.id)}
-          >
-            {IsBuildingOpen ? "Hide Buildings" : "See Buildings"}
-          </Button>
-        </CardFooter>
+        {!EditMode && (
+          <CardFooter>
+            <Button
+              variant="default"
+              size="lg"
+              className="w-full cursor-pointer bg-[#173b67] font-semibold text-white hover:bg-[#24507f]"
+              onClick={() => ToggleBuildingShow(project.id)}
+            >
+              {IsBuildingOpen ? "Hide Buildings" : "See Buildings"}
+            </Button>
+          </CardFooter>
+        )}
       </Card>
 
       <Modal

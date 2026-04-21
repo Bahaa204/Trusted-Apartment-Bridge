@@ -21,8 +21,7 @@ import { Button } from "@/components/ui/button";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function ProjectsDashboard() {
-
-  useDocumentTitle("Projects Dashboard")
+  useDocumentTitle("Projects Dashboard");
 
   const navigate = useNavigate();
 
@@ -138,32 +137,77 @@ export default function ProjectsDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-[#e6e0d8] px-4 py-6 md:px-8 md:py-10">
+    <div className="min-h-screen bg-[#e6e0d8] px-4 py-10 sm:px-6 lg:px-8">
       <Breadcrumbs />
-      <section className="mx-auto flex w-full max-w-7xl flex-col gap-6">
-        <ProjectsDashBoardForm
-          AddBuilding={AddBuilding}
-          AddHouse={AddHouse}
-          AddProject={AddProject}
-          Projects={Projects}
-          Buildings={Buildings}
-          loading={loading}
-          Countries={Countries}
-        />
+      <div className="mx-auto w-full">
+        <Card className="rounded-[2rem] bg-[linear-gradient(135deg,#10243e,#17365d_65%,#bf530a)] px-8 py-10 text-white shadow-xl">
+          <CardHeader>
+            <CardTitle>
+              <p className="  -3 text-sm uppercase tracking-[0.3em] text-[#ffe0c2]">
+                Admin workspace
+              </p>
+              <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+                Manage Projects
+              </h1>
+            </CardTitle>
+            <CardDescription className="mt-4 max-w-2xl text-sm leading-6 text-[#d9e4f0] sm:text-base">
+              View, edit, delete, or add projects, buildings, or houses.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+        <Card className="grid gap-4 p-5 md:grid-cols-3 mt-5 mb-5 bg-transparent ring-0!">
+            <Card className="rounded-3xl border border-[#ffd2ad] bg-[linear-gradient(180deg,#ffffff_0%,#fff8f2_100%)] p-5 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-sm text-[#5f7490]">Core actions</CardTitle>
+                <CardDescription className="mt-2 text-lg font-semibold text-[#10243e]">
+                  Create, update, and delete projects, buildings, or houses
+                </CardDescription>
+              </CardHeader>
+            </Card>
+            <Card className="rounded-3xl border border-[#ffd2ad] bg-[linear-gradient(180deg,#ffffff_0%,#fff8f2_100%)] p-5 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-sm text-[#5f7490]">Data source</CardTitle>
+                <CardDescription className="mt-2 text-lg font-semibold text-[#10243e]">
+                  Synced with the Database
+                </CardDescription>
+              </CardHeader>
+            </Card>
+            <Card className="rounded-3xl border border-[#ffd2ad] bg-[linear-gradient(180deg,#ffffff_0%,#fff8f2_100%)] p-5 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-sm text-[#5f7490]">Editing style</CardTitle>
+                <CardDescription className="mt-2 text-lg font-semibold text-[#10243e]">
+                  Inline updates with instant refresh
+                </CardDescription>
+              </CardHeader>
+            </Card>
+        </Card>
 
-        <ProjectsDashBoardDisplay
-          Buildings={Buildings}
-          Projects={Projects}
-          Countries={Countries}
-          Houses={Houses}
-          UpdateProject={UpdateProject}
-          RemoveProject={RemoveProject}
-          UpdateBuilding={UpdateBuilding}
-          RemoveBuilding={RemoveBuilding}
-          RemoveHouse={RemoveHouse}
-          UpdateHouse={UpdateHouse}
-        />
-      </section>
-    </main>
+        <Card className="bg-transparent ring-0! p-0!">
+          <CardContent className="flex flex-col gap-5 p-5">
+            <ProjectsDashBoardForm
+              AddBuilding={AddBuilding}
+              AddHouse={AddHouse}
+              AddProject={AddProject}
+              Projects={Projects}
+              Buildings={Buildings}
+              loading={loading}
+              Countries={Countries}
+            />
+            <ProjectsDashBoardDisplay
+              Buildings={Buildings}
+              Projects={Projects}
+              Countries={Countries}
+              Houses={Houses}
+              UpdateProject={UpdateProject}
+              RemoveProject={RemoveProject}
+              UpdateBuilding={UpdateBuilding}
+              RemoveBuilding={RemoveBuilding}
+              RemoveHouse={RemoveHouse}
+              UpdateHouse={UpdateHouse}
+            />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

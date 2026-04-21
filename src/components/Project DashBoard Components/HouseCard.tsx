@@ -68,6 +68,7 @@ export default function HouseCard({
               <Input
                 type="number"
                 className="border-slate-300 bg-white text-slate-900"
+                placeholder="House Floor"
                 value={Number.isNaN(HouseInput.floor) ? "" : HouseInput.floor}
                 onChange={(event) => {
                   setHouseInput((prev) => ({
@@ -87,6 +88,7 @@ export default function HouseCard({
                 type="number"
                 className="border-slate-300 bg-white text-slate-900"
                 value={Number.isNaN(HouseInput.price) ? "" : HouseInput.price}
+                placeholder="House Price"
                 onChange={(event) => {
                   setHouseInput((prev) => ({
                     ...prev,
@@ -95,7 +97,7 @@ export default function HouseCard({
                 }}
               />
             ) : (
-              `$${house.price}`
+              `$ ${house.price.toLocaleString()}`
             )}
           </CardDescription>
 
@@ -119,6 +121,16 @@ export default function HouseCard({
             >
               {EditMode ? "Submit Edits" : "Edit House"}
             </Button>
+            {EditMode && (
+              <Button
+                variant="secondary"
+                size="lg"
+                className="cursor-pointer border border-slate-300 bg-slate-100 text-slate-900 hover:bg-slate-200"
+                onClick={() => setEditMode(false)}
+              >
+                Cancel Edits
+              </Button>
+            )}
           </CardAction>
         </CardHeader>
 
@@ -134,6 +146,7 @@ export default function HouseCard({
                     ? ""
                     : HouseInput.nb_bathrooms
                 }
+                placeholder="Number of Bathrooms"
                 onChange={(event) => {
                   setHouseInput((prev) => ({
                     ...prev,
@@ -156,6 +169,7 @@ export default function HouseCard({
                     ? ""
                     : HouseInput.nb_bedrooms
                 }
+                placeholder="Number of Bedrooms"
                 onChange={(event) => {
                   setHouseInput((prev) => ({
                     ...prev,
