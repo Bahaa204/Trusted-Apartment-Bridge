@@ -37,7 +37,7 @@ import type { SurveyForm } from "@/types/form";
 import ErrorCard from "@/components/ErrorCard";
 import { useAuth } from "@/hooks/useAuth";
 import { useFavorites } from "@/hooks/useFavorites";
-import { Heart } from "lucide-react";
+import { Heart, X } from "lucide-react";
 
 const countryFlags: Record<string, string> = {
   Egypt: "eg",
@@ -129,7 +129,6 @@ function scoreCandidate(candidate: Recommendation, form: SurveyForm) {
   const projectText =
     `${candidate.project.name} ${candidate.project.description} ${candidate.project.location}`.toLowerCase();
   const locationHint = form.location.trim().toLowerCase();
-  const areaType = form.areaType.toLowerCase();
   const priority = form.priority.toLowerCase();
   const bedrooms = Number(form.bedrooms);
 
@@ -160,22 +159,6 @@ function scoreCandidate(candidate: Recommendation, form: SurveyForm) {
       score += 2;
   }
 
-  if (areaType === "calm") {
-    if (
-      projectText.match(
-        /calm|quiet|resort|retreat|green|garden|peaceful|private/,
-      )
-    )
-      score += 4;
-    if (projectText.match(/city|downtown|bustle|busy|center/)) score -= 1;
-  } else if (areaType === "busy") {
-    if (
-      projectText.match(/city|downtown|bustle|busy|center|urban|metropolitan/)
-    )
-      score += 4;
-    if (projectText.match(/quiet|calm|peaceful|resort|private/)) score -= 1;
-  }
-
   if (priority === "family") {
     if (projectText.match(/family|community|garden|school|park/)) score += 3;
   } else if (priority === "luxury") {
@@ -200,6 +183,74 @@ function scoreCandidate(candidate: Recommendation, form: SurveyForm) {
   return score;
 }
 
+function matchesBudget(price: number, budgetRange: SurveyForm["budgetRange"]) {
+  if (budgetRange === "low") return price <= 200000;
+  if (budgetRange === "mid") return price >= 200000 && price <= 800000;
+  if (budgetRange === "high") return price >= 800000;
+  return true;
+}
+
+function matchesPriority(projectText: string, priority: string) {
+  const normalized = priority.trim().toLowerCase();
+
+  if (!normalized) return true;
+  if (normalized === "city living") {
+    return /city|downtown|urban|center|metropolitan/.test(projectText);
+  }
+  if (normalized === "family") {
+    return /family|community|garden|school|park/.test(projectText);
+  }
+  if (normalized === "luxury") {
+    return /luxury|exclusive|premium|five-star|high-end/.test(projectText);
+  }
+  if (normalized === "investment") {
+    return /investment|value|return|growth|rental|development/.test(
+      projectText,
+    );
+  }
+  if (normalized === "beachfront") {
+    return /beach|sea|waterfront|coast/.test(projectText);
+  }
+
+  return true;
+}
+
+function matchesAllFilters(candidate: Recommendation, form: SurveyForm) {
+  const price = candidate.house.price ?? 0;
+  const bedrooms = Number(form.bedrooms);
+  const locationHint = form.location.trim().toLowerCase();
+  const projectText =
+    `${candidate.project.name} ${candidate.project.description} ${candidate.project.location}`.toLowerCase();
+
+  if (form.countryId && Number(form.countryId) !== candidate.project.country_id) {
+    return false;
+  }
+
+  if (!matchesBudget(price, form.budgetRange)) {
+    return false;
+  }
+
+  if (
+    locationHint &&
+    !candidate.project.location.toLowerCase().includes(locationHint) &&
+    !candidate.project.description.toLowerCase().includes(locationHint)
+  ) {
+    return false;
+  }
+
+  if (
+    bedrooms > 0 &&
+    (candidate.house.nb_bedrooms == null ||
+      (bedrooms >= 4
+        ? candidate.house.nb_bedrooms < 4
+        : candidate.house.nb_bedrooms !== bedrooms))
+  ) {
+    return false;
+  }
+
+  return matchesPriority(projectText, form.priority);
+}
+
 export default function Projects() {
   useDocumentTitle("Projects");
 
@@ -214,7 +265,6 @@ export default function Projects() {
   const [form, setForm] = useState<SurveyForm>({
     budgetRange: "any",
     countryId: "",
-    areaType: "calm",
     location: "",
     priority: "City living",
     bedrooms: "",
@@ -384,7 +434,6 @@ export default function Projects() {
       ...prev,
       budgetRange: "any",
       countryId: selectedCountry || prev.countryId || "",
-      areaType: "calm",
       location: "",
       priority: "City living",
       bedrooms: "",
@@ -399,22 +448,20 @@ export default function Projects() {
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const validCandidates = recommendationCandidates.filter((candidate) => {
-      return (
-        !activeCountryId ||
-        Number(activeCountryId) === candidate.project.country_id
-      );
-    });
+    const strictMatches = recommendationCandidates.filter((candidate) =>
+      matchesAllFilters(candidate, {
+        ...form,
+        countryId: form.countryId || activeCountryId,
+      }),
+    );
 
-    if (activeCountryId && validCandidates.length === 0) {
+    if (strictMatches.length === 0) {
       setRecommendation(null);
-      setRecommendationText(
-        "No project is available in the selected country with these criteria. Please choose another country or broaden your search.",
-      );
+      setRecommendationText("Not found. No project matches your selected filters.");
       return;
     }
 
-    const best = validCandidates.reduce<Recommendation | null>(
+    const best = strictMatches.reduce<Recommendation | null>(
       (bestSoFar, candidate) => {
         if (!bestSoFar) return candidate;
         return scoreCandidate(candidate, form) > scoreCandidate(bestSoFar, form)
@@ -427,12 +474,12 @@ export default function Projects() {
     if (best) {
       setRecommendation(best);
       setRecommendationText(
-        `Based on your preferences, ${best.project.name} is the closest match in the selected country. The best building is ${best.building.name} with a unit at $${best.house.price.toLocaleString()}.`,
+        `Great match: ${best.project.name}. Best building: ${best.building.name}, unit price $${best.house.price.toLocaleString()}.`,
       );
     } else {
       setRecommendation(null);
       setRecommendationText(
-        "We couldn't find a suitable project with these answers. Please adjust your budget, country, or area preference.",
+        "Not found. No project matches your selected filters.",
       );
     }
   }
@@ -474,7 +521,7 @@ export default function Projects() {
             </h2>
             <p className="mt-2 text-sm text-slate-500">
               Open the survey and get the best building match based on budget,
-              country, area type and location.
+              country, location and priorities.
             </p>
           </div>
           <button
@@ -646,38 +693,37 @@ export default function Projects() {
 
       {showSurvey && (
         <Card
-          className="fixed inset-0 z-9000 flex items-center justify-center bg-black/50 p-4"
+          className="fixed inset-0 z-9000 overflow-y-auto flex items-start justify-center bg-black/50 p-4 sm:items-center"
           onMouseDown={closeSurvey}
         >
           <Card
-            className="min-w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-[2rem] bg-[#e6e0d8] shadow-2xl no-scrollbar p-0!"
+            className="w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-[2rem] bg-white shadow-2xl p-0!"
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <CardHeader className="flex items-center justify-between flex-wrap gap-4 bg-orange-500 px-6 py-5 text-white">
+            <CardHeader className="flex items-center justify-between bg-orange-500 px-6 py-5 text-white rounded-t-[2rem]">
               <div>
-                <CardTitle className="text-[27px] font-bold">
+                <CardTitle className="text-2xl font-bold">
                   Find your perfect building
                 </CardTitle>
-                <CardDescription className="mt-2 text-sm text-orange-100">
+                <CardDescription className="text-sm text-orange-100 mt-1">
                   Answer a few quick questions and we'll recommend the best
                   building from our current projects.
                 </CardDescription>
               </div>
               <CardAction>
-                <Button
+                <button
                   type="button"
-                  variant="secondary"
                   onClick={closeSurvey}
-                  className="rounded-full border border-white/20 bg-white/10 p-5 text-sm font-semibold text-white transition hover:bg-white/20 cursor-pointer"
+                  className="rounded-full border border-white/30 bg-white/10 hover:bg-white/20 transition p-2 cursor-pointer"
                 >
-                  Close
-                </Button>
+                  <X className="w-4 h-4" />
+                </button>
               </CardAction>
             </CardHeader>
 
-            <CardContent className="grid grid-cols-1 lg:grid-cols-[1.45fr_1fr] gap-6 p-6">
-              <Card className="p-5 bg-transparent ring-0!">
-                <CardHeader className="rounded-3xl bg-slate-50 p-6 shadow-sm mb-6">
+            <CardContent className="grid grid-cols-1 gap-6 p-6 lg:grid-cols-[1.45fr_1fr]">
+              <Card className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm ring-0!">
+                <CardHeader className="mb-6 rounded-2xl border border-orange-100 bg-orange-50 p-5">
                   <CardTitle className="text-sm text-gray-500 mb-2">
                     Available price range
                   </CardTitle>
@@ -702,13 +748,11 @@ export default function Projects() {
                     </Label>
                     <Select
                       value={form.budgetRange}
-                      onValueChange={(value) => {
-                        console.log(value);
-
-                        setForm({ ...form, budgetRange: value });
-                      }}
+                      onValueChange={(value) =>
+                        setForm({ ...form, budgetRange: value })
+                      }
                     >
-                      <SelectTrigger className="w-full rounded-3xl border border-slate-200 bg-white p-5 text-sm shadow-sm cursor-pointer">
+                      <SelectTrigger className="w-full rounded-lg border border-slate-200 bg-white p-3.5 text-sm shadow-sm cursor-pointer">
                         <SelectValue placeholder="Select Your Budget" />
                       </SelectTrigger>
                       <SelectContent className="z-9001">
@@ -733,7 +777,7 @@ export default function Projects() {
                         setForm({ ...form, countryId: value })
                       }
                     >
-                      <SelectTrigger className="w-full rounded-3xl border border-slate-200 bg-white p-5 text-sm shadow-sm cursor-pointer">
+                      <SelectTrigger className="w-full rounded-lg border border-slate-200 bg-white p-3.5 text-sm shadow-sm cursor-pointer">
                         <SelectValue placeholder="Select Your Country" />
                       </SelectTrigger>
                       <SelectContent className="z-9001">
@@ -754,29 +798,6 @@ export default function Projects() {
 
                   <Field>
                     <Label className="block text-sm font-semibold text-slate-700 mb-2">
-                      Do you prefer a calm or busy area?
-                    </Label>
-                    <Select
-                      value={form.areaType}
-                      onValueChange={(value) =>
-                        setForm({ ...form, areaType: value })
-                      }
-                    >
-                      <SelectTrigger className="w-full rounded-3xl border border-slate-200 bg-white p-5 text-sm shadow-sm cursor-pointer">
-                        <SelectValue placeholder="Calm or Busy?" />
-                      </SelectTrigger>
-                      <SelectContent className="z-9001">
-                        <SelectGroup>
-                          <SelectLabel> Calm or Busy?</SelectLabel>
-                          <SelectItem value="calm">Calm area</SelectItem>
-                          <SelectItem value="busy">Busy area</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </Field>
-
-                  <Field>
-                    <Label className="block text-sm font-semibold text-slate-700 mb-2">
                       What location do you have in mind?
                     </Label>
                     <Input
@@ -785,7 +806,7 @@ export default function Projects() {
                         setForm({ ...form, location: e.target.value })
                       }
                       placeholder="e.g. city center, beach, quiet neighborhood"
-                      className="w-full rounded-3xl border border-slate-200 bg-white p-5 text-sm shadow-sm"
+                      className="w-full rounded-lg border border-slate-200 bg-white p-3 text-sm shadow-sm"
                     />
                   </Field>
 
@@ -799,7 +820,7 @@ export default function Projects() {
                         setForm({ ...form, priority: value })
                       }
                     >
-                      <SelectTrigger className="w-full rounded-3xl border border-slate-200 bg-white p-5 text-sm shadow-sm cursor-pointer">
+                      <SelectTrigger className="w-full rounded-lg border border-slate-200 bg-white p-3.5 text-sm shadow-sm cursor-pointer">
                         <SelectValue placeholder="What Matters Most?" />
                       </SelectTrigger>
                       <SelectContent className="z-9001">
@@ -833,7 +854,7 @@ export default function Projects() {
                         setForm({ ...form, bedrooms: value })
                       }
                     >
-                      <SelectTrigger className="w-full rounded-3xl border border-slate-200 bg-white p-5 text-sm shadow-sm cursor-pointer">
+                      <SelectTrigger className="w-full rounded-lg border border-slate-200 bg-white p-3.5 text-sm shadow-sm cursor-pointer">
                         <SelectValue placeholder="No preference" />
                       </SelectTrigger>
                       <SelectContent className="z-9001">
@@ -852,7 +873,7 @@ export default function Projects() {
                     <Button
                       type="submit"
                       variant="secondary"
-                      className="w-full rounded-3xl bg-orange-500 p-5 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition cursor-pointer"
+                      className="w-full rounded-lg bg-orange-500 px-4 py-3 text-sm font-semibold text-white hover:bg-orange-600 transition cursor-pointer"
                     >
                       Get recommendation
                     </Button>
@@ -860,52 +881,44 @@ export default function Projects() {
                 </form>
               </Card>
 
-              <Card className="rounded-3xl bg-slate-950 p-5 text-white shadow-sm">
+              <Card className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-slate-900 shadow-sm">
                 <CardHeader className="mb-6">
                   <CardTitle className="text-xl font-semibold">
                     Your current preferences
                   </CardTitle>
-                  <CardDescription className="text-slate-300 mt-2">
+                  <CardDescription className="text-slate-600 mt-2">
                     Country:
                     {activeCountryId
                       ? countries.find(
                           (item) => String(item.id) === activeCountryId,
                         )?.name
                       : "Any"}
-                    <p className="text-slate-300 mt-1">
+                    <p className="text-slate-600 mt-1">
                       Location: {form.location || "Any"}
                     </p>
                   </CardDescription>
                 </CardHeader>
 
                 <CardContent className="space-y-4">
-                  <Card className="rounded-3xl bg-slate-900 p-4">
-                    <CardHeader className="text-sm uppercase tracking-[0.2em] text-slate-400">
+                  <Card className="rounded-xl border border-slate-200 bg-white p-4">
+                    <CardHeader className="text-sm uppercase tracking-[0.2em] text-slate-400 p-0!">
                       <CardTitle>Budget range</CardTitle>
-                      <CardDescription className="mt-2 text-lg font-semibold text-slate-100">
+                      <CardDescription className="mt-2 text-base font-semibold text-slate-900">
                         {form.budgetRange}
                       </CardDescription>
                     </CardHeader>
                   </Card>
-                  <Card className="rounded-3xl bg-slate-900 p-4">
-                    <CardHeader className="text-sm uppercase tracking-[0.2em] text-slate-400">
-                      <CardTitle>Area type</CardTitle>
-                      <CardDescription className="mt-2 text-lg font-semibold text-slate-100">
-                        {form.areaType}
-                      </CardDescription>
-                    </CardHeader>
-                  </Card>
-                  <Card className="rounded-3xl bg-slate-900 p-4">
-                    <CardHeader className="text-sm uppercase tracking-[0.2em] text-slate-400">
+                  <Card className="rounded-xl border border-slate-200 bg-white p-4">
+                    <CardHeader className="text-sm uppercase tracking-[0.2em] text-slate-400 p-0!">
                       <CardTitle>Preference</CardTitle>
-                      <CardDescription className="mt-2 text-lg font-semibold text-slate-100">
+                      <CardDescription className="mt-2 text-base font-semibold text-slate-900">
                         {form.priority}
                       </CardDescription>
                     </CardHeader>
                   </Card>
                 </CardContent>
 
-                <Card className="mt-8 rounded-3xl bg-white p-5 text-slate-900 shadow-lg">
+                <Card className="mt-8 rounded-2xl border border-orange-100 bg-white p-5 text-slate-900 shadow-sm">
                   <CardHeader className="text-sm uppercase tracking-[0.2em] text-orange-500">
                     <CardTitle>Recommendation</CardTitle>
                   </CardHeader>
@@ -914,7 +927,7 @@ export default function Projects() {
                   </CardDescription>
                   <CardContent>
                     {recommendation && (
-                      <Card className="mt-5 rounded-3xl bg-orange-50 p-4 text-slate-900">
+                      <Card className="mt-5 rounded-2xl border border-orange-100 bg-orange-50 p-4 text-slate-900">
                         <CardHeader className="text-sm uppercase tracking-[0.2em] text-orange-500">
                           <CardTitle>Best building</CardTitle>
                         </CardHeader>

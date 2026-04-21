@@ -997,7 +997,7 @@ export default function ProjectDetails() {
                   Contact phone
                 </label>
                 <PhoneInput
-                  defaultCountry="eg"
+                  defaultCountry="eg" 
                   value={tourForm.contactPhone}
                   onChange={(phone) =>
                     setTourForm((prev) => ({ ...prev, contactPhone: phone }))

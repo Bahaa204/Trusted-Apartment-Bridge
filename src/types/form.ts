@@ -65,7 +65,6 @@ export type BuildingFormProps = BuildingData & {
 export type SurveyForm = {
   budgetRange: string;
   countryId: string;
-  areaType: string;
   location: string;
   priority: string;
   bedrooms: string;
