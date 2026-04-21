@@ -36,7 +36,7 @@ export default function UnitCard({
           color: isHovered ? "white" : "#888",
         }}
       >
-         {house.floor > 10 ? "High Floor" :"Low Floor"}
+         {house.floor >= 9 ? "High Floor" :"Low Floor"}
       </div>
       <div className="p-4">
         <p
