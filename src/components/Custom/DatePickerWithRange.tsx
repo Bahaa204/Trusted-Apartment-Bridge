@@ -51,11 +51,11 @@ export function DatePickerWithRange({
         {label}
       </FieldLabel>
       <Popover>
-        <PopoverTrigger asChild>
+        <PopoverTrigger className="cursor-pointer" asChild>
           <Button
             variant="outline"
             id="date-picker-range"
-            className="h-12 w-full justify-center gap-2 px-4 text-center text-base font-normal"
+            className="h-12 w-full justify-center gap-2 px-4 text-center text-base font-normal cursor-pointer"
             style={pickerStyle}
           >
             <CalendarIcon />
