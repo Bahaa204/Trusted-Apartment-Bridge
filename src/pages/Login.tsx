@@ -4,7 +4,7 @@ import { useState, type ReactNode, type SubmitEvent } from "react";
 import type { Provider } from "@supabase/supabase-js";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import { Button } from "@/components/ui/button";
-import Logo from "/images/Logo.png";
+import Logo from "/images/NavBarLogo.png";
 
 import {
   Card,
@@ -189,11 +189,11 @@ export default function Login() {
         <Card className="w-full max-w-4xl overflow-hidden border border-white/60 bg-white/85 text-slate-900 shadow-[0_30px_100px_rgba(15,23,42,0.2)] backdrop-blur p-0!">
           <CardHeader className="rounded-none! gap-6 border-b border-slate-200 bg-linear-to-br from-slate-950 via-slate-900 to-slate-800 px-6 py-8 text-white md:px-10">
             <div className="flex flex-col items-center gap-5 text-center md:flex-row md:text-left">
-              <div className="flex size-28 items-center justify-center rounded-full border border-orange-300/40 bg-white shadow-inner shadow-black/20">
+              <div className="flex size-28 items-center justify-center rounded-full border border-orange-300/40 bg-white shadow-inner shadow-black/20 p-5">
                 <img
                   src={Logo}
                   alt="TAB Logo"
-                  className="size-20 object-contain"
+                  className="object-center"
                 />
               </div>
 

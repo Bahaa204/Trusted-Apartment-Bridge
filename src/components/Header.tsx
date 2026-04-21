@@ -56,7 +56,7 @@ export default function Header() {
           <div className="flex lg:flex-1">
             <Link to="/" className="flex items-center gap-3">
               <span className="sr-only">Trusted Apartment Bridge - TAB</span>
-              <img src={Logo} alt="Logo" className="size-18" />
+              <img src={Logo} alt="Logo" className="w-25 h-10" />
             </Link>
           </div>
           <div className="flex lg:hidden">
