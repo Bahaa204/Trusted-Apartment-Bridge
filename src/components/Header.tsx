@@ -17,7 +17,7 @@ export default function Header() {
     { to: "/contact", label: "Contact Us" },
     { to: "/projects", label: "Projects" },
     { to: "/support", label: "Support" },
-    { to: "/staff", label: "Admin" },
+    { to: "/staff", label: "Staff" },
   ];
 
   const {
