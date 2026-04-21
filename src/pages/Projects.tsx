@@ -1,4 +1,4 @@
-import { useMemo, useState, type SubmitEvent } from "react";
+import { useMemo, useState, type MouseEvent, type SubmitEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useBuildings } from "@/hooks/useBuildings";
@@ -35,7 +35,9 @@ import {
 import { Input } from "@/components/ui/input";
 import type { SurveyForm } from "@/types/form";
 import ErrorCard from "@/components/ErrorCard";
-import LoadingCard from "@/components/LoadingCard";
+import { useAuth } from "@/hooks/useAuth";
+import { useFavorites } from "@/hooks/useFavorites";
+import { Heart } from "lucide-react";
 
 const countryFlags: Record<string, string> = {
   Egypt: "eg",
@@ -234,6 +236,8 @@ export default function Projects() {
     Error: BuildingsError,
   } = useBuildings();
   const { Houses, Loading: HousesLoading, Error: HousesError } = useHouses();
+  const { Session } = useAuth();
+  const { IsFavorited, ToggleFavorite } = useFavorites();
 
   const loading =
     CountriesLoading || ProjectsLoading || BuildingsLoading || HousesLoading;
@@ -433,6 +437,20 @@ export default function Projects() {
     }
   }
 
+  async function handleFavoriteClick(
+    event: MouseEvent<HTMLButtonElement>,
+    projectId: Project["id"],
+  ) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!Session) {
+      return alert("Please login to save favorites.");
+    }
+
+    await ToggleFavorite(projectId);
+  }
+
   return (
     <div className="bg-[#e6e0d8]">
       <div className="bg-linear-to-br from-gray-900 via-gray-800 to-orange-900 text-white py-20 px-6">
@@ -507,7 +525,36 @@ export default function Projects() {
         )}
 
         {loading ? (
-          <LoadingCard message="Loading Projects..." />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-md animate-pulse">
+                {/* Image placeholder */}
+                <div className="h-48 bg-gray-200" />
+                <div className="p-6">
+                  {/* Country flag + name */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="h-4 w-5 bg-gray-200 rounded" />
+                    <div className="h-3 w-20 bg-gray-100 rounded" />
+                  </div>
+                  {/* Title */}
+                  <div className="h-5 w-3/4 bg-gray-200 rounded mb-3" />
+                  {/* Description lines */}
+                  <div className="space-y-2 mb-4">
+                    <div className="h-3 w-full bg-gray-100 rounded" />
+                    <div className="h-3 w-5/6 bg-gray-100 rounded" />
+                  </div>
+                  {/* Meta */}
+                  <div className="h-3 w-1/2 bg-gray-100 rounded mb-1" />
+                  <div className="h-3 w-2/3 bg-gray-100 rounded mb-4" />
+                  {/* Footer */}
+                  <div className="flex justify-between">
+                    <div className="h-3 w-24 bg-gray-100 rounded" />
+                    <div className="h-3 w-28 bg-gray-100 rounded" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         ) : projects.length === 0 ? (
           <p className="text-center text-gray-400 py-20">No projects found.</p>
         ) : (
@@ -519,8 +566,23 @@ export default function Projects() {
                 <Link
                   to={`/projects/${project.id}`}
                   key={project.id}
-                  className="group text-left bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                  className="group relative text-left bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                 >
+                  <button
+                    type="button"
+                    onClick={(event) => handleFavoriteClick(event, project.id)}
+                    className="absolute right-3 top-3 z-30 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-[#0f2f4f] shadow-md transition hover:bg-orange-50 cursor-pointer"
+                    aria-label={
+                      IsFavorited(project.id)
+                        ? "Remove from favorites"
+                        : "Add to favorites"
+                    }
+                  >
+                    <Heart
+                      className={`h-4 w-4 ${IsFavorited(project.id) ? "fill-orange-500 text-orange-500" : "text-[#0f2f4f]"}`}
+                    />
+                  </button>
+
                   {projectImages.length > 0 ? (
                     <ImageGallery images={projectImages} />
                   ) : (
@@ -555,6 +617,17 @@ export default function Projects() {
                     <p className="text-gray-500 text-sm line-clamp-2 mb-4">
                       {project.description}
                     </p>
+                    <div className="mb-4 space-y-1 text-xs text-[#24507f]">
+                      <p>
+                        Handover: {" "}
+                        {project.handover_date
+                          ? new Date(project.handover_date).toLocaleDateString()
+                          : "To be announced"}
+                      </p>
+                      <p className="line-clamp-2">
+                        ROI Insight: {project.expected_roi_note || "Steady rental demand with long-term growth potential."}
+                      </p>
+                    </div>
                     <div className="flex items-center justify-between text-sm text-gray-400">
                       <span>📍 {project.location}</span>
                       <span>
@@ -562,7 +635,7 @@ export default function Projects() {
                           ? `$${getPriceRange(project.id).min.toLocaleString()} - $${getPriceRange(project.id).max.toLocaleString()}`
                           : "Price available"}
                       </span>
-                    </div>
+                    </div> 
                   </div>
                 </Link>
               );

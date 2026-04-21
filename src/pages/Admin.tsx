@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
 import { useState, type SubmitEvent } from "react";
+import { useEffect } from "react";
 import type { Session } from "@supabase/supabase-js";
 import StaffChatDashboard from "@/components/StaffChatDashboard";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -27,6 +28,8 @@ import { Field, Input } from "@headlessui/react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import ErrorCard from "@/components/ErrorCard";
 import LoadingCard from "@/components/LoadingCard";
+import { supabaseClient } from "@/lib/supabaseClient";
+import { useTourBookings } from "@/hooks/useTourBookings";
 
 export default function Admin() {
   useDocumentTitle("Staff");
@@ -36,9 +39,23 @@ export default function Admin() {
   const [Email, setEmail] = useState<string>("");
   const [Password, setPassword] = useState<string>("");
   const [FormError, setFormError] = useState<string>("");
+  const [FavoritesCount, setFavoritesCount] = useState<number>(0);
 
   const { Session, Error, Loading, GetRoleFromEmail, SignUp, RestoreSession } =
     useAuth();
+  const { Bookings } = useTourBookings({ includeAllForStaff: true });
+
+  useEffect(() => {
+    async function fetchFavoritesCount() {
+      const { count } = await supabaseClient
+        .from("project_favorites")
+        .select("id", { head: true, count: "exact" });
+
+      setFavoritesCount(count || 0);
+    }
+
+    fetchFavoritesCount();
+  }, []);
 
   function checkAccess(Session: Session) {
     const role = GetRoleFromEmail(Session.user.email);
@@ -189,6 +206,53 @@ export default function Admin() {
                 </Button>
               </CardAction>
             </CardFooter>
+          </Card>
+
+          <Card
+            onClick={() => navigate("/staff/bookings")}
+            className="cursor-pointer border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-sm transition hover:border-[#f3a342] hover:shadow-md"
+          >
+            <CardHeader>
+              <CardTitle className="text-xl text-[#0f2f4f]">
+                Manage Tour Bookings
+              </CardTitle>
+              <CardDescription className="text-[#24507f]">
+                Confirm, complete, or cancel customer tour requests.
+              </CardDescription>
+            </CardHeader>
+            <CardFooter className="bg-transparent">
+              <CardAction>
+                <Button
+                  variant="default"
+                  className="cursor-pointer bg-[#0f2f4f] text-white hover:bg-[#173b67]"
+                >
+                  Go
+                </Button>
+              </CardAction>
+            </CardFooter>
+          </Card>
+        </section>
+
+        <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <Card className="border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-xl text-[#0f2f4f]">
+                Favorites Insights
+              </CardTitle>
+              <CardDescription className="text-[#24507f]">
+                Total saved projects by customers: {FavoritesCount}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          <Card className="border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-xl text-[#0f2f4f]">
+                Tour Requests Snapshot
+              </CardTitle>
+              <CardDescription className="text-[#24507f]">
+                Pending: {Bookings.filter((booking) => booking.status === "pending").length} | Confirmed: {Bookings.filter((booking) => booking.status === "confirmed").length}
+              </CardDescription>
+            </CardHeader>
           </Card>
         </section>
 

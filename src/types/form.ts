@@ -13,6 +13,10 @@ export type FormData = {
   project_location: string;
   project_country_id: Country["id"]; // Same Type as the Country id
   project_images: FileList | null;
+  project_handover_date: string;
+  project_expected_roi_note: string;
+  project_map_url: string;
+  project_map_embed_url: string;
   buildings_name: string;
   buildings_block: string;
   buildings_images: FileList | null;
@@ -22,6 +26,7 @@ export type FormData = {
   house_nb_bathrooms: number;
   house_building_id: Building["id"]; // Same Type as the building id
   house_price: number;
+  house_area: number;
 };
 
 export type PaymentFormData = {
@@ -64,4 +69,11 @@ export type SurveyForm = {
   location: string;
   priority: string;
   bedrooms: string;
+};
+
+export type BookTourFormData = {
+  preferredDate: string;
+  preferredTime: string;
+  contactPhone: string;
+  notes: string;
 };

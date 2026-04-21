@@ -45,6 +45,10 @@ export default function ProjectCard({
     location: project.location || "",
     country_id: project.country_id || NaN,
     images: null,
+    handover_date: project.handover_date || null,
+    expected_roi_note: project.expected_roi_note || null,
+    map_url: project.map_url || null,
+    map_embed_url: project.map_embed_url || null,
   };
 
   const [EditMode, setEditMode] = useState<boolean>(false);
@@ -69,7 +73,11 @@ export default function ProjectCard({
       description: ProjectsInput.description,
       location: ProjectsInput.location,
       country_id: ProjectsInput.country_id,
-      images: project_images || project.images,
+      images: project_images.length > 0 ? project_images : project.images,
+      handover_date: ProjectsInput.handover_date || null,
+      expected_roi_note: ProjectsInput.expected_roi_note || null,
+      map_url: ProjectsInput.map_url || null,
+      map_embed_url: ProjectsInput.map_embed_url || null,
     };
 
     const ok = await UpdateProject(updatedProject, project.id);
@@ -236,7 +244,7 @@ export default function ProjectCard({
                 <Input
                   type="file"
                   multiple
-                  accept="images/*"
+                  accept="image/*"
                   className="mt-1 cursor-pointer border-slate-300 bg-white text-slate-900 file:text-slate-700"
                   onChange={(event) => {
                     setProjectsInput((prev) => ({
@@ -250,6 +258,70 @@ export default function ProjectCard({
               <>
                 <strong>Project Visits:</strong> {project.nb_visits}
               </>
+            )}
+          </p>
+          <p>
+            <strong>Handover Date: </strong>
+            {EditMode ? (
+              <Input
+                type="date"
+                className="mt-1 border-slate-300 bg-white text-slate-900"
+                value={ProjectsInput.handover_date || ""}
+                onChange={(event) => {
+                  setProjectsInput((prev) => ({
+                    ...prev,
+                    handover_date: event.target.value || null,
+                  }));
+                }}
+              />
+            ) : project.handover_date ? (
+              new Date(project.handover_date).toLocaleDateString()
+            ) : (
+              "N/A"
+            )}
+          </p>
+          <p>
+            <strong>ROI/Yield Note: </strong>
+            {EditMode ? (
+              <Textarea
+                className="mt-1 border-slate-300 bg-white text-slate-900"
+                value={ProjectsInput.expected_roi_note || ""}
+                onChange={(event) => {
+                  setProjectsInput((prev) => ({
+                    ...prev,
+                    expected_roi_note: event.target.value,
+                  }));
+                }}
+              />
+            ) : (
+              project.expected_roi_note || "N/A"
+            )}
+          </p>
+          <p>
+            <strong>Map URL: </strong>
+            {EditMode ? (
+              <Input
+                type="url"
+                className="mt-1 border-slate-300 bg-white text-slate-900"
+                value={ProjectsInput.map_url || ""}
+                onChange={(event) => {
+                  setProjectsInput((prev) => ({
+                    ...prev,
+                    map_url: event.target.value,
+                  }));
+                }}
+              />
+            ) : project.map_url ? (
+              <a
+                href={project.map_url}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#173b67] underline"
+              >
+                Open Map
+              </a>
+            ) : (
+              "N/A"
             )}
           </p>
           {!EditMode && (

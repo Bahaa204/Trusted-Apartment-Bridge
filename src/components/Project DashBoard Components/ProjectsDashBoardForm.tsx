@@ -25,6 +25,10 @@ const InitialData: FormData = {
   project_location: "",
   project_country_id: NaN,
   project_images: null,
+  project_handover_date: "",
+  project_expected_roi_note: "",
+  project_map_url: "",
+  project_map_embed_url: "",
   buildings_name: "",
   buildings_block: "",
   buildings_images: null,
@@ -34,6 +38,7 @@ const InitialData: FormData = {
   house_nb_bathrooms: NaN,
   house_building_id: NaN,
   house_price: NaN,
+  house_area: NaN,
 };
 
 type ProjectsDashBoardFormProps = {
@@ -98,13 +103,16 @@ export default function ProjectsDashBoardForm({
             if (imageObj) project_images.push(imageObj);
           }
           const newProject: Project = {
-            id: Math.floor(Math.random() * 1000), // for some reason supabase identity broke
             name: FormData.project_name,
             description: FormData.project_description,
             location: FormData.project_location,
             nb_visits: 0,
             country_id: FormData.project_country_id,
             images: project_images,
+            handover_date: FormData.project_handover_date || null,
+            expected_roi_note: FormData.project_expected_roi_note || null,
+            map_url: FormData.project_map_url || null,
+            map_embed_url: FormData.project_map_embed_url || null,
           };
 
           const ok = await AddProject(newProject);
@@ -115,7 +123,7 @@ export default function ProjectsDashBoardForm({
       }
       // Buildings
       case 1: {
-        const images = FormData.project_images;
+        const images = FormData.buildings_images;
         if (images) {
           const building_images: Image[] = [];
           for (const file of images) {
@@ -145,6 +153,7 @@ export default function ProjectsDashBoardForm({
           nb_bathrooms: FormData.house_nb_bathrooms,
           building_id: FormData.house_building_id,
           price: FormData.house_price,
+          area: FormData.house_area,
         };
 
         const ok = await AddHouse(newHouse);

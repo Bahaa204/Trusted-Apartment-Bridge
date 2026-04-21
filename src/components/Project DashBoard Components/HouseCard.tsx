@@ -31,6 +31,7 @@ export default function HouseCard({
     floor: house.floor || NaN,
     building_id: house.building_id || NaN,
     price: house.price || NaN,
+    area: house.area || NaN,
     is_sold: house.is_sold,
   };
 
@@ -45,6 +46,7 @@ export default function HouseCard({
       floor: HouseInput.floor,
       building_id: HouseInput.building_id,
       price: HouseInput.price,
+      area: HouseInput.area,
       is_sold: HouseInput.is_sold,
     };
 
@@ -205,6 +207,29 @@ export default function HouseCard({
               "Yes"
             ) : (
               "No"
+            )}
+          </p>
+          <p>
+            <strong>Area (m²): </strong>
+            {EditMode ? (
+              <Input
+                type="number"
+                className="mt-1 border-slate-300 bg-white text-slate-900"
+                value={
+                  typeof HouseInput.area !== "number" || Number.isNaN(HouseInput.area)
+                    ? ""
+                    : HouseInput.area
+                }
+                placeholder="Area in square meters"
+                onChange={(event) => {
+                  setHouseInput((prev) => ({
+                    ...prev,
+                    area: parseFloat(event.target.value.trim()),
+                  }));
+                }}
+              />
+            ) : (
+              house.area || "N/A"
             )}
           </p>
           <p>

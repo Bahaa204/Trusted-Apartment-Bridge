@@ -14,6 +14,12 @@ export type Project = Common & {
   nb_visits?: number; // Supabase defaults the value to 0 so it is optional
   country_id: Country["id"]; // Same Type as the Country id
   images: Image[];
+  handover_date?: string | null;
+  expected_roi_note?: string | null;
+  map_url?: string | null;
+  map_embed_url?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 };
 
 // Same type as the Projects but changing the images type from Image[] to FileList or null
@@ -32,7 +38,10 @@ export type Functions = {
     buildingId: Building["id"],
   ) => Promise<boolean>;
   RemoveBuilding: (buildingId: Building["id"]) => Promise<boolean>;
-  UpdateHouse: (updated_house: House, houseId: House["id"]) => Promise<boolean>;
+  UpdateHouse: (
+    updated_house: Partial<House>,
+    houseId: House["id"],
+  ) => Promise<boolean>;
   RemoveHouse: (houseId: House["id"]) => Promise<boolean>;
 };
 
@@ -54,6 +63,7 @@ export type UnitCardProps = {
   onHover: () => void;
   onLeave: () => void;
   onBuy: () => void;
+  onBookTour: () => void;
 };
 
 export type ProjectsData = {
@@ -62,6 +72,10 @@ export type ProjectsData = {
   project_location: string;
   project_images: FileList | null;
   project_country_id: Country["id"];
+  project_handover_date: string;
+  project_expected_roi_note: string;
+  project_map_url: string;
+  project_map_embed_url: string;
 };
 
 export type ProjectCardsProps = {
@@ -80,4 +94,36 @@ export type Recommendation = {
   project: Project;
   building: Building;
   house: House;
+};
+
+export type FavoriteProject = Common & {
+  user_id: string;
+  project_id: Project["id"];
+};
+
+export type TourBookingStatus =
+  | "pending"
+  | "confirmed"
+  | "completed"
+  | "cancelled";
+
+export type TourBooking = Common & {
+  user_id: string;
+  project_id: Project["id"];
+  house_id: House["id"] | null;
+  preferred_date: string;
+  preferred_time: string;
+  contact_phone?: string | null;
+  notes?: string | null;
+  status: TourBookingStatus;
+  updated_at?: string;
+};
+
+export type TourBookingInput = {
+  project_id: Project["id"];
+  house_id: House["id"] | null;
+  preferred_date: string;
+  preferred_time: string;
+  contact_phone?: string;
+  notes?: string;
 };

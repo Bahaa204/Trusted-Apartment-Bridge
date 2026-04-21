@@ -11,6 +11,7 @@ export type House = Common & {
   nb_bathrooms: number;
   building_id: Building["id"]; // Same Type as the building id
   price: number;
+  area?: number | null;
   is_sold?: boolean; // Defaults to False
 };
 
@@ -20,11 +21,15 @@ export type HouseData = {
   house_nb_bathrooms: number;
   house_building_id: Building["id"];
   house_price: number;
+  house_area: number;
 };
 
 export type HouseCardsProps = {
   house: House;
   Buildings: Building[];
-  UpdateHouse: (updated_house: House, houseId: House["id"]) => Promise<boolean>;
+  UpdateHouse: (
+    updated_house: Partial<House>,
+    houseId: House["id"],
+  ) => Promise<boolean>;
   RemoveHouse: (houseId: House["id"]) => Promise<boolean>;
 };

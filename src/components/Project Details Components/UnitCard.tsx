@@ -1,3 +1,4 @@
+import { BedDouble, ShowerHead, Maximize2 } from "lucide-react";
 import type { UnitCardProps } from "@/types/projects";
 
 export default function UnitCard({
@@ -6,6 +7,7 @@ export default function UnitCard({
   onHover,
   onLeave,
   onBuy,
+  onBookTour,
   LoginNotice,
 }: UnitCardProps) {
   return (
@@ -44,24 +46,49 @@ export default function UnitCard({
           ${house.price.toLocaleString()}
         </p>
         <div
-          className="flex gap-5 text-sm"
+          className="flex flex-wrap gap-4 text-sm"
           style={{ color: isHovered ? "rgba(255,255,255,0.85)" : "#666" }}
         >
-          <span>🛏 {house.nb_bedrooms} Bedrooms</span>
-          <span>🚿 {house.nb_bathrooms} Bathrooms</span>
+          <span className="flex items-center gap-1.5">
+            <BedDouble className="w-4 h-4 shrink-0" />
+            {house.nb_bedrooms} Bed{house.nb_bedrooms !== 1 ? "s" : ""}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <ShowerHead className="w-4 h-4 shrink-0" />
+            {house.nb_bathrooms} Bath{house.nb_bathrooms !== 1 ? "s" : ""}
+          </span>
+          {house.area != null && (
+            <span className="flex items-center gap-1.5">
+              <Maximize2 className="w-4 h-4 shrink-0" />
+              {house.area} m²
+            </span>
+          )}
         </div>
-        <button
-          type="button"
-          onClick={onBuy}
-          className={`mt-5 w-full rounded-2xl border px-4 py-3 text-sm font-semibold transition cursor-pointer disabled:cursor-not-allowed ${
-            isHovered
-              ? "border-white bg-white text-orange-500 hover:bg-white/90"
-              : "border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100"
-          }`}
-          disabled={LoginNotice}
-        >
-          {LoginNotice ? "Login in to buy this unit" : "Buy this unit"}
-        </button>
+        <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={onBuy}
+            className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition cursor-pointer disabled:cursor-not-allowed ${
+              isHovered
+                ? "border-white bg-white text-orange-500 hover:bg-white/90"
+                : "border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100"
+            }`}
+            disabled={LoginNotice}
+          >
+            {LoginNotice ? "Login to buy" : "Buy this unit"}
+          </button>
+          <button
+            type="button"
+            onClick={onBookTour}
+            className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition cursor-pointer ${
+              isHovered
+                ? "border-white/70 bg-transparent text-white hover:bg-white/15"
+                : "border-orange-500 bg-orange-500 text-white hover:bg-orange-600"
+            }`}
+          >
+            Book a tour
+          </button>
+        </div>
       </div>
     </div>
   );

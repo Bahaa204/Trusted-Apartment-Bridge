@@ -24,6 +24,7 @@ export default function HouseForm({
   house_nb_bathrooms,
   house_nb_bedrooms,
   house_price,
+  house_area,
   updateFields,
   Options,
 }: HouseFormProps) {
@@ -99,6 +100,23 @@ export default function HouseForm({
             value={Number.isNaN(house_price) ? "" : house_price}
             onChange={(event) =>
               updateFields({ house_price: parseInt(event.target.value) })
+            }
+            disabled={loading}
+          />
+        </FieldGroup>
+
+        <FieldGroup className="grid gap-1.5">
+          <FieldLabel htmlFor="house-area" className="text-slate-700">
+            Area (m²)
+          </FieldLabel>
+          <Input
+            type="number"
+            id="house-area"
+            className="border-slate-300 bg-white text-slate-900"
+            required
+            value={Number.isNaN(house_area) ? "" : house_area}
+            onChange={(event) =>
+              updateFields({ house_area: parseFloat(event.target.value) })
             }
             disabled={loading}
           />

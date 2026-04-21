@@ -17,7 +17,8 @@ export default function Header() {
     { to: "/contact", label: "Contact Us" },
     { to: "/projects", label: "Projects" },
     { to: "/support", label: "Support" },
-    { to: "/staff", label: "Staff" },
+    { to: "/favorites", label: "Favorites", requiresAuth: true },
+    { to: "/staff", label: "Staff", requiresStaff: true },
   ];
 
   const {
@@ -72,7 +73,8 @@ export default function Header() {
           </div>
           <PopoverGroup className="hidden lg:flex lg:gap-x-12">
             {NAVLINKS.map((link, index) => {
-              if (link.label === "Staff" && !condition) return;
+              if (link.requiresStaff && !condition) return;
+              if (link.requiresAuth && !Session) return;
 
               return (
                 <NavLink
@@ -139,7 +141,8 @@ export default function Header() {
               <div className="-my-6 divide-y divide-gray-500/10">
                 <div className="space-y-2 py-6 flex flex-col">
                   {NAVLINKS.map((link, index) => {
-                    if (link.label === "Admin" && !condition) return;
+                    if (link.requiresStaff && !condition) return;
+                    if (link.requiresAuth && !Session) return;
 
                     return (
                       <NavLink

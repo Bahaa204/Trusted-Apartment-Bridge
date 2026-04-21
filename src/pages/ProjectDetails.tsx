@@ -1,5 +1,8 @@
-import { useMemo, useState, type SubmitEvent } from "react";
-import { useParams, Link } from "react-router-dom";
+import React, { useMemo, useState, useEffect, type SubmitEvent } from "react";
+import { MapPin, Map as MapIcon, CheckCircle2, X, Heart, Calendar, Clock, Phone, FileText } from "lucide-react";
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { supabaseClient } from "../lib/supabaseClient";
 import { Suspense } from "react";
 import { useBuildings } from "@/hooks/useBuildings";
@@ -27,13 +30,20 @@ import type { Building } from "@/types/building";
 import type { House } from "@/types/house";
 import type { Project } from "@/types/projects";
 import type { PaymentFormData } from "@/types/form";
+import type { BookTourFormData } from "@/types/form";
 import type { Country } from "@/types/country";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { ValidatePayment } from "@/helpers/helpers";
+import {
+  ValidateBookTour,
+  ValidatePayment,
+  sanitizeMapUrl,
+} from "@/helpers/helpers";
 import { useAuth } from "@/hooks/useAuth";
 import ErrorCard from "@/components/ErrorCard";
-import LoadingCard from "@/components/LoadingCard";
+
+import { useFavorites } from "@/hooks/useFavorites";
+import { useTourBookings } from "@/hooks/useTourBookings";
 
 const MODELS = [
   "models/162_7.glb",
@@ -136,6 +146,7 @@ function getProjectImageUrls(project: Project): string[] {
 }
 
 export default function ProjectDetails() {
+  const navigate = useNavigate();
   const { projectID } = useParams();
 
   const InitialValue: PaymentFormData = {
@@ -161,8 +172,27 @@ export default function ProjectDetails() {
   const [paymentError, setPaymentError] = useState<string>("");
 
   const [paymentForm, setPaymentForm] = useState<PaymentFormData>(InitialValue);
+  const [showBookTour, setShowBookTour] = useState<boolean>(false);
+  const [bookTourError, setBookTourError] = useState<string>("");
+  const [tourHouse, setTourHouse] = useState<House | null>(null);
+  const [tourForm, setTourForm] = useState<BookTourFormData>({
+    preferredDate: "",
+    preferredTime: "10:00",
+    contactPhone: "",
+    notes: "",
+  });
+  const [showToast, setShowToast] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string>("");
+
+  useEffect(() => {
+    if (!showToast) return;
+    const t = setTimeout(() => setShowToast(false), 4000);
+    return () => clearTimeout(t);
+  }, [showToast]);
 
   const { Session, Loading: AuthLoading, Error: AuthError } = useAuth();
+  const { IsFavorited, ToggleFavorite } = useFavorites();
+  const { AddBooking, Loading: BookingLoading } = useTourBookings();
 
   const {
     Countries,
@@ -289,7 +319,53 @@ export default function ProjectDetails() {
   console.log("Login Notice: ", LoginNotice);
 
   if (loading) {
-    return <LoadingCard message="Loading Project Details..." />;
+    return (
+      <main className="min-h-screen bg-[#e6e0d8]">
+        {/* Hero skeleton */}
+        <div className="bg-linear-to-br from-gray-900 via-gray-800 to-orange-900 py-20 px-6">
+          <div className="max-w-5xl mx-auto">
+            <div className="h-4 w-32 bg-white/20 rounded-full mb-6 animate-pulse" />
+            <div className="h-10 w-64 bg-white/20 rounded-xl mb-4 animate-pulse" />
+            <div className="h-4 w-48 bg-white/10 rounded-full animate-pulse" />
+          </div>
+        </div>
+        <div className="max-w-5xl mx-auto px-6 -mt-8">
+          {/* Stats skeleton */}
+          <div className="grid grid-cols-3 gap-4 mb-10">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="bg-white rounded-2xl shadow-lg p-6 text-center animate-pulse">
+                <div className="h-8 w-16 bg-gray-200 rounded-lg mx-auto mb-2" />
+                <div className="h-3 w-12 bg-gray-100 rounded mx-auto" />
+              </div>
+            ))}
+          </div>
+          {/* Image gallery skeleton */}
+          <div className="h-80 bg-gray-200 rounded-2xl mb-10 animate-pulse" />
+          {/* Description skeleton */}
+          <div className="bg-white rounded-2xl shadow-md p-8 mb-10 animate-pulse">
+            <div className="h-6 w-48 bg-gray-200 rounded-lg mb-4" />
+            <div className="space-y-2">
+              <div className="h-4 w-full bg-gray-100 rounded" />
+              <div className="h-4 w-5/6 bg-gray-100 rounded" />
+              <div className="h-4 w-4/6 bg-gray-100 rounded" />
+            </div>
+          </div>
+          {/* Buildings skeleton */}
+          <div className="mb-20">
+            <div className="h-7 w-48 bg-gray-300 rounded-lg mb-2 animate-pulse" />
+            <div className="h-4 w-64 bg-gray-200 rounded mb-8 animate-pulse" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="rounded-3xl border border-gray-200 bg-white p-6 animate-pulse">
+                  <div className="h-5 w-32 bg-gray-200 rounded mb-3" />
+                  <div className="h-3 w-20 bg-gray-100 rounded" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   if (error) {
@@ -348,6 +424,8 @@ export default function ProjectDetails() {
     typeof project.country_id === "number"
       ? countryById.get(project.country_id)?.name
       : undefined;
+  const sanitizedMapLink = sanitizeMapUrl(project.map_url);
+  const projectId = project.id;
 
   function openPayment(house: House) {
     setPaymentHouse(house);
@@ -379,6 +457,61 @@ export default function ProjectDetails() {
     setPaymentSuccess(true);
   }
 
+  function openBookTour(house: House) {
+    if (!Session) {
+      navigate("/login");
+      return;
+    }
+
+    setTourHouse(house);
+    setBookTourError("");
+    setTourForm({
+      preferredDate: "",
+      preferredTime: "10:00",
+      contactPhone: "",
+      notes: "",
+    });
+    setShowBookTour(true);
+  }
+
+  async function handleBookTourSubmit(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const validationError = ValidateBookTour(tourForm);
+    if (validationError) {
+      setBookTourError(validationError);
+      return;
+    }
+
+    const ok = await AddBooking({
+      project_id: projectId,
+      house_id: tourHouse?.id ?? null,
+      preferred_date: tourForm.preferredDate,
+      preferred_time: tourForm.preferredTime,
+      contact_phone: tourForm.contactPhone,
+      notes: tourForm.notes,
+    });
+
+    if (!ok) {
+      setBookTourError("Could not book the tour. Please try again.");
+      return;
+    }
+
+    // Close the modal and show a toast notification
+    setShowBookTour(false);
+    setToastMessage("Tour request submitted! Our team will confirm shortly.");
+    setShowToast(true);
+  }
+
+  async function handleFavoriteToggle() {
+    if (!Session) {
+      navigate("/login");
+      return;
+    }
+
+    await ToggleFavorite(projectId);
+  }
+
   return (
     <div className="min-h-screen bg-[#e6e0d8]">
       {/* Hero */}
@@ -388,10 +521,36 @@ export default function ProjectDetails() {
           <h1 className="text-4xl md:text-5xl font-extrabold mb-3">
             {project.name}
           </h1>
-          <div className="flex flex-wrap gap-4 text-gray-300">
-            <span>📍 {project.location}</span>
+          <div className="flex flex-wrap gap-4 text-gray-300 items-center">
+            <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /> {project.location}</span>
             <span>•</span>
             <span>{countryName || "Unknown"}</span>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={handleFavoriteToggle}
+              className="rounded-full border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 cursor-pointer"
+            >
+              {IsFavorited(project.id)
+                ? "Saved in Favorites"
+                : "Add to Favorites"}
+            </button>
+            {sanitizedMapLink && (
+              <a
+                href={sanitizedMapLink}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 inline-flex items-center gap-1.5"
+              >
+                <MapIcon className="w-4 h-4" /> View Map
+              </a>
+            )}
+            <span className="text-sm text-orange-200">
+              Handover: {project.handover_date
+                ? new Date(project.handover_date).toLocaleDateString()
+                : "To be announced"}
+            </span>
           </div>
         </div>
       </div>
@@ -436,7 +595,17 @@ export default function ProjectDetails() {
           <p className="text-gray-600 leading-relaxed whitespace-pre-line">
             {project.description}
           </p>
+          <div className="mt-6 grid gap-3 rounded-xl border border-orange-100 bg-orange-50 p-4 text-sm text-[#8a3f00]">
+            <p>
+              Expected ROI/Yield: {project.expected_roi_note || "Projected stable yield with long-term demand in this district."}
+            </p>
+            <p>
+              Sales advisory: Booking a tour allows our team to align units with your timeline and investment target.
+            </p>
+          </div>
         </div>
+
+
 
         {/* Buildings & Units */}
         {projectBuildings.length > 0 && (
@@ -456,8 +625,8 @@ export default function ProjectDetails() {
                     setHoveredUnit(null);
                   }}
                   className={`rounded-3xl border p-6 text-left transition-all duration-200 ${
-                    selectedBuilding === building.id
-                      ? "border-orange-400 bg-orange-50 shadow-lg"
+                    effectiveSelectedBuildingId === building.id
+                      ? "border-orange-400 bg-orange-50 shadow-lg ring-2 ring-orange-300/50"
                       : "border-gray-200 bg-white hover:border-orange-200"
                   }`}
                 >
@@ -499,6 +668,7 @@ export default function ProjectDetails() {
                           onHover={() => setHoveredUnit(house.id)}
                           onLeave={() => setHoveredUnit(null)}
                           onBuy={() => openPayment(house)}
+                          onBookTour={() => openBookTour(house)}
                         />
                       ))}
                   </div>
@@ -749,6 +919,141 @@ export default function ProjectDetails() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {showBookTour && (
+        <div
+          className="fixed inset-0 z-9000 overflow-y-auto flex items-center justify-center bg-black/50 p-4"
+          onMouseDown={() => setShowBookTour(false)}
+        >
+          <div
+            className="w-full max-w-xl rounded-[2rem] bg-white shadow-2xl"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-center justify-between bg-orange-500 px-6 py-5 text-white rounded-t-[2rem]">
+              <div>
+                <h2 className="text-2xl font-bold">Book a Tour</h2>
+                <p className="text-sm text-orange-100 mt-1">
+                  Reserve your preferred date and our advisor will confirm.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowBookTour(false)}
+                className="rounded-full border border-white/30 bg-white/10 hover:bg-white/20 transition p-2"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleBookTourSubmit} className="space-y-4 p-6">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                    <Calendar className="w-4 h-4 text-orange-500" />
+                    Preferred date
+                  </label>
+                  <input
+                    type="date"
+                    value={tourForm.preferredDate}
+                    onChange={(event) =>
+                      setTourForm((prev) => ({
+                        ...prev,
+                        preferredDate: event.target.value,
+                      }))
+                    }
+                    className="w-full rounded-lg border border-slate-200 p-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                    <Clock className="w-4 h-4 text-orange-500" />
+                    Preferred time
+                  </label>
+                  <select
+                    value={tourForm.preferredTime}
+                    onChange={(event) =>
+                      setTourForm((prev) => ({
+                        ...prev,
+                        preferredTime: event.target.value,
+                      }))
+                    }
+                    className="w-full rounded-lg border border-slate-200 p-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  >
+                    <option value="10:00">10:00 AM</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="14:00">2:00 PM</option>
+                    <option value="16:00">4:00 PM</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                  <Phone className="w-4 h-4 text-orange-500" />
+                  Contact phone
+                </label>
+                <PhoneInput
+                  defaultCountry="eg"
+                  value={tourForm.contactPhone}
+                  onChange={(phone) =>
+                    setTourForm((prev) => ({ ...prev, contactPhone: phone }))
+                  }
+                  style={{
+                    width: "100%",
+                    "--react-international-phone-border-radius": "0.5rem",
+                    "--react-international-phone-border-color": "#e2e8f0",
+                    "--react-international-phone-height": "46px",
+                    "--react-international-phone-font-size": "0.875rem",
+                  } as React.CSSProperties}
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                  <FileText className="w-4 h-4 text-orange-500" />
+                  Notes (optional)
+                </label>
+                <textarea
+                  value={tourForm.notes}
+                  onChange={(event) =>
+                    setTourForm((prev) => ({ ...prev, notes: event.target.value }))
+                  }
+                  className="w-full rounded-lg border border-slate-200 p-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  rows={3}
+                  placeholder="Preferred meeting point, questions, or unit preference"
+                />
+              </div>
+
+              {bookTourError && <p className="text-sm text-red-500">{bookTourError}</p>}
+
+              <button
+                type="submit"
+                disabled={BookingLoading}
+                className="w-full rounded-lg bg-orange-500 px-4 py-3 text-sm font-semibold text-white hover:bg-orange-600 transition disabled:opacity-60"
+              >
+                {BookingLoading ? "Submitting..." : `Confirm Tour${tourHouse ? ` for Unit #${tourHouse.id}` : ""}`}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Toast notification */}
+      {showToast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-xl shadow-emerald-900/30 animate-in slide-in-from-bottom-4 duration-300">
+          <CheckCircle2 className="w-5 h-5 shrink-0" />
+          <p className="text-sm font-semibold">{toastMessage}</p>
+          <button
+            type="button"
+            onClick={() => setShowToast(false)}
+            className="ml-2 text-white/70 hover:text-white"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
     </div>

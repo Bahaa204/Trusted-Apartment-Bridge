@@ -14,6 +14,8 @@ import Finances from "./pages/Finances";
 import ProjectsDashboard from "./pages/ProjectsDashboard";
 import ResetPassword from "./pages/ResetPassword";
 import Support from "./pages/Support";
+import Favorites from "./pages/Favorites";
+import StaffTourBookings from "./pages/StaffTourBookings";
 
 const router = createHashRouter([
   {
@@ -33,6 +35,8 @@ const router = createHashRouter([
       { path: "staff/employees", element: <EmployeeDashboard /> },
       { path: "staff/finances", element: <Finances /> },
       { path: "staff/projects", element: <ProjectsDashboard /> },
+      { path: "staff/bookings", element: <StaffTourBookings /> },
+      { path: "favorites", element: <Favorites /> },
       { path: "reset-password", element: <ResetPassword /> },
       { path: "support", element: <Support /> },
       { path: "*", element: <NotFound /> },

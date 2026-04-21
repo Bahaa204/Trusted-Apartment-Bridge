@@ -24,6 +24,10 @@ export default function ProjectForm({
   project_description,
   project_location,
   project_country_id,
+  project_handover_date,
+  project_expected_roi_note,
+  project_map_url,
+  project_map_embed_url,
   updateFields,
   Options,
 }: ProjectFormProps) {
@@ -104,6 +108,71 @@ export default function ProjectForm({
               updateFields({ project_images: event.target.files });
             }
           }}
+          disabled={loading}
+        />
+      </FieldGroup>
+
+      <FieldGroup className="grid gap-1.5">
+        <FieldLabel htmlFor="project-handover-date" className="text-slate-700">
+          Handover date
+        </FieldLabel>
+        <Input
+          type="date"
+          id="project-handover-date"
+          className="border-slate-300 bg-white text-slate-900"
+          value={project_handover_date}
+          onChange={(event) =>
+            updateFields({ project_handover_date: event.target.value })
+          }
+          disabled={loading}
+        />
+      </FieldGroup>
+
+      <FieldGroup className="grid gap-1.5">
+        <FieldLabel htmlFor="project-roi-note" className="text-slate-700">
+          ROI / Yield note
+        </FieldLabel>
+        <Textarea
+          id="project-roi-note"
+          className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400"
+          value={project_expected_roi_note}
+          onChange={(event) =>
+            updateFields({ project_expected_roi_note: event.target.value })
+          }
+          disabled={loading}
+        />
+      </FieldGroup>
+
+      <FieldGroup className="grid gap-1.5">
+        <FieldLabel htmlFor="project-map-url" className="text-slate-700">
+          Public map URL
+        </FieldLabel>
+        <Input
+          type="url"
+          id="project-map-url"
+          className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400"
+          placeholder="https://www.google.com/maps/..."
+          value={project_map_url}
+          onChange={(event) =>
+            updateFields({ project_map_url: event.target.value })
+          }
+          disabled={loading}
+        />
+      </FieldGroup>
+
+      <FieldGroup className="grid gap-1.5">
+        <FieldLabel htmlFor="project-map-embed-url" className="text-slate-700">
+          Map embed URL
+        </FieldLabel>
+        <Input
+          type="url"
+          id="project-map-embed-url"
+          className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400"
+          placeholder="https://www.google.com/maps/embed?..."
+          value={project_map_embed_url}
+          onChange={(event) =>
+            updateFields({ project_map_embed_url: event.target.value })
+          }
           disabled={loading}
         />
       </FieldGroup>
