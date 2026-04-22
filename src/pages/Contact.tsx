@@ -24,8 +24,7 @@ const initialValues: FormValues = {
 };
 
 export default function Contact() {
-
-  useDocumentTitle("Contact Us")
+  useDocumentTitle("Contact Us");
 
   const [formValues, setFormValues] = useState<FormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -175,6 +174,7 @@ export default function Contact() {
               )}
               <PhoneInput
                 defaultCountry="eg"
+                className="w-full!"
                 disableFocusAfterCountrySelect
                 value={formValues.phone}
                 onChange={(phone) =>
@@ -191,6 +191,7 @@ export default function Contact() {
                 }}
                 inputStyle={{
                   height: "50px",
+                  width: "100%",
                   fontSize: "1rem",
                   lineHeight: "1.5rem",
                   paddingTop: "12px",
@@ -198,13 +199,15 @@ export default function Contact() {
                   paddingLeft: "16px",
                   paddingRight: "16px",
                 }}
-                style={{
-                  width: "100%",
-                  "--react-international-phone-border-radius": "0px",
-                  "--react-international-phone-border-color": "#d7e0ea",
-                  "--react-international-phone-height": "50px",
-                  "--react-international-phone-font-size": "1rem",
-                } as React.CSSProperties}
+                style={
+                  {
+                    width: "100%",
+                    "--react-international-phone-border-radius": "0px",
+                    "--react-international-phone-border-color": "#d7e0ea",
+                    "--react-international-phone-height": "50px",
+                    "--react-international-phone-font-size": "1rem",
+                  } as React.CSSProperties
+                }
               />
             </div>
 
