@@ -2,6 +2,8 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useState, type SubmitEvent } from "react";
 import { Link } from "react-router-dom";
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
 
 type FormValues = {
   firstName: string;
@@ -164,26 +166,47 @@ export default function Contact() {
               />
             </label>
 
-            <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
-              Phone number
+            <div className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
+              <label>Phone number</label>
               {errors.phone && (
                 <span className="text-sm font-medium text-red-600">
                   {errors.phone}
                 </span>
               )}
-              <input
-                className="border border-[#d7e0ea] bg-white px-4 py-3 outline-none transition focus:border-[#17365d]"
-                placeholder="+961 ..."
-                type="tel"
+              <PhoneInput
+                defaultCountry="eg"
+                disableFocusAfterCountrySelect
                 value={formValues.phone}
-                onChange={(event) =>
+                onChange={(phone) =>
                   setFormValues((current) => ({
                     ...current,
-                    phone: event.target.value,
+                    phone,
                   }))
                 }
+                countrySelectorStyleProps={{
+                  buttonStyle: {
+                    height: "50px",
+                    padding: "0 12px",
+                  },
+                }}
+                inputStyle={{
+                  height: "50px",
+                  fontSize: "1rem",
+                  lineHeight: "1.5rem",
+                  paddingTop: "12px",
+                  paddingBottom: "12px",
+                  paddingLeft: "16px",
+                  paddingRight: "16px",
+                }}
+                style={{
+                  width: "100%",
+                  "--react-international-phone-border-radius": "0px",
+                  "--react-international-phone-border-color": "#d7e0ea",
+                  "--react-international-phone-height": "50px",
+                  "--react-international-phone-font-size": "1rem",
+                } as React.CSSProperties}
               />
-            </label>
+            </div>
 
             <div />
 

@@ -98,7 +98,7 @@ export default function About() {
     null,
   );
   const [showAbout, setShowAbout] = useState(true);
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (location.hash === "#globe" && globeRef2.current) {

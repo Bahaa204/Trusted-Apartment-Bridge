@@ -10,8 +10,9 @@ export function ValidatePayment(
     return "No unit selected for payment.";
   }
 
-  const { cardName, cardNumber, expiry, cvc, email } = paymentForm;
-  if (!cardName || !cardNumber || !expiry || !cvc || !email) {
+  const { cardName, cardNumber, expiry, cvc, email, contactPhone } =
+    paymentForm;
+  if (!cardName || !cardNumber || !expiry || !cvc || !email || !contactPhone) {
     return "Please fill in all fields to complete the payment.";
   }
 
@@ -22,6 +23,10 @@ export function ValidatePayment(
   if (!/^\d{2}\/\d{2}$/.test(expiry)) return "Expiry must be in MM/YY format.";
 
   if (!/^\d{3,4}$/.test(cvc)) return "Enter a valid CVC code.";
+
+  if (!/^\+?[0-9\s\-()]{7,20}$/.test(contactPhone)) {
+    return "Please enter a valid phone number.";
+  }
 
   if (paymentHouse.is_sold) return "Sorry, this unit has already been sold.";
   return "";

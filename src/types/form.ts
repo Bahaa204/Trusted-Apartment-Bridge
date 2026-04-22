@@ -35,6 +35,7 @@ export type PaymentFormData = {
   expiry: string;
   cvc: string;
   email: string;
+  contactPhone: string;
 };
 
 export type LoginFormData = {
@@ -65,7 +66,7 @@ export type BuildingFormProps = BuildingData & {
 export type SurveyForm = {
   budgetRange: string;
   countryId: string;
-  location: string;
+  floorPreference: string;
   priority: string;
   bedrooms: string;
 };

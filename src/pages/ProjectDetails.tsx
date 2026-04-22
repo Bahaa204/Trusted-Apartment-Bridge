@@ -171,6 +171,7 @@ export default function ProjectDetails() {
     expiry: "",
     cvc: "",
     email: "",
+    contactPhone: "",
   };
 
   const [selectedBuilding, setSelectedBuilding] = useState<
@@ -932,12 +933,12 @@ export default function ProjectDetails() {
           onMouseDown={closePayment}
         >
           <div
-            className="w-full max-w-2xl max-h-[90vh] rounded-[2rem] bg-white shadow-2xl overflow-y-auto no-scrollbar"
+            className="w-full max-w-5xl max-h-[92vh] rounded-[2rem] bg-white shadow-2xl overflow-y-auto no-scrollbar"
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between flex-wrap gap-4 bg-orange-500 px-6 py-5 text-white">
+            <div className="flex items-center justify-between flex-wrap gap-4 bg-orange-500 px-7 py-6 text-white rounded-t-[2rem]">
               <div>
-                <h2 className="text-2xl font-bold">Complete purchase</h2>
+                <h2 className="text-3xl font-bold">Complete purchase</h2>
                 <p className="mt-2 text-sm text-orange-100">
                   Fill the card details to confirm your purchase.
                 </p>
@@ -945,18 +946,20 @@ export default function ProjectDetails() {
               <button
                 type="button"
                 onClick={closePayment}
-                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
+                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20 cursor-pointer"
               >
                 Close
               </button>
             </div>
 
-            <div className="p-6">
-              <div className="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
-                <div className="space-y-4">
-                  <div className="rounded-3xl bg-slate-50 p-5 shadow-sm">
-                    <p className="text-sm text-gray-500">Selected</p>
-                    <p className="mt-2 text-xl font-semibold text-slate-900">
+            <div className="p-7">
+              <div className="grid gap-6 lg:grid-cols-[1.55fr_1fr]">
+                <div className="space-y-6">
+                  <div className="rounded-2xl border border-orange-100 bg-orange-50 p-5 shadow-sm">
+                    <p className="text-sm uppercase tracking-[0.2em] text-orange-500">
+                      Selected unit
+                    </p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900">
                       {paymentHouse
                         ? `Unit #${paymentHouse.id} - $${paymentHouse.price.toLocaleString()}`
                         : "No unit selected"}
@@ -968,7 +971,10 @@ export default function ProjectDetails() {
                     </p>
                   </div>
 
-                  <form onSubmit={handlePaymentSubmit} className="space-y-5">
+                  <form
+                    onSubmit={handlePaymentSubmit}
+                    className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5"
+                  >
                     <div>
                       <label className="block text-sm font-semibold text-slate-700 mb-2">
                         Cardholder name
@@ -981,7 +987,7 @@ export default function ProjectDetails() {
                             cardName: e.target.value,
                           })
                         }
-                        className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm"
+                        className="w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm shadow-sm"
                         placeholder="John Doe"
                       />
                     </div>
@@ -998,7 +1004,7 @@ export default function ProjectDetails() {
                             cardNumber: e.target.value,
                           })
                         }
-                        className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm"
+                        className="w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm shadow-sm"
                         placeholder="1234 5678 9012 3456"
                         inputMode="numeric"
                       />
@@ -1017,7 +1023,7 @@ export default function ProjectDetails() {
                               expiry: e.target.value,
                             })
                           }
-                          className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm"
+                          className="w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm shadow-sm"
                           placeholder="MM/YY"
                         />
                       </div>
@@ -1033,7 +1039,7 @@ export default function ProjectDetails() {
                               cvc: e.target.value,
                             })
                           }
-                          className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm"
+                          className="w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm shadow-sm"
                           placeholder="123"
                           inputMode="numeric"
                         />
@@ -1052,9 +1058,32 @@ export default function ProjectDetails() {
                             email: e.target.value,
                           })
                         }
-                        className="w-full rounded-3xl border border-slate-200 bg-white p-4 text-sm shadow-sm"
+                        className="w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm shadow-sm"
                         placeholder="you@example.com"
                         type="email"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Phone number
+                      </label>
+                      <PhoneInput
+                        defaultCountry="eg"
+                        value={paymentForm.contactPhone}
+                        onChange={(phone) =>
+                          setPaymentForm({
+                            ...paymentForm,
+                            contactPhone: phone,
+                          })
+                        }
+                        style={{
+                          width: "100%",
+                          "--react-international-phone-border-radius": "0.75rem",
+                          "--react-international-phone-border-color": "#e2e8f0",
+                          "--react-international-phone-height": "48px",
+                          "--react-international-phone-font-size": "0.875rem",
+                        } as React.CSSProperties}
                       />
                     </div>
 
@@ -1064,34 +1093,34 @@ export default function ProjectDetails() {
 
                     <button
                       type="submit"
-                      className="w-full rounded-3xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition"
+                      className="w-full rounded-xl bg-orange-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition"
                     >
                       Pay now
                     </button>
                   </form>
                 </div>
 
-                <div className="rounded-3xl bg-slate-950 p-6 text-white shadow-sm">
-                  <p className="text-sm uppercase tracking-[0.2em] text-slate-400">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-slate-900 shadow-sm">
+                  <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
                     Payment summary
                   </p>
                   <div className="mt-4 space-y-4">
-                    <div className="rounded-3xl bg-slate-900 p-4">
-                      <p className="text-sm text-slate-400">Unit</p>
+                    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                      <p className="text-sm text-slate-500">Unit</p>
                       <p className="mt-2 text-lg font-semibold">
                         {paymentHouse ? `#${paymentHouse.id}` : "-"}
                       </p>
                     </div>
-                    <div className="rounded-3xl bg-slate-900 p-4">
-                      <p className="text-sm text-slate-400">Price</p>
+                    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                      <p className="text-sm text-slate-500">Price</p>
                       <p className="mt-2 text-lg font-semibold">
                         {paymentHouse
                           ? `$${paymentHouse.price.toLocaleString()}`
                           : "-"}
                       </p>
                     </div>
-                    <div className="rounded-3xl bg-slate-900 p-4">
-                      <p className="text-sm text-slate-400">Total</p>
+                    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                      <p className="text-sm text-slate-500">Total</p>
                       <p className="mt-2 text-lg font-semibold">
                         {paymentHouse
                           ? `$${paymentHouse.price.toLocaleString()}`
@@ -1140,7 +1169,7 @@ export default function ProjectDetails() {
               <button
                 type="button"
                 onClick={() => setShowBookTour(false)}
-                className="rounded-full border border-white/30 bg-white/10 hover:bg-white/20 transition p-2"
+                className="rounded-full border border-white/30 bg-white/10 hover:bg-white/20 transition p-2 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>

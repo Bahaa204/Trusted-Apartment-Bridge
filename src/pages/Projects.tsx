@@ -33,7 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import type { SurveyForm } from "@/types/form";
 import ErrorCard from "@/components/ErrorCard";
 import { useAuth } from "@/hooks/useAuth";
@@ -129,9 +128,9 @@ function scoreCandidate(candidate: Recommendation, form: SurveyForm) {
   const price = candidate.house.price ?? 0;
   const projectText =
     `${candidate.project.name} ${candidate.project.description} ${candidate.project.location}`.toLowerCase();
-  const locationHint = form.location.trim().toLowerCase();
   const priority = form.priority.toLowerCase();
   const bedrooms = Number(form.bedrooms);
+  const floor = candidate.house.floor ?? 0;
 
   if (form.budgetRange === "low") {
     if (price <= 200000) score += 5;
@@ -153,11 +152,12 @@ function scoreCandidate(candidate: Recommendation, form: SurveyForm) {
     score += 4;
   }
 
-  if (locationHint) {
-    if (candidate.project.location.toLowerCase().includes(locationHint))
-      score += 4;
-    if (candidate.project.description.toLowerCase().includes(locationHint))
-      score += 2;
+  if (form.floorPreference === "high") {
+    if (floor >= 8) score += 4;
+    else if (floor >= 5) score += 2;
+  } else if (form.floorPreference === "low") {
+    if (floor <= 3) score += 4;
+    else if (floor <= 5) score += 2;
   }
 
   if (priority === "family") {
@@ -219,7 +219,7 @@ function matchesPriority(projectText: string, priority: string) {
 function matchesAllFilters(candidate: Recommendation, form: SurveyForm) {
   const price = candidate.house.price ?? 0;
   const bedrooms = Number(form.bedrooms);
-  const locationHint = form.location.trim().toLowerCase();
+  const floor = candidate.house.floor ?? 0;
   const projectText =
     `${candidate.project.name} ${candidate.project.description} ${candidate.project.location}`.toLowerCase();
 
@@ -234,11 +234,11 @@ function matchesAllFilters(candidate: Recommendation, form: SurveyForm) {
     return false;
   }
 
-  if (
-    locationHint &&
-    !candidate.project.location.toLowerCase().includes(locationHint) &&
-    !candidate.project.description.toLowerCase().includes(locationHint)
-  ) {
+  if (form.floorPreference === "high" && floor < 5) {
+    return false;
+  }
+
+  if (form.floorPreference === "low" && floor > 5) {
     return false;
   }
 
@@ -270,7 +270,7 @@ export default function Projects() {
   const [form, setForm] = useState<SurveyForm>({
     budgetRange: "any",
     countryId: "",
-    location: "",
+    floorPreference: "any",
     priority: "City living",
     bedrooms: "",
   });
@@ -439,7 +439,7 @@ export default function Projects() {
       ...prev,
       budgetRange: "any",
       countryId: selectedCountry || prev.countryId || "",
-      location: "",
+      floorPreference: "any",
       priority: "City living",
       bedrooms: "",
     }));
@@ -540,7 +540,7 @@ export default function Projects() {
             </h2>
             <p className="mt-2 text-sm text-slate-500">
               Open the survey and get the best building match based on budget,
-              country, location and priorities.
+              country, floor preference and priorities.
             </p>
           </div>
           <button
@@ -721,7 +721,7 @@ export default function Projects() {
           onMouseDown={closeSurvey}
         >
           <Card
-            className="w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-[2rem] bg-white shadow-2xl p-0! no-scrollbar"
+            className="w-full max-w-6xl max-h-[92vh] overflow-y-auto rounded-[2rem] bg-white shadow-2xl p-0! no-scrollbar"
             onMouseDown={(e) => e.stopPropagation()}
           >
             <CardHeader className="flex items-center justify-between bg-orange-500 px-6 py-5 text-white rounded-t-[2rem]">
@@ -745,7 +745,7 @@ export default function Projects() {
               </CardAction>
             </CardHeader>
 
-            <CardContent className="grid grid-cols-1 gap-6 p-6 lg:grid-cols-[1.45fr_1fr]">
+            <CardContent className="grid grid-cols-1 gap-6 p-7 lg:grid-cols-[1.6fr_1fr]">
               <Card className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm ring-0!">
                 <CardHeader className="mb-6 rounded-2xl border border-orange-100 bg-orange-50 p-5">
                   <CardTitle className="text-sm text-gray-500 mb-2">
@@ -822,16 +822,26 @@ export default function Projects() {
 
                   <Field>
                     <Label className="block text-sm font-semibold text-slate-700 mb-2">
-                      What location do you have in mind?
+                      Do you prefer a high floor or a low floor?
                     </Label>
-                    <Input
-                      value={form.location}
-                      onChange={(e) =>
-                        setForm({ ...form, location: e.target.value })
+                    <Select
+                      value={form.floorPreference}
+                      onValueChange={(value) =>
+                        setForm({ ...form, floorPreference: value })
                       }
-                      placeholder="e.g. city center, beach, quiet neighborhood"
-                      className="w-full rounded-lg border border-slate-200 bg-white p-3 text-sm shadow-sm"
-                    />
+                    >
+                      <SelectTrigger className="w-full rounded-lg border border-slate-200 bg-white p-3.5 text-sm shadow-sm cursor-pointer">
+                        <SelectValue placeholder="No preference" />
+                      </SelectTrigger>
+                      <SelectContent className="z-9001">
+                        <SelectGroup>
+                          <SelectLabel>Floor preference</SelectLabel>
+                          <SelectItem value="any">No preference</SelectItem>
+                          <SelectItem value="high">High floor</SelectItem>
+                          <SelectItem value="low">Low floor</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </Field>
 
                   <Field>
@@ -918,7 +928,12 @@ export default function Projects() {
                         )?.name
                       : "Any"}
                     <p className="text-slate-600 mt-1">
-                      Location: {form.location || "Any"}
+                      Floor preference:
+                      {form.floorPreference === "high"
+                        ? "High floor"
+                        : form.floorPreference === "low"
+                          ? "Low floor"
+                          : "No preference"}
                     </p>
                   </CardDescription>
                 </CardHeader>
