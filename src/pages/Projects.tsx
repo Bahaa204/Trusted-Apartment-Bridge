@@ -1,5 +1,5 @@
 import { useMemo, useState, type MouseEvent, type SubmitEvent } from "react";
-import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useBuildings } from "@/hooks/useBuildings";
