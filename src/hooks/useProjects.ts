@@ -4,6 +4,8 @@ import type { PostgrestError } from "@supabase/supabase-js";
 import { supabaseClient } from "../lib/supabaseClient";
 import type { Project } from "@/types/projects";
 
+const LOCAL_STORAGE_KEY = "projects";
+
 /**
  * Custom hook to manage projects data and operations.
  * @returns An object containing the list of projects, loading state, error message, and functions to manage projects.
@@ -31,12 +33,24 @@ export function useProjects() {
 
   // Fetching the data from the database + real time listeners to update the data
   useEffect(() => {
+    const start = performance.now();
+    const localProjects = localStorage.getItem(LOCAL_STORAGE_KEY);
+
     /**
      * Fetches the list of projects from the database
      * and updates the state accordingly. If an error occurs during fetching, it sets the error message and updates the loading state.
      */
     async function fetchProjects() {
       resetStates();
+
+      if (localProjects) {
+
+        setProjects(JSON.parse(localProjects) as Project[]);
+        setLoading(false);
+        const end = performance.now();
+        console.log(`Loaded projects in ${end - start} ms`);
+        return;
+      }
 
       const { data, error: FetchError } = (await supabaseClient
         .from("projects")
@@ -49,6 +63,15 @@ export function useProjects() {
 
       setProjects(data || []);
       setLoading(false);
+
+      const end = performance.now();
+      console.log(`Loaded projects in ${end - start} ms`);
+
+      if (!localProjects)
+        return localStorage.setItem(
+          LOCAL_STORAGE_KEY,
+          JSON.stringify(data || []),
+        );
     }
 
     fetchProjects();

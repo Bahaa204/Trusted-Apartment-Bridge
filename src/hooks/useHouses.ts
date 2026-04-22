@@ -6,6 +6,8 @@ import { GetMinMaxDate } from "../helpers/Date";
 import type { DateReturn, DateString } from "../types/date";
 import type { House } from "@/types/house";
 
+const LOCAL_STORAGE_KEY = "houses";
+
 /**
  *
  * This hook manages the state and operations related to houses.
@@ -33,8 +35,21 @@ export function useHouses() {
 
   // Fetching the data from the database + real time listeners to update the data
   useEffect(() => {
+    const start = performance.now();
+    const localHouses = localStorage.getItem(LOCAL_STORAGE_KEY);
+
     async function fetchHouses() {
       resetStates();
+
+      if (localHouses) {
+        console.log("Loading Local Houses...");
+
+        setHouses(JSON.parse(localHouses) as House[]);
+        setLoading(false);
+        const end = performance.now();
+        console.log(`Loaded houses in ${end - start} ms`);
+        return;
+      }
 
       const { data, error: FetchError } = (await supabaseClient
         .from("houses")
@@ -47,6 +62,12 @@ export function useHouses() {
 
       setHouses(data || []);
       setLoading(false);
+
+      if (!localHouses)
+        return localStorage.setItem(
+          LOCAL_STORAGE_KEY,
+          JSON.stringify(data || []),
+        );
     }
 
     fetchHouses();

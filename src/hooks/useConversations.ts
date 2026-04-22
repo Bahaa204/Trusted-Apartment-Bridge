@@ -1,5 +1,5 @@
 import { PostgrestError } from "@supabase/supabase-js";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { supabaseClient } from "../lib/supabaseClient";
 import type { Conversation } from "@/types/chat";
 import type { Data } from "@/types/types";
@@ -31,30 +31,26 @@ export function useConversations() {
     setLoading(false);
   }
 
-  const FetchConversations = useCallback(async () => {
-    ResetStates();
-
-    const { data, error: FetchError } = await supabaseClient
-      .from("conversations")
-      .select("*")
-      .eq("status", "open")
-      .order("updated_at", { ascending: false });
-
-    if (FetchError) {
-      SetError(FetchError);
-      return;
-    }
-
-    setConversations(data ?? []);
-    setLoading(false);
-  }, []);
-
   useEffect(() => {
-    async function LoadConversations() {
-      await FetchConversations();
+    async function FetchConversations() {
+      ResetStates();
+
+      const { data, error: FetchError } = await supabaseClient
+        .from("conversations")
+        .select("*")
+        .eq("status", "open")
+        .order("updated_at", { ascending: false });
+
+      if (FetchError) {
+        SetError(FetchError);
+        return;
+      }
+
+      setConversations(data ?? []);
+      setLoading(false);
     }
 
-    LoadConversations();
+    FetchConversations();
 
     const channel = supabaseClient
       .channel("all-conversations-feed")
@@ -65,27 +61,14 @@ export function useConversations() {
       )
       .subscribe((status) => {
         console.log("Conversations channel:", status);
-
-        if (status === "CHANNEL_ERROR") {
-          SetError(
-            new PostgrestError({
-              message:
-                "Realtime channel error for conversations. Check Realtime replication and RLS SELECT policies.",
-              code: "CHANNEL_ERROR",
-              details: "",
-              hint: "",
-            }),
-          );
-          setLoading(false);
-        }
       });
 
     return () => {
       supabaseClient.removeChannel(channel);
     };
-  }, [FetchConversations]);
+  }, []);
 
-  const getConversation = useCallback(async (customerToken: string) => {
+  async function getConversation(customerToken: string) {
     const { data, error: FetchError } = (await supabaseClient
       .from("conversations")
       .select("*")
@@ -99,7 +82,7 @@ export function useConversations() {
       return null;
     }
     return data;
-  }, []);
+  }
 
   async function StartConversation(
     customerToken: string,
@@ -131,7 +114,7 @@ export function useConversations() {
     return data;
   }
 
-  async function CloseConversation(conversationId: string){
+  async function CloseConversation(conversationId: string) {
     ResetStates();
 
     const { error: DeleteMessagesError } = await supabaseClient
@@ -168,7 +151,7 @@ export function useConversations() {
     return true;
   }
 
-  async function BumpConversation(conversationId: string){
+  async function BumpConversation(conversationId: string) {
     const { error: UpdateError } = await supabaseClient
       .from("conversations")
       .update({ updated_at: new Date().toISOString() })
