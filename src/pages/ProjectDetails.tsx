@@ -47,8 +47,6 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { useTourBookings } from "@/hooks/useTourBookings";
 
 const MODELS = [
-  "models/162_7.glb",
-  "models/southern_district_police_station.glb",
   "models/simple_low_poly_abandoned_brick_building.glb",
   "models/modern_villa_apartment_house_home_building.glb",
   "models/modern_luxury_villa_house_building.glb",
@@ -611,7 +609,7 @@ export default function ProjectDetails() {
         <div className="absolute inset-0 bg-black/45" />
 
         <div className="relative max-w-5xl mx-auto">
-          <Breadcrumbs name={project.name} />
+          <Breadcrumbs name={project.name} style="light" />
           <h1 className="text-4xl md:text-5xl font-extrabold mb-3">
             {project.name}
           </h1>
