@@ -8,6 +8,19 @@ import type {
   SortKey,
 } from "@/types/employee";
 import ErrorCard from "./ErrorCard";
+import Modal from "./Project DashBoard Components/Modal";
+import { Button } from "./ui/button";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Field } from "./ui/field";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
 
 const emptyForm: EmployeeFormValues = {
   name: "",
@@ -42,12 +55,15 @@ export default function EmployeeTable() {
   const [editingId, setEditingId] = useState<Employee["id"] | null>(null);
   const [editValues, setEditValues] = useState<EmployeeFormValues>(emptyForm);
   const [actionMessage, setActionMessage] = useState<string>("");
+  const [FormActionMessage, setFormActionMessage] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<
     Employee["id"] | null
   >(null);
+  const [DeleteEmployee, setDeleteEmployee] = useState<Employee | null>(null);
+  const [IsOpen, setIsOpen] = useState<boolean>(false);
 
   const normalizedQuery = searchQuery.trim().toLowerCase();
   const filteredEmployees = Employees.filter((employee) => {
@@ -102,13 +118,8 @@ export default function EmployeeTable() {
         .toUpperCase()
     : "CT";
 
-  function handleNewEmployeeChange(event: ChangeEvent<HTMLInputElement>) {
-    const { name, value } = event.target;
-
-    setNewEmployee((current) => ({
-      ...current,
-      [name]: name === "salary" ? Number(value) : value,
-    }));
+  function UpdateFields(fields: Partial<Employee>) {
+    setNewEmployee((prev) => ({ ...prev, ...fields }));
   }
 
   function handleEditChange(event: ChangeEvent<HTMLInputElement>) {
@@ -127,7 +138,7 @@ export default function EmployeeTable() {
     const role = GetRoleFromEmail(newEmployee.email);
 
     if (role !== "employee") {
-      setActionMessage(
+      setFormActionMessage(
         "Only emails ending with '@tab-employee.com' can be used to add employees.",
       );
       return;
@@ -140,7 +151,7 @@ export default function EmployeeTable() {
     );
 
     if (duplicateEmail) {
-      setActionMessage("This email already exists for another employee.");
+      setFormActionMessage("This email already exists for another employee.");
       return;
     }
 
@@ -157,7 +168,7 @@ export default function EmployeeTable() {
       if (ok && prevSession) {
         await RestoreSession(prevSession);
         setNewEmployee(emptyForm);
-        setActionMessage("Employee added successfully.");
+        setFormActionMessage("Employee added successfully.");
       }
     }
   }
@@ -202,20 +213,11 @@ export default function EmployeeTable() {
   }
 
   async function handleDeleteEmployee(employeeId: Employee["id"]) {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this employee?",
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
     setActionMessage("");
-    const deleted = await removeEmployee(employeeId);
 
-    if (deleted) {
-      setActionMessage("Employee removed successfully.");
-    }
+    const ok = await removeEmployee(employeeId);
+
+    if (ok) return setActionMessage("Employee removed successfully.");
   }
 
   function toggleSort(nextSortKey: SortKey) {
@@ -231,436 +233,462 @@ export default function EmployeeTable() {
   }
 
   return (
-    <section className="space-y-8">
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-md border border-[#d7e0ea] bg-white p-5 shadow-sm">
-          <p className="text-sm text-[#5f7490]">People in view</p>
-          <p className="mt-2 text-3xl font-semibold text-[#10243e]">
-            {filteredEmployees.length}
-          </p>
-        </div>
-        <div className="rounded-md border border-[#d7e0ea] bg-white p-5 shadow-sm">
-          <p className="text-sm text-[#5f7490]">Current payroll view</p>
-          <p className="mt-2 text-3xl font-semibold text-[#10243e]">
-            ${totalPayroll.toLocaleString()}
-          </p>
-        </div>
-        <div className="rounded-md border border-[#d7e0ea] bg-white p-5 shadow-sm">
-          <p className="text-sm text-[#5f7490]">Highest salary</p>
-          <p className="mt-2 text-2xl font-semibold text-[#10243e]">
-            {highestPaidEmployee
-              ? `${highestPaidEmployee.name} - $${highestPaidEmployee.salary.toLocaleString()}`
-              : "No employees yet"}
-          </p>
-          <p className="mt-2 text-sm text-[#5f7490]">
-            Average salary: ${Math.round(averageSalary).toLocaleString()}
-          </p>
-        </div>
-      </div>
-
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.9fr)]">
-        <div className="relative overflow-hidden rounded-md bg-[linear-gradient(135deg,#10243e,#17365d_55%,#f4821f)] px-7 py-8 text-white shadow-xl">
-          <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-          <div className="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-[#ffd3ad]/30 blur-2xl" />
-          <p className="relative text-sm uppercase tracking-[0.3em] text-[#ffcfaa]">
-            Meet The Team
-          </p>
-          <h3 className="relative mt-3 text-3xl font-semibold tracking-tight">
-            {spotlightEmployee ? spotlightEmployee.name : "Your team preview"}
-          </h3>
-          <p className="relative mt-3 max-w-xl text-sm leading-6 text-[#e8eef6]">
-            A warmer snapshot of the people behind the work. Click any employee
-            below to bring their profile forward here.
-          </p>
-
-          <div className="relative mt-8 flex flex-wrap items-center gap-5">
-            <div
-              className={`flex h-20 w-20 items-center justify-center rounded-md border border-white/20 bg-linear-to-br ${spotlightEmployee ? getEmployeeTone(spotlightEmployee.id!) : "from-white/50 to-white/10"} text-2xl font-semibold text-[#10243e] shadow-lg backdrop-blur`}
-            >
-              {spotlightInitials}
-            </div>
-
-            <div className="grid gap-2">
-              <div className="inline-flex w-fit rounded-md bg-white/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-[#ffcfaa]">
-                Team profile
-              </div>
-              <p className="text-lg font-medium text-white/95">
-                {spotlightEmployee
-                  ? spotlightEmployee.email
-                  : "Select an employee to preview details."}
-              </p>
-              <p className="text-sm text-[#ffddb8]">
-                {spotlightEmployee
-                  ? `Monthly salary: $${spotlightEmployee.salary.toLocaleString()}`
-                  : "Use the employee table below to highlight someone here."}
-              </p>
-              <p className="text-sm text-[#d9e4f0]">
-                {spotlightEmployee
-                  ? "A valued member of the care and operations team."
-                  : "This area helps the page feel more personal and welcoming."}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-md border border-[#d7e0ea] bg-white p-6 shadow-sm">
-          <p className="text-sm uppercase tracking-[0.3em] text-[#ea6a12]">
-            Team Mood
-          </p>
-          <h3 className="mt-3 text-2xl font-semibold text-[#10243e]">
-            A softer overview
-          </h3>
-          <div className="mt-6 grid gap-3">
-            <div className="rounded-md bg-[#f7f9fc] p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-[#5f7490]">
-                What you are seeing
-              </p>
-              <p className="mt-2 text-xl font-semibold text-[#10243e]">
-                {filteredEmployees.length} people in the current view
-              </p>
-            </div>
-            <div className="rounded-md bg-[#fff0e2] p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-[#ea6a12]">
-                Leading salary
-              </p>
-              <p className="mt-2 text-xl font-semibold text-[#10243e]">
-                {highestPaidEmployee
-                  ? `${highestPaidEmployee.name}`
-                  : "No one selected yet"}
-              </p>
-            </div>
-            <div className="rounded-md bg-[#e8eef6] p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-[#17365d]">
-                Average salary
-              </p>
-              <p className="mt-2 text-xl font-semibold text-[#10243e]">
-                ${Math.round(averageSalary).toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-md border border-[#d7e0ea] bg-white p-6 shadow-sm">
-        <div className="mb-6 flex flex-col gap-2">
-          <h2 className="text-2xl font-semibold text-[#10243e]">
-            Add employee
-          </h2>
-          <p className="text-sm text-[#5f7490]">
-            Add a new team member with the details you want to keep on hand.
-          </p>
-        </div>
-
-        <form
-          className="grid gap-4 md:grid-cols-2 xl:grid-cols-4"
-          onSubmit={handleAddEmployee}
-        >
-          <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
-            Full name
-            <input
-              required
-              className="rounded-md border border-[#d7e0ea] px-4 py-3 outline-none transition focus:border-[#f4821f]"
-              name="name"
-              placeholder="Sara Ahmad"
-              type="text"
-              value={newEmployee.name}
-              onChange={handleNewEmployeeChange}
-            />
-          </label>
-
-          <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
-            Email
-            <input
-              required
-              className="rounded-md border border-[#d7e0ea] px-4 py-3 outline-none transition focus:border-[#f4821f]"
-              name="email"
-              placeholder="sara@tab-employee.com"
-              type="email"
-              value={newEmployee.email}
-              onChange={handleNewEmployeeChange}
-            />
-          </label>
-
-          <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
-            Salary
-            <input
-              required
-              min="0"
-              className="rounded-md border border-[#d7e0ea] px-4 py-3 outline-none transition focus:border-[#f4821f]"
-              name="salary"
-              placeholder="2500"
-              type="number"
-              value={newEmployee.salary || ""}
-              onChange={handleNewEmployeeChange}
-            />
-          </label>
-
-          <div className="flex items-end">
-            <button
-              className="w-full rounded-md bg-[#10243e] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#17365d] disabled:cursor-not-allowed disabled:bg-[#5f7490]"
-              disabled={Loading}
-              type="submit"
-            >
-              {Loading ? "Saving..." : "Add employee"}
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <div className="rounded-md border border-[#d7e0ea] bg-white p-6 shadow-sm">
-        <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold text-[#10243e]">
-              Employee list
-            </h2>
-            <p className="text-sm text-[#5f7490]">
-              Browse your team, update details inline, and keep everything tidy.
+    <>
+      <section className="space-y-8">
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="rounded-md border border-[#d7e0ea] bg-white p-5 shadow-sm">
+            <p className="text-sm text-[#5f7490]">People in view</p>
+            <p className="mt-2 text-3xl font-semibold text-[#10243e]">
+              {filteredEmployees.length}
             </p>
           </div>
-          <div className="rounded-md bg-[#e8eef6] px-4 py-2 text-sm font-medium text-[#17365d]">
-            {Employees.length} employee{Employees.length === 1 ? "" : "s"}
+          <div className="rounded-md border border-[#d7e0ea] bg-white p-5 shadow-sm">
+            <p className="text-sm text-[#5f7490]">Current payroll view</p>
+            <p className="mt-2 text-3xl font-semibold text-[#10243e]">
+              ${totalPayroll.toLocaleString()}
+            </p>
+          </div>
+          <div className="rounded-md border border-[#d7e0ea] bg-white p-5 shadow-sm">
+            <p className="text-sm text-[#5f7490]">Highest salary</p>
+            <p className="mt-2 text-2xl font-semibold text-[#10243e]">
+              {highestPaidEmployee
+                ? `${highestPaidEmployee.name} - $${highestPaidEmployee.salary.toLocaleString()}`
+                : "No employees yet"}
+            </p>
+            <p className="mt-2 text-sm text-[#5f7490]">
+              Average salary: ${Math.round(averageSalary).toLocaleString()}
+            </p>
           </div>
         </div>
-
-        <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto]">
-          <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
-            Search employees
-            <input
-              className="rounded-md border border-[#d7e0ea] px-4 py-3 outline-none transition focus:border-[#f4821f]"
-              placeholder="Search by name, email, or salary"
-              type="text"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-            />
-          </label>
-
-          <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
-            Sort by
-            <select
-              className="rounded-md border border-[#d7e0ea] px-4 py-3 outline-none transition focus:border-[#f4821f]"
-              value={sortKey}
-              onChange={(event) => toggleSort(event.target.value as SortKey)}
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.9fr)]">
+          <div className="relative overflow-hidden rounded-md bg-[linear-gradient(135deg,#10243e,#17365d_55%,#f4821f)] px-7 py-8 text-white shadow-xl">
+            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+            <div className="absolute bottom-0 right-20 h-24 w-24 rounded-full bg-[#ffd3ad]/30 blur-2xl" />
+            <p className="relative text-sm uppercase tracking-[0.3em] text-[#ffcfaa]">
+              Meet The Team
+            </p>
+            <h3 className="relative mt-3 text-3xl font-semibold tracking-tight">
+              {spotlightEmployee ? spotlightEmployee.name : "Your team preview"}
+            </h3>
+            <p className="relative mt-3 max-w-xl text-sm leading-6 text-[#e8eef6]">
+              A warmer snapshot of the people behind the work. Click any
+              employee below to bring their profile forward here.
+            </p>
+            <div className="relative mt-8 flex flex-wrap items-center gap-5">
+              <div
+                className={`flex h-20 w-20 items-center justify-center rounded-md border border-white/20 bg-linear-to-br ${spotlightEmployee ? getEmployeeTone(spotlightEmployee.id!) : "from-white/50 to-white/10"} text-2xl font-semibold text-[#10243e] shadow-lg backdrop-blur`}
+              >
+                {spotlightInitials}
+              </div>
+              <div className="grid gap-2">
+                <div className="inline-flex w-fit rounded-md bg-white/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-[#ffcfaa]">
+                  Team profile
+                </div>
+                <p className="text-lg font-medium text-white/95">
+                  {spotlightEmployee
+                    ? spotlightEmployee.email
+                    : "Select an employee to preview details."}
+                </p>
+                <p className="text-sm text-[#ffddb8]">
+                  {spotlightEmployee
+                    ? `Monthly salary: $${spotlightEmployee.salary.toLocaleString()}`
+                    : "Use the employee table below to highlight someone here."}
+                </p>
+                <p className="text-sm text-[#d9e4f0]">
+                  {spotlightEmployee
+                    ? "A valued member of the care and operations team."
+                    : "This area helps the page feel more personal and welcoming."}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-md border border-[#d7e0ea] bg-white p-6 shadow-sm">
+            <p className="text-sm uppercase tracking-[0.3em] text-[#ea6a12]">
+              Team Mood
+            </p>
+            <h3 className="mt-3 text-2xl font-semibold text-[#10243e]">
+              A softer overview
+            </h3>
+            <div className="mt-6 grid gap-3">
+              <div className="rounded-md bg-[#f7f9fc] p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-[#5f7490]">
+                  What you are seeing
+                </p>
+                <p className="mt-2 text-xl font-semibold text-[#10243e]">
+                  {filteredEmployees.length} people in the current view
+                </p>
+              </div>
+              <div className="rounded-md bg-[#fff0e2] p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-[#ea6a12]">
+                  Leading salary
+                </p>
+                <p className="mt-2 text-xl font-semibold text-[#10243e]">
+                  {highestPaidEmployee
+                    ? `${highestPaidEmployee.name}`
+                    : "No one selected yet"}
+                </p>
+              </div>
+              <div className="rounded-md bg-[#e8eef6] p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-[#17365d]">
+                  Average salary
+                </p>
+                <p className="mt-2 text-xl font-semibold text-[#10243e]">
+                  ${Math.round(averageSalary).toLocaleString()}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Card className="rounded-md border border-[#d7e0ea] bg-white p-6 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold text-[#10243e]">
+              Add employee
+            </CardTitle>
+            <CardDescription className="text-sm text-[#5f7490]">
+              Add a new team member with the details you want to keep on hand.
+            </CardDescription>
+            {FormActionMessage && (
+              <CardAction>
+                <div
+                  className={`mb-4 rounded-md px-4 py-3 text-sm ${
+                    actionMessage.includes("already exists")
+                      ? "border border-[#ffd2ad] bg-[#fff0e2] text-[#ea6a12]"
+                      : "border border-[#d7e0ea] bg-[#e8eef6] text-[#17365d]"
+                  }`}
+                >
+                  {FormActionMessage}
+                </div>
+              </CardAction>
+            )}
+          </CardHeader>
+          <CardContent>
+            <form
+              className="grid gap-4 md:grid-cols-2 xl:grid-cols-4"
+              onSubmit={handleAddEmployee}
             >
-              <option value="name">Name</option>
-              <option value="email">Email</option>
-              <option value="salary">Salary</option>
-            </select>
-          </label>
-        </div>
-
-        {actionMessage ? (
-          <div
-            className={`mb-4 rounded-md px-4 py-3 text-sm ${
-              actionMessage.includes("already exists")
-                ? "border border-[#ffd2ad] bg-[#fff0e2] text-[#ea6a12]"
-                : "border border-[#d7e0ea] bg-[#e8eef6] text-[#17365d]"
-            }`}
-          >
-            {actionMessage}
+              <Field>
+                <Label className="text-sm font-medium text-[#17365d]">
+                  Full name
+                </Label>
+                <Input
+                  required
+                  className="rounded-md border border-[#d7e0ea] px-4 py-5 outline-none transition focus:border-[#f4821f]"
+                  name="name"
+                  placeholder="Sara Ahmad"
+                  type="text"
+                  value={newEmployee.name}
+                  onChange={(event) =>
+                    UpdateFields({ name: event.target.value })
+                  }
+                />
+              </Field>
+              <Field>
+                <Label className="text-sm font-medium text-[#17365d]">
+                  Email
+                </Label>
+                <Input
+                  required
+                  className="rounded-md border border-[#d7e0ea] px-4 py-5 outline-none transition focus:border-[#f4821f]"
+                  name="email"
+                  placeholder="sara@tab-employee.com"
+                  type="email"
+                  value={newEmployee.email}
+                  onChange={(event) =>
+                    UpdateFields({ email: event.target.value })
+                  }
+                />
+              </Field>
+              <Field>
+                <Label className="text-sm font-medium text-[#17365d]">
+                  Salary
+                </Label>
+                <Input
+                  required
+                  min="0"
+                  className="rounded-md border border-[#d7e0ea] px-4 py-5 outline-none transition focus:border-[#f4821f]"
+                  name="salary"
+                  placeholder="2500"
+                  type="number"
+                  value={newEmployee.salary || ""}
+                  onChange={(event) =>
+                    UpdateFields({ salary: parseInt(event.target.value) || 0 })
+                  }
+                />
+              </Field>
+              <Field className="flex flex-col justify-end">
+                <Button
+                  className="w-full rounded-md bg-[#10243e] px-4 py-5 text-sm font-semibold text-white transition hover:bg-[#17365d] disabled:cursor-not-allowed disabled:bg-[#5f7490] cursor-pointer"
+                  disabled={Loading}
+                  type="submit"
+                >
+                  {Loading ? "Saving..." : "Add employee"}
+                </Button>
+              </Field>
+            </form>
+          </CardContent>
+        </Card>
+        <div className="rounded-md border border-[#d7e0ea] bg-white p-6 shadow-sm">
+          <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h2 className="text-2xl font-semibold text-[#10243e]">
+                Employee list
+              </h2>
+              <p className="text-sm text-[#5f7490]">
+                Browse your team, update details inline, and keep everything
+                tidy.
+              </p>
+            </div>
+            <div className="rounded-md bg-[#e8eef6] px-4 py-2 text-sm font-medium text-[#17365d]">
+              {Employees.length} employee{Employees.length === 1 ? "" : "s"}
+            </div>
           </div>
-        ) : null}
-
-        {Error && (
-          <ErrorCard
-            message="We could not load Employee Table. Please try again later."
-            error={Error}
-          />
-        )}
-
-        <div className="overflow-x-auto">
-          <table className="min-w-full border-separate border-spacing-y-3">
-            <thead>
-              <tr className="text-left text-xs uppercase tracking-[0.2em] text-[#5f7490]">
-                <th className="px-4 py-2">
-                  <button
-                    className="transition hover:text-[#ea6a12]"
-                    type="button"
-                    onClick={() => toggleSort("name")}
-                  >
-                    Name
-                  </button>
-                </th>
-                <th className="px-4 py-2">
-                  <button
-                    className="transition hover:text-[#ea6a12]"
-                    type="button"
-                    onClick={() => toggleSort("email")}
-                  >
-                    Email
-                  </button>
-                </th>
-                <th className="px-4 py-2">
-                  <button
-                    className="transition hover:text-[#ea6a12]"
-                    type="button"
-                    onClick={() => toggleSort("salary")}
-                  >
-                    Salary
-                  </button>
-                </th>
-                <th className="px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Loading && sortedEmployees.length === 0 ? (
-                <tr>
-                  <td
-                    className="rounded-md bg-[#f7f9fc] px-4 py-6 text-center text-sm text-[#5f7490]"
-                    colSpan={4}
-                  >
-                    Loading employees...
-                  </td>
+          <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto]">
+            <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
+              Search employees
+              <input
+                className="rounded-md border border-[#d7e0ea] px-4 py-3 outline-none transition focus:border-[#f4821f]"
+                placeholder="Search by name, email, or salary"
+                type="text"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+              />
+            </label>
+            <label className="flex flex-col gap-2 text-sm font-medium text-[#17365d]">
+              Sort by
+              <select
+                className="rounded-md border border-[#d7e0ea] px-4 py-3 outline-none transition focus:border-[#f4821f]"
+                value={sortKey}
+                onChange={(event) => toggleSort(event.target.value as SortKey)}
+              >
+                <option value="name">Name</option>
+                <option value="email">Email</option>
+                <option value="salary">Salary</option>
+              </select>
+            </label>
+          </div>
+          {actionMessage && (
+            <div
+              className={`mb-4 rounded-md px-4 py-3 text-sm ${
+                actionMessage.includes("already exists")
+                  ? "border border-[#ffd2ad] bg-[#fff0e2] text-[#ea6a12]"
+                  : "border border-[#d7e0ea] bg-[#e8eef6] text-[#17365d]"
+              }`}
+            >
+              {actionMessage}
+            </div>
+          )}
+          {Error && (
+            <ErrorCard
+              message="We could not load Employee Table. Please try again later."
+              error={Error}
+            />
+          )}
+          <div className="overflow-x-auto">
+            <table className="min-w-full border-separate border-spacing-y-3">
+              <thead>
+                <tr className="text-left text-xs uppercase tracking-[0.2em] text-[#5f7490]">
+                  <th className="px-4 py-2">
+                    <button
+                      className="transition hover:text-[#ea6a12]"
+                      type="button"
+                      onClick={() => toggleSort("name")}
+                    >
+                      Name
+                    </button>
+                  </th>
+                  <th className="px-4 py-2">
+                    <button
+                      className="transition hover:text-[#ea6a12]"
+                      type="button"
+                      onClick={() => toggleSort("email")}
+                    >
+                      Email
+                    </button>
+                  </th>
+                  <th className="px-4 py-2">
+                    <button
+                      className="transition hover:text-[#ea6a12]"
+                      type="button"
+                      onClick={() => toggleSort("salary")}
+                    >
+                      Salary
+                    </button>
+                  </th>
+                  <th className="px-4 py-2">Actions</th>
                 </tr>
-              ) : null}
-
-              {!Loading && Employees.length === 0 ? (
-                <tr>
-                  <td
-                    className="rounded-md bg-[#f7f9fc] px-4 py-6 text-center text-sm text-[#5f7490]"
-                    colSpan={4}
-                  >
-                    No employees found yet. Add your first employee above.
-                  </td>
-                </tr>
-              ) : null}
-
-              {!Loading &&
-              Employees.length > 0 &&
-              sortedEmployees.length === 0 ? (
-                <tr>
-                  <td
-                    className="rounded-md bg-[#f7f9fc] px-4 py-6 text-center text-sm text-[#5f7490]"
-                    colSpan={4}
-                  >
-                    No employees match your current search.
-                  </td>
-                </tr>
-              ) : null}
-
-              {sortedEmployees.map((employee) => {
-                const isEditing = editingId === employee.id;
-                const isSelected = spotlightEmployee?.id === employee.id;
-
-                return (
-                  <tr
-                    key={employee.id}
-                    className={`transition ${
-                      isSelected
-                        ? "bg-[#fff0e2] ring-1 ring-[#ffd2ad]"
-                        : "bg-[#f7f9fc]"
-                    }`}
-                    onClick={() => setSelectedEmployeeId(employee.id)}
-                  >
-                    <td className="px-4 py-4">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-linear-to-br ${getEmployeeTone(employee.id!)} text-sm font-semibold text-[#10243e] shadow-sm`}
-                        >
-                          {employee.name
-                            .split(" ")
-                            .map((namePart) => namePart[0])
-                            .join("")
-                            .slice(0, 2)
-                            .toUpperCase()}
+              </thead>
+              <tbody>
+                {Loading && sortedEmployees.length === 0 ? (
+                  <tr>
+                    <td
+                      className="rounded-md bg-[#f7f9fc] px-4 py-6 text-center text-sm text-[#5f7490]"
+                      colSpan={4}
+                    >
+                      Loading employees...
+                    </td>
+                  </tr>
+                ) : null}
+                {!Loading && Employees.length === 0 ? (
+                  <tr>
+                    <td
+                      className="rounded-md bg-[#f7f9fc] px-4 py-6 text-center text-sm text-[#5f7490]"
+                      colSpan={4}
+                    >
+                      No employees found yet. Add your first employee above.
+                    </td>
+                  </tr>
+                ) : null}
+                {!Loading &&
+                Employees.length > 0 &&
+                sortedEmployees.length === 0 ? (
+                  <tr>
+                    <td
+                      className="rounded-md bg-[#f7f9fc] px-4 py-6 text-center text-sm text-[#5f7490]"
+                      colSpan={4}
+                    >
+                      No employees match your current search.
+                    </td>
+                  </tr>
+                ) : null}
+                {sortedEmployees.map((employee) => {
+                  const isEditing = editingId === employee.id;
+                  const isSelected = spotlightEmployee?.id === employee.id;
+                  return (
+                    <tr
+                      key={employee.id}
+                      className={`transition ${
+                        isSelected
+                          ? "bg-[#fff0e2] ring-1 ring-[#ffd2ad]"
+                          : "bg-[#f7f9fc]"
+                      }`}
+                      onClick={() => setSelectedEmployeeId(employee.id)}
+                    >
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-linear-to-br ${getEmployeeTone(employee.id!)} text-sm font-semibold text-[#10243e] shadow-sm`}
+                          >
+                            {employee.name
+                              .split(" ")
+                              .map((namePart) => namePart[0])
+                              .join("")
+                              .slice(0, 2)
+                              .toUpperCase()}
+                          </div>
+                          <div className="min-w-0">
+                            {isEditing ? (
+                              <input
+                                className="w-full rounded-md border border-[#d7e0ea] bg-white px-3 py-2 outline-none focus:border-[#f4821f]"
+                                name="name"
+                                type="text"
+                                value={editValues.name}
+                                onChange={handleEditChange}
+                              />
+                            ) : (
+                              <>
+                                <span className="block font-medium text-[#10243e]">
+                                  {employee.name}
+                                </span>
+                                <span className="block text-xs text-[#5f7490]">
+                                  Click row to feature this person above
+                                </span>
+                              </>
+                            )}
+                          </div>
                         </div>
-                        <div className="min-w-0">
+                      </td>
+                      <td className="px-4 py-4 text-[#17365d]">
+                        {isEditing ? (
+                          <input
+                            className="w-full rounded-md border border-[#d7e0ea] bg-white px-3 py-2 outline-none focus:border-[#f4821f]"
+                            name="email"
+                            type="email"
+                            value={editValues.email}
+                            onChange={handleEditChange}
+                          />
+                        ) : (
+                          employee.email
+                        )}
+                      </td>
+                      <td className="px-4 py-4 text-[#17365d]">
+                        {isEditing ? (
+                          <input
+                            className="w-full rounded-md border border-[#d7e0ea] bg-white px-3 py-2 outline-none focus:border-[#f4821f]"
+                            min="0"
+                            name="salary"
+                            type="number"
+                            value={editValues.salary}
+                            onChange={handleEditChange}
+                          />
+                        ) : (
+                          `$${employee.salary.toLocaleString()}`
+                        )}
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex flex-wrap gap-2">
                           {isEditing ? (
-                            <input
-                              className="w-full rounded-md border border-[#d7e0ea] bg-white px-3 py-2 outline-none focus:border-[#f4821f]"
-                              name="name"
-                              type="text"
-                              value={editValues.name}
-                              onChange={handleEditChange}
-                            />
+                            <>
+                              <Button
+                                className="rounded-md bg-[#10243e] px-3 py-5 text-sm font-medium text-white transition hover:bg-[#17365d] cursor-pointer"
+                                type="button"
+                                variant="default"
+                                onClick={() =>
+                                  handleUpdateEmployee(employee.id)
+                                }
+                              >
+                                Save
+                              </Button>
+                              <Button
+                                className="rounded-md border border-[#d7e0ea] px-3 py-5 text-sm font-medium text-[#17365d] transition hover:bg-[#f7f9fc] cursor-pointer"
+                                variant="secondary"
+                                type="button"
+                                onClick={cancelEditing}
+                              >
+                                Cancel
+                              </Button>
+                            </>
                           ) : (
                             <>
-                              <span className="block font-medium text-[#10243e]">
-                                {employee.name}
-                              </span>
-                              <span className="block text-xs text-[#5f7490]">
-                                Click row to feature this person above
-                              </span>
+                              <Button
+                                className="px-3 py-5 cursor-pointer"
+                                type="button"
+                                variant="secondary"
+                                onClick={() => startEditing(employee)}
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                className="px-3 py-5 cursor-pointer"
+                                type="button"
+                                variant="destructive"
+                                onClick={() => {
+                                  setIsOpen(true);
+                                  setDeleteEmployee(employee);
+                                }}
+                              >
+                                Delete
+                              </Button>
                             </>
                           )}
                         </div>
-                      </div>
-                    </td>
-
-                    <td className="px-4 py-4 text-[#17365d]">
-                      {isEditing ? (
-                        <input
-                          className="w-full rounded-md border border-[#d7e0ea] bg-white px-3 py-2 outline-none focus:border-[#f4821f]"
-                          name="email"
-                          type="email"
-                          value={editValues.email}
-                          onChange={handleEditChange}
-                        />
-                      ) : (
-                        employee.email
-                      )}
-                    </td>
-
-                    <td className="px-4 py-4 text-[#17365d]">
-                      {isEditing ? (
-                        <input
-                          className="w-full rounded-md border border-[#d7e0ea] bg-white px-3 py-2 outline-none focus:border-[#f4821f]"
-                          min="0"
-                          name="salary"
-                          type="number"
-                          value={editValues.salary}
-                          onChange={handleEditChange}
-                        />
-                      ) : (
-                        `$${employee.salary.toLocaleString()}`
-                      )}
-                    </td>
-
-                    <td className="px-4 py-4">
-                      <div className="flex flex-wrap gap-2">
-                        {isEditing ? (
-                          <>
-                            <button
-                              className="rounded-md bg-[#10243e] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#17365d]"
-                              type="button"
-                              onClick={() => handleUpdateEmployee(employee.id)}
-                            >
-                              Save
-                            </button>
-                            <button
-                              className="rounded-md border border-[#d7e0ea] px-3 py-2 text-sm font-medium text-[#17365d] transition hover:bg-[#f7f9fc]"
-                              type="button"
-                              onClick={cancelEditing}
-                            >
-                              Cancel
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              className="rounded-md border border-[#d7e0ea] px-3 py-2 text-sm font-medium text-[#17365d] transition hover:bg-[#f7f9fc]"
-                              type="button"
-                              onClick={() => startEditing(employee)}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="rounded-md bg-[#ea6a12] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#f4821f]"
-                              type="button"
-                              onClick={() => handleDeleteEmployee(employee.id)}
-                            >
-                              Delete
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {IsOpen && (
+        <Modal
+          Open={IsOpen}
+          setOpen={setIsOpen}
+          handleDelete={() => handleDeleteEmployee(DeleteEmployee?.id)}
+          text={DeleteEmployee?.name || "Employee"}
+        />
+      )}
+    </>
   );
 }
