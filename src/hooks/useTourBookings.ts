@@ -6,7 +6,7 @@ import type {
   TourBooking,
   TourBookingInput,
   TourBookingStatus,
-} from "@/types/projects";
+} from "@/types/tour";
 import type { Data } from "@/types/types";
 
 type TourBookingOptions = {
