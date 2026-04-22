@@ -8,7 +8,6 @@ export default function UnitCard({
   onLeave,
   onBuy,
   onBookTour,
-  LoginNotice,
 }: UnitCardProps) {
   return (
     <div
@@ -68,14 +67,13 @@ export default function UnitCard({
           <button
             type="button"
             onClick={onBuy}
-            className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition cursor-pointer disabled:cursor-not-allowed ${
+            className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition cursor-pointer ${
               isHovered
                 ? "border-white bg-white text-orange-500 hover:bg-white/90"
                 : "border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100"
             }`}
-            disabled={LoginNotice}
           >
-            {LoginNotice ? "Login to buy" : "Buy this unit"}
+            Buy
           </button>
           <button
             type="button"

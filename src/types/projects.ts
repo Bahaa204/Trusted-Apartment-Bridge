@@ -59,7 +59,6 @@ export type ImageGalleryProps = {
 export type UnitCardProps = {
   house: House;
   isHovered: boolean;
-  LoginNotice: boolean;
   onHover: () => void;
   onLeave: () => void;
   onBuy: () => void;

@@ -44,6 +44,59 @@ type CountryDisplay = DBCountry & {
   lng: number;
 };
 
+const faqItems = [
+  {
+    question: "What types of properties does TAB Developments offer?",
+    answer:
+      "TAB Developments offers apartments, villas, townhouses, and selected commercial opportunities across key locations in Egypt, the UAE, and the UK. Availability varies by project phase and location.",
+  },
+  {
+    question: "How can I reserve a unit?",
+    answer:
+      "You can reserve a unit by selecting your preferred project, contacting our sales team, and completing the reservation form with the required documents and initial payment.",
+  },
+  {
+    question: "Do you provide installment payment plans?",
+    answer:
+      "Yes. Flexible installment plans are available on many projects. Plan duration, down payment, and milestone structure depend on the specific development and current offer.",
+  },
+  {
+    question: "Are your projects suitable for investment?",
+    answer:
+      "Many of our projects are designed with long-term value in mind, including strong locations, quality construction, and rental demand factors that support investment objectives.",
+  },
+  {
+    question: "Can international buyers purchase properties?",
+    answer:
+      "Yes, international buyers can purchase in many of our developments, subject to local regulations and verification requirements in each country.",
+  },
+  {
+    question: "What documents are required to purchase a property?",
+    answer:
+      "Typically, you will need a valid identification document, proof of address, and signed reservation or contract forms. Exact requirements may vary by country and project.",
+  },
+  {
+    question: "How do I schedule a site visit or virtual tour?",
+    answer:
+      "You can schedule a site visit or virtual tour directly through our project pages or by contacting our support team. We will coordinate a suitable time with an advisor.",
+  },
+  {
+    question: "Do you support after-sales services?",
+    answer:
+      "Yes. We provide structured after-sales support, including handover guidance, documentation coordination, and dedicated assistance for post-purchase inquiries.",
+  },
+  {
+    question: "How is project handover timing communicated?",
+    answer:
+      "Handover timelines are shared in project updates and contract documents. We also provide progress communication through official channels during construction phases.",
+  },
+  {
+    question: "Who can I contact for financing guidance?",
+    answer:
+      "Our sales advisors can guide you through available financing options and connect you with partner institutions where applicable, based on your chosen project and eligibility.",
+  },
+];
+
 export default function About() {
   useDocumentTitle("About Us");
 
@@ -58,6 +111,7 @@ export default function About() {
   );
   const [showAbout, setShowAbout] = useState(true);
   const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   useEffect(() => {
     if (location.hash === "#globe" && globeRef2.current) {
@@ -107,16 +161,23 @@ export default function About() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative bg-linear-to-br from-gray-900 via-gray-800 to-orange-900 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,92,0,0.15),transparent_60%)]" />
+      <section className="relative overflow-hidden text-white">
+        <motion.div
+          initial={{ opacity: 0, scale: 1.04 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.55, ease: "easeOut" }}
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/images/projects/about-us.png')" }}
+        />
+        <div className="absolute inset-0 bg-black/45" />
         <div className="p-5">
           <Breadcrumbs style="light" />
         </div>
-        <div className="relative max-w-7xl mx-auto px-6 py-32 md:py-44">
+        <div className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
           <h1 className="text-5xl md:text-7xl font-extrabold leading-tight mb-6">
             Building the
             <br />
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-orange-600">
+            <span className="text-orange-400">
               Future
             </span>
           </h1>
@@ -206,23 +267,80 @@ export default function About() {
           </div>
         </div>
       </section>
-      {/* CTA */}
-      <section className="bg-linear-to-r from-orange-500 to-orange-600 py-20 px-6 text-white text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          Ready to Find Your Dream Home?
-        </h2>
-        <p className="text-orange-100 mb-8 max-w-lg mx-auto">
-          Explore our global portfolio and discover the perfect property for
-          you.
-        </p>
-        <button
-          onClick={() =>
-            globeRef2.current?.scrollIntoView({ behavior: "smooth" })
-          }
-          className="bg-white text-orange-500 hover:bg-gray-100 px-8 py-3 rounded-full font-semibold transition shadow-lg"
-        >
-          Explore the Globe
-        </button>
+      {/* FAQ */}
+      <section className="py-20 px-6 bg-[#e6e0d8]">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+              Most Asked Questions
+            </h2>
+            <p className="mt-3 text-slate-500 max-w-2xl mx-auto">
+              Find quick, clear answers about buying, payments, investment,
+              handover, and support.
+            </p>
+            <div className="mx-auto mt-5 h-1 w-24 rounded-full bg-orange-500/70" />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
+            {[0, 1].map((columnIndex) => (
+              <div key={columnIndex} className="space-y-4 md:space-y-5">
+                {faqItems
+                  .filter((_, itemIndex) => itemIndex % 2 === columnIndex)
+                  .map((item, filteredIndex) => {
+                    const index = filteredIndex * 2 + columnIndex;
+                    const isOpen = openFaqIndex === index;
+
+                    return (
+                      <article
+                        key={item.question}
+                        className="w-full rounded-2xl border border-slate-200 bg-white shadow-sm"
+                      >
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setOpenFaqIndex((prev) =>
+                              prev === index ? null : index,
+                            )
+                          }
+                          className="flex h-24 w-full items-center justify-between gap-6 px-6 py-5 text-left"
+                          aria-expanded={isOpen}
+                        >
+                          <h3 className="line-clamp-2 text-base md:text-lg font-semibold text-slate-900">
+                            {item.question}
+                          </h3>
+                          <span
+                            className={`inline-flex h-8 w-8 shrink-0 flex-none items-center justify-center rounded-full border border-slate-300 text-lg leading-none text-slate-600 transition-transform ${
+                              isOpen ? "rotate-45" : "rotate-0"
+                            }`}
+                          >
+                            +
+                          </span>
+                        </button>
+
+                        <AnimatePresence initial={false}>
+                          {isOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.22, ease: "easeOut" }}
+                              className="overflow-hidden"
+                            >
+                              <div className="px-6 pb-6 border-t border-slate-100">
+                                <p className="pt-4 text-sm md:text-base leading-7 text-slate-600">
+                                  {item.answer}
+                                </p>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </article>
+                    );
+                  })}
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
       {/* Globe Section */}
       <div ref={globeRef2} className="w-full">

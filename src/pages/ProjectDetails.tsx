@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect, type SubmitEvent } from "react";
-import { MapPin, Map as MapIcon, CheckCircle2, X, Heart, Calendar, Clock, Phone, FileText } from "lucide-react";
+import { MapPin, Map as MapIcon, CheckCircle2, X, Calendar, Clock, Phone, FileText } from "lucide-react";
+import { motion } from "framer-motion";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import { useParams, Link, useNavigate } from "react-router-dom";
@@ -55,6 +56,21 @@ const MODELS = [
   "models/futuristic_building.glb",
   "models/amelinco_office_building.glb",
 ];
+
+const PROJECT_HERO_IMAGE_FILES = [
+  "20240731_ADPIC_Enhanced Construction Contract _Web-0-690-0-0.webp",
+  "6mYmWTRTa9d3292b5PIVkXkd7jgYrXgg0cilZf2F.webp",
+  "ADPIC.jpg",
+  "bbb13181-5a9d-4681-a7f2-431240935dde.jpg",
+  "HgmafnUUlQ.jpeg",
+  "Image-1-Yas-Island-Abu-Dhabi-UAE-Shutterstock_629465048.jpg",
+  "Reeman-Living-PIVOT-1.jpg",
+  "Web-0-690-0-0.webp",
+];
+
+const PROJECT_HERO_IMAGES = PROJECT_HERO_IMAGE_FILES.map(
+  (file) => `/images/projects/${encodeURIComponent(file)}`,
+);
 
 type BuildingWithHouses = Building & { houses: House[] };
 
@@ -183,6 +199,10 @@ export default function ProjectDetails() {
   });
   const [showToast, setShowToast] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
+  const [loanAmountInput, setLoanAmountInput] = useState<string>("350000");
+  const [downPaymentInput, setDownPaymentInput] = useState<string>("70000");
+  const [annualRateInput, setAnnualRateInput] = useState<string>("6.5");
+  const [loanTermYearsInput, setLoanTermYearsInput] = useState<string>("25");
 
   useEffect(() => {
     if (!showToast) return;
@@ -190,7 +210,7 @@ export default function ProjectDetails() {
     return () => clearTimeout(t);
   }, [showToast]);
 
-  const { Session, Loading: AuthLoading, Error: AuthError } = useAuth();
+  const { Session } = useAuth();
   const { IsFavorited, ToggleFavorite } = useFavorites();
   const { AddBooking, Loading: BookingLoading } = useTourBookings();
 
@@ -220,18 +240,9 @@ export default function ProjectDetails() {
   } = useHouses();
 
   const loading =
-    CountriesLoading ||
-    ProjectsLoading ||
-    BuildingsLoading ||
-    HousesLoading ||
-    AuthLoading;
+    CountriesLoading || ProjectsLoading || BuildingsLoading || HousesLoading;
 
-  const error =
-    CountriesError ||
-    ProjectsError ||
-    BuildingsError ||
-    HousesError ||
-    AuthError;
+  const error = CountriesError || ProjectsError || BuildingsError || HousesError;
 
   const countries = Countries as Country[];
 
@@ -309,20 +320,84 @@ export default function ProjectDetails() {
     [project],
   );
 
+  const projectHeroImageById = useMemo(() => {
+    const map = new Map<number, string>();
+
+    const sortedProjects = Projects.filter(
+      (item): item is Project & { id: number } => typeof item.id === "number",
+    ).sort((a, b) => a.id - b.id);
+
+    sortedProjects.forEach((item, index) => {
+      const image = PROJECT_HERO_IMAGES[index];
+      if (image) {
+        map.set(item.id, image);
+      }
+    });
+
+    return map;
+  }, [Projects]);
+
+  const projectHeroImage =
+    typeof project?.id === "number"
+      ? projectHeroImageById.get(project.id) ?? null
+      : null;
+
   const modelAssignments = useMemo(() => {
     return getUniqueModelAssignments(projectBuildings.length);
   }, [projectBuildings]);
 
   const isSingleBuildingProject = projectBuildings.length === 1;
 
-  const LoginNotice = Session ? false : true;
-  console.log("Login Notice: ", LoginNotice);
+  const mortgageSummary = useMemo(() => {
+    const loanAmount = Number(loanAmountInput);
+    const downPayment = Number(downPaymentInput);
+    const annualRate = Number(annualRateInput);
+    const loanTermYears = Number(loanTermYearsInput);
+
+    if (
+      Number.isNaN(loanAmount) ||
+      Number.isNaN(downPayment) ||
+      Number.isNaN(annualRate) ||
+      Number.isNaN(loanTermYears)
+    ) {
+      return null;
+    }
+
+    const principal = Math.max(loanAmount - downPayment, 0);
+    const months = Math.max(Math.round(loanTermYears * 12), 0);
+    const monthlyRate = Math.max(annualRate, 0) / 100 / 12;
+
+    if (principal <= 0 || months <= 0) {
+      return {
+        principal,
+        monthlyPayment: 0,
+        totalPaid: 0,
+        totalInterest: 0,
+      };
+    }
+
+    const monthlyPayment =
+      monthlyRate === 0
+        ? principal / months
+        : (principal * monthlyRate * (1 + monthlyRate) ** months) /
+          ((1 + monthlyRate) ** months - 1);
+
+    const totalPaid = monthlyPayment * months;
+    const totalInterest = Math.max(totalPaid - principal, 0);
+
+    return {
+      principal,
+      monthlyPayment,
+      totalPaid,
+      totalInterest,
+    };
+  }, [loanAmountInput, downPaymentInput, annualRateInput, loanTermYearsInput]);
 
   if (loading) {
     return (
       <main className="min-h-screen bg-[#e6e0d8]">
         {/* Hero skeleton */}
-        <div className="bg-linear-to-br from-gray-900 via-gray-800 to-orange-900 py-20 px-6">
+        <div className="bg-slate-900 py-20 px-6">
           <div className="max-w-5xl mx-auto">
             <div className="h-4 w-32 bg-white/20 rounded-full mb-6 animate-pulse" />
             <div className="h-10 w-64 bg-white/20 rounded-xl mb-4 animate-pulse" />
@@ -428,6 +503,11 @@ export default function ProjectDetails() {
   const projectId = project.id;
 
   function openPayment(house: House) {
+    if (!Session) {
+      navigate("/login");
+      return;
+    }
+
     setPaymentHouse(house);
     setPaymentSuccess(false);
     setPaymentError("");
@@ -515,8 +595,22 @@ export default function ProjectDetails() {
   return (
     <div className="min-h-screen bg-[#e6e0d8]">
       {/* Hero */}
-      <div className="bg-linear-to-br from-gray-900 via-gray-800 to-orange-900 text-white py-20 px-6">
-        <div className="max-w-5xl mx-auto">
+      <div className="relative overflow-hidden text-white py-24 md:py-32 px-6">
+        {projectHeroImage ? (
+          <motion.div
+            key={projectHeroImage}
+            initial={{ opacity: 0, scale: 1.04 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.55, ease: "easeOut" }}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${projectHeroImage})` }}
+          />
+        ) : (
+          <div className="absolute inset-0 bg-slate-900" />
+        )}
+        <div className="absolute inset-0 bg-black/45" />
+
+        <div className="relative max-w-5xl mx-auto">
           <Breadcrumbs name={project.name} style="light" />
           <h1 className="text-4xl md:text-5xl font-extrabold mb-3">
             {project.name}
@@ -555,22 +649,22 @@ export default function ProjectDetails() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 -mt-8">
+      <div className="max-w-5xl mx-auto px-6 mt-8 md:mt-10">
         {/* Stats cards */}
         <div className="grid grid-cols-3 gap-4 mb-10">
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
+          <div className="h-28 md:h-32 bg-white rounded-2xl shadow-lg p-6 text-center flex flex-col items-center justify-center">
             <p className="text-3xl font-extrabold text-orange-500">
               {projectBuildings.length}
             </p>
             <p className="text-gray-500 text-sm mt-1">Buildings</p>
           </div>
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
+          <div className="h-28 md:h-32 bg-white rounded-2xl shadow-lg p-6 text-center flex flex-col items-center justify-center">
             <p className="text-3xl font-extrabold text-orange-500">
               {totalUnits}
             </p>
             <p className="text-gray-500 text-sm mt-1">Units</p>
           </div>
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
+          <div className="h-28 md:h-32 bg-white rounded-2xl shadow-lg p-6 text-center flex flex-col items-center justify-center">
             <p className="text-3xl font-extrabold text-orange-500">
               {countryName || "—"}
             </p>
@@ -582,7 +676,7 @@ export default function ProjectDetails() {
         {projectImages.length > 0 ? (
           <ImageGallery images={projectImages} />
         ) : (
-          <div className="h-64 bg-linear-to-br from-orange-400 to-orange-600 rounded-2xl shadow-lg mb-10 flex items-center justify-center">
+          <div className="h-64 bg-slate-300 rounded-2xl shadow-lg mb-10 flex items-center justify-center">
             <span className="text-white/20 text-9xl font-black">
               {project.name[0]}
             </span>
@@ -624,7 +718,7 @@ export default function ProjectDetails() {
                     setSelectedBuilding(building.id);
                     setHoveredUnit(null);
                   }}
-                  className={`rounded-3xl border p-6 text-left transition-all duration-200 ${
+                  className={`cursor-pointer rounded-3xl border p-6 text-left transition-all duration-200 ${
                     effectiveSelectedBuildingId === building.id
                       ? "border-orange-400 bg-orange-50 shadow-lg ring-2 ring-orange-300/50"
                       : "border-gray-200 bg-white hover:border-orange-200"
@@ -662,7 +756,6 @@ export default function ProjectDetails() {
                       .map((house) => (
                         <UnitCard
                           key={house.id}
-                          LoginNotice={LoginNotice}
                           house={house}
                           isHovered={hoveredUnit === house.id}
                           onHover={() => setHoveredUnit(house.id)}
@@ -723,6 +816,112 @@ export default function ProjectDetails() {
                 </div>
               );
             })}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-20">
+          <h2 className="text-2xl font-bold mb-2">
+            Calculate Your Loan / Mortgage Payments
+          </h2>
+          <p className="text-gray-500 text-sm mb-6">
+            Enter your values to estimate monthly payments, total payment, and
+            total interest.
+          </p>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Home price ($)
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="1000"
+                value={loanAmountInput}
+                onChange={(event) => setLoanAmountInput(event.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-white p-3 text-sm shadow-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Down payment ($)
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="1000"
+                value={downPaymentInput}
+                onChange={(event) => setDownPaymentInput(event.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-white p-3 text-sm shadow-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Interest rate (% / year)
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                value={annualRateInput}
+                onChange={(event) => setAnnualRateInput(event.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-white p-3 text-sm shadow-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Loan term (years)
+              </label>
+              <input
+                type="number"
+                min="1"
+                step="1"
+                value={loanTermYearsInput}
+                onChange={(event) => setLoanTermYearsInput(event.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-white p-3 text-sm shadow-sm"
+              />
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4">
+              <p className="text-xs uppercase tracking-[0.16em] text-orange-600">
+                Monthly payment
+              </p>
+              <p className="mt-2 text-xl font-bold text-[#10243e]">
+                ${mortgageSummary ? mortgageSummary.monthlyPayment.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+                Loan principal
+              </p>
+              <p className="mt-2 text-xl font-bold text-[#10243e]">
+                ${mortgageSummary ? mortgageSummary.principal.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+                Total payment
+              </p>
+              <p className="mt-2 text-xl font-bold text-[#10243e]">
+                ${mortgageSummary ? mortgageSummary.totalPaid.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+                Total interest
+              </p>
+              <p className="mt-2 text-xl font-bold text-[#10243e]">
+                ${mortgageSummary ? mortgageSummary.totalInterest.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -1044,7 +1243,7 @@ export default function ProjectDetails() {
 
       {/* Toast notification */}
       {showToast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-xl shadow-emerald-900/30 animate-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-9999 flex items-center gap-3 bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-xl shadow-emerald-900/30 animate-in slide-in-from-bottom-4 duration-300">
           <CheckCircle2 className="w-5 h-5 shrink-0" />
           <p className="text-sm font-semibold">{toastMessage}</p>
           <button

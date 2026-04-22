@@ -48,6 +48,7 @@ export function useTourBookings(options: TourBookingOptions = {}) {
       const query = supabaseClient
         .from("tour_bookings")
         .select("*")
+        .order("added_at", { ascending: false })
         .order("preferred_date", { ascending: true })
         .order("preferred_time", { ascending: true });
 
@@ -114,7 +115,15 @@ export function useTourBookings(options: TourBookingOptions = {}) {
   ) {
     if (!Session?.user.id || typeof bookingId !== "number") return false;
 
-    resetStates();
+    setError("");
+    const previousBookings = Bookings;
+
+    // Optimistic UI update so status reflects instantly in staff controls.
+    setBookings((current) =>
+      current.map((booking) =>
+        booking.id === bookingId ? { ...booking, status } : booking,
+      ),
+    );
 
     const { error: UpdateError } = await supabaseClient
       .from("tour_bookings")
@@ -122,11 +131,11 @@ export function useTourBookings(options: TourBookingOptions = {}) {
       .eq("id", bookingId);
 
     if (UpdateError) {
+      setBookings(previousBookings);
       SetError(UpdateError);
       return false;
     }
 
-    setLoading(false);
     return true;
   }
 

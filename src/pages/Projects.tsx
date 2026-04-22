@@ -1,5 +1,6 @@
 import { useMemo, useState, type MouseEvent, type SubmitEvent } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { motion } from "framer-motion";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useBuildings } from "@/hooks/useBuildings";
 import { useProjects } from "@/hooks/useProjects";
@@ -253,6 +254,7 @@ function matchesAllFilters(candidate: Recommendation, form: SurveyForm) {
 
 export default function Projects() {
   useDocumentTitle("Projects");
+  const navigate = useNavigate();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [showSurvey, setShowSurvey] = useState(false);
@@ -492,7 +494,8 @@ export default function Projects() {
     event.stopPropagation();
 
     if (!Session) {
-      return alert("Please login to save favorites.");
+      navigate("/login");
+      return;
     }
 
     await ToggleFavorite(projectId);
@@ -500,9 +503,20 @@ export default function Projects() {
 
   return (
     <div className="bg-[#e6e0d8]">
-      <div className="bg-linear-to-br from-gray-900 via-gray-800 to-orange-900 text-white py-20 px-6">
+      <div className="relative overflow-hidden text-white py-24 md:py-32 px-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 1.04 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.55, ease: "easeOut" }}
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage:
+              "url('/images/projects/skyscrapers-city-highrise-business-buildings-in-do-2023-01-21-02-55-59-utc-1.jpg')",
+          }}
+        />
+        <div className="absolute inset-0 bg-black/45" />
         <Breadcrumbs style="light" />
-        <div className="max-w-6xl mx-auto text-center">
+        <div className="relative max-w-5xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
             Our Projects
           </h1>
@@ -513,7 +527,7 @@ export default function Projects() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 -mt-8">
+      <div className="max-w-6xl mx-auto px-6 mt-8 md:mt-10">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
           <div className="rounded-3xl bg-white p-5 shadow-lg">
             <h2 className="text-xl font-semibold text-slate-900">
