@@ -611,7 +611,7 @@ export default function ProjectDetails() {
         <div className="absolute inset-0 bg-black/45" />
 
         <div className="relative max-w-5xl mx-auto">
-          <Breadcrumbs name={project.name} style="light" />
+          <Breadcrumbs name={project.name} />
           <h1 className="text-4xl md:text-5xl font-extrabold mb-3">
             {project.name}
           </h1>

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabaseClient } from "../lib/supabaseClient";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import type { FAQItem, SummaryLabel } from "@/types/types";
 
 const countryInfo: Record<
   string,
@@ -44,7 +45,7 @@ type CountryDisplay = DBCountry & {
   lng: number;
 };
 
-const faqItems = [
+const faqItems: FAQItem[] = [
   {
     question: "What types of properties does TAB Developments offer?",
     answer:
@@ -158,6 +159,13 @@ export default function About() {
     navigate(`/projects?country=${selectedCountry.id}`);
   }
 
+  const SummaryLabels: SummaryLabel[] = [
+    { num: "8+", label: "Projects" },
+    { num: "3+", label: "Countries" },
+    { num: "12+", label: "Buildings" },
+    { num: "22+", label: "Units" },
+  ];
+
   return (
     <>
       {/* Hero Section */}
@@ -171,15 +179,13 @@ export default function About() {
         />
         <div className="absolute inset-0 bg-black/45" />
         <div className="p-5">
-          <Breadcrumbs style="light" />
+          <Breadcrumbs />
         </div>
         <div className="relative max-w-7xl mx-auto px-6 py-24 md:py-32">
           <h1 className="text-5xl md:text-7xl font-extrabold leading-tight mb-6">
             Building the
             <br />
-            <span className="text-orange-400">
-              Future
-            </span>
+            <span className="text-orange-400">Future</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-300 max-w-xl mb-10">
             Premium real estate developments across Egypt, UAE, and the United
@@ -206,12 +212,7 @@ export default function About() {
       {/* Stats */}
       <section className="py-16 px-6">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {[
-            { num: "8+", label: "Projects" },
-            { num: "3", label: "Countries" },
-            { num: "12+", label: "Buildings" },
-            { num: "22+", label: "Units" },
-          ].map((stat) => (
+          {SummaryLabels.map((stat) => (
             <div key={stat.label}>
               <p className="text-4xl font-extrabold text-orange-500">
                 {stat.num}
@@ -302,7 +303,7 @@ export default function About() {
                               prev === index ? null : index,
                             )
                           }
-                          className="flex h-24 w-full items-center justify-between gap-6 px-6 py-5 text-left"
+                          className="flex h-24 w-full items-center justify-between gap-6 px-6 py-5 text-left cursor-pointer"
                           aria-expanded={isOpen}
                         >
                           <h3 className="line-clamp-2 text-base md:text-lg font-semibold text-slate-900">

@@ -223,7 +223,10 @@ function matchesAllFilters(candidate: Recommendation, form: SurveyForm) {
   const projectText =
     `${candidate.project.name} ${candidate.project.description} ${candidate.project.location}`.toLowerCase();
 
-  if (form.countryId && Number(form.countryId) !== candidate.project.country_id) {
+  if (
+    form.countryId &&
+    Number(form.countryId) !== candidate.project.country_id
+  ) {
     return false;
   }
 
@@ -459,7 +462,9 @@ export default function Projects() {
 
     if (strictMatches.length === 0) {
       setRecommendation(null);
-      setRecommendationText("Not found. No project matches your selected filters.");
+      setRecommendationText(
+        "Not found. No project matches your selected filters.",
+      );
       return;
     }
 
@@ -588,7 +593,10 @@ export default function Projects() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
             {[0, 1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-md animate-pulse">
+              <div
+                key={i}
+                className="bg-white rounded-2xl overflow-hidden shadow-md animate-pulse"
+              >
                 {/* Image placeholder */}
                 <div className="h-48 bg-gray-200" />
                 <div className="p-6">
@@ -680,13 +688,15 @@ export default function Projects() {
                     </p>
                     <div className="mb-4 space-y-1 text-xs text-[#24507f]">
                       <p>
-                        Handover: {" "}
+                        Handover:{" "}
                         {project.handover_date
                           ? new Date(project.handover_date).toLocaleDateString()
                           : "To be announced"}
                       </p>
                       <p className="line-clamp-2">
-                        ROI Insight: {project.expected_roi_note || "Steady rental demand with long-term growth potential."}
+                        ROI Insight:{" "}
+                        {project.expected_roi_note ||
+                          "Steady rental demand with long-term growth potential."}
                       </p>
                     </div>
                     <div className="flex items-center justify-between text-sm text-gray-400">
@@ -696,7 +706,7 @@ export default function Projects() {
                           ? `$${getPriceRange(project.id).min.toLocaleString()} - $${getPriceRange(project.id).max.toLocaleString()}`
                           : "Price available"}
                       </span>
-                    </div> 
+                    </div>
                   </div>
                 </Link>
               );
@@ -707,11 +717,11 @@ export default function Projects() {
 
       {showSurvey && (
         <Card
-          className="fixed inset-0 z-9000 overflow-y-auto flex items-start justify-center bg-black/50 p-4 sm:items-center"
+          className="fixed inset-0 z-9000 overflow-y-auto flex items-start justify-center bg-black/50 p-4 sm:items-center no-scrollbar overflow-hidden"
           onMouseDown={closeSurvey}
         >
           <Card
-            className="w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-[2rem] bg-white shadow-2xl p-0!"
+            className="w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-[2rem] bg-white shadow-2xl p-0! no-scrollbar"
             onMouseDown={(e) => e.stopPropagation()}
           >
             <CardHeader className="flex items-center justify-between bg-orange-500 px-6 py-5 text-white rounded-t-[2rem]">

@@ -26,7 +26,6 @@ import {
   FieldTitle,
 } from "@/components/ui/field";
 
-import { Separator } from "@/components/ui/separator";
 import ErrorCard from "./ErrorCard";
 import LoadingCard from "./LoadingCard";
 
@@ -229,7 +228,7 @@ export default function CustomerChatWidget() {
                 </CardTitle>
               ) : (
                 <CardContent className="flex flex-col justify-center gap-7">
-                  {Messages.map((message, index) => {
+                  {Messages.map((message) => {
                     const isCustomer = message.sender_type === "customer";
                     return (
                       <div key={message.id}>
@@ -256,8 +255,6 @@ export default function CustomerChatWidget() {
                             </CardFooter>
                           </Card>
                         </div>
-                        {/* Render a Separator between each message except the last message */}
-                        {index !== Messages.length - 1 && <Separator />}
                       </div>
                     );
                   })}

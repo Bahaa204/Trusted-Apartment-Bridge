@@ -5,13 +5,14 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import Logo from "/images/NavBarLogo.png";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import type { NavLink as NavLinkType } from "@/types/types";
 
 export default function Header() {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [showLogoutNotice, setShowLogoutNotice] = useState<boolean>(false);
 
-  const NAVLINKS = [
+  const NAVLINKS: NavLinkType[] = [
     { to: "/", label: "Home" },
     { to: "/about", label: "About Us" },
     { to: "/contact", label: "Contact Us" },

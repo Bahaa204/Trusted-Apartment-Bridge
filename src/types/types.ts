@@ -37,3 +37,20 @@ export type Image = {
 export type Data<T> =
   | { data: T; error: null }
   | { error: PostgrestError; data: null };
+
+export type NavLink = {
+  to: string;
+  label: string;
+  requiresAuth?: true;
+  requiresStaff?: true;
+};
+
+export type SummaryLabel = {
+  num: `${number}+`;
+  label: string;
+};
+
+export type FAQItem ={
+  question: string,
+  answer:string
+}
