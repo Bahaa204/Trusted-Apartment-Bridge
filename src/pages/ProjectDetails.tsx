@@ -818,108 +818,124 @@ export default function ProjectDetails() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-20">
-          <h2 className="text-2xl font-bold mb-2">
-            Calculate Your Loan / Mortgage Payments
-          </h2>
-          <p className="text-gray-500 text-sm mb-6">
-            Enter your values to estimate monthly payments, total payment, and
-            total interest.
-          </p>
-
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Home price ($)
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="1000"
-                value={loanAmountInput}
-                onChange={(event) => setLoanAmountInput(event.target.value)}
-                className="w-full rounded-2xl border border-slate-200 bg-white p-3 text-sm shadow-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Down payment ($)
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="1000"
-                value={downPaymentInput}
-                onChange={(event) => setDownPaymentInput(event.target.value)}
-                className="w-full rounded-2xl border border-slate-200 bg-white p-3 text-sm shadow-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Interest rate (% / year)
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="0.1"
-                value={annualRateInput}
-                onChange={(event) => setAnnualRateInput(event.target.value)}
-                className="w-full rounded-2xl border border-slate-200 bg-white p-3 text-sm shadow-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Loan term (years)
-              </label>
-              <input
-                type="number"
-                min="1"
-                step="1"
-                value={loanTermYearsInput}
-                onChange={(event) => setLoanTermYearsInput(event.target.value)}
-                className="w-full rounded-2xl border border-slate-200 bg-white p-3 text-sm shadow-sm"
-              />
-            </div>
+        <div className="mb-20 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg">
+          <div className="bg-linear-to-r from-[#10243e] via-[#17365d] to-[#24507f] px-8 py-7 text-white">
+            <h2 className="text-2xl font-bold md:text-3xl">
+              Mortgage Calculator
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm text-slate-200">
+              Adjust purchase values to estimate monthly installments, total
+              paid amount, and lifetime interest.
+            </p>
           </div>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4">
-              <p className="text-xs uppercase tracking-[0.16em] text-orange-600">
-                Monthly payment
+          <div className="grid gap-6 p-7 lg:grid-cols-[1.35fr_1fr]">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Loan inputs
               </p>
-              <p className="mt-2 text-xl font-bold text-[#10243e]">
-                ${mortgageSummary ? mortgageSummary.monthlyPayment.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
-              </p>
+
+              <div className="mt-5 grid grid-cols-1 gap-5">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Home price ($)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1000"
+                    value={loanAmountInput}
+                    onChange={(event) => setLoanAmountInput(event.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Down payment ($)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1000"
+                    value={downPaymentInput}
+                    onChange={(event) => setDownPaymentInput(event.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Interest rate (% / year)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value={annualRateInput}
+                    onChange={(event) => setAnnualRateInput(event.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Loan term (years)
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    step="1"
+                    value={loanTermYearsInput}
+                    onChange={(event) => setLoanTermYearsInput(event.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200"
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
-                Loan principal
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Summary
               </p>
-              <p className="mt-2 text-xl font-bold text-[#10243e]">
-                ${mortgageSummary ? mortgageSummary.principal.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
-              </p>
-            </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
-                Total payment
-              </p>
-              <p className="mt-2 text-xl font-bold text-[#10243e]">
-                ${mortgageSummary ? mortgageSummary.totalPaid.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
-              </p>
-            </div>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                <div className="rounded-xl border border-orange-200 bg-orange-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.16em] text-orange-600">
+                    Monthly payment
+                  </p>
+                  <p className="mt-2 text-2xl font-bold text-[#10243e]">
+                    ${mortgageSummary ? mortgageSummary.monthlyPayment.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
+                  </p>
+                </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
-                Total interest
-              </p>
-              <p className="mt-2 text-xl font-bold text-[#10243e]">
-                ${mortgageSummary ? mortgageSummary.totalInterest.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
-              </p>
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+                    Loan principal
+                  </p>
+                  <p className="mt-2 text-xl font-bold text-[#10243e]">
+                    ${mortgageSummary ? mortgageSummary.principal.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+                    Total payment
+                  </p>
+                  <p className="mt-2 text-xl font-bold text-[#10243e]">
+                    ${mortgageSummary ? mortgageSummary.totalPaid.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+                    Total interest
+                  </p>
+                  <p className="mt-2 text-xl font-bold text-[#10243e]">
+                    ${mortgageSummary ? mortgageSummary.totalInterest.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
