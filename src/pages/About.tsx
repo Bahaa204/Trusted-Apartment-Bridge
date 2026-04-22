@@ -175,7 +175,7 @@ export default function About() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.55, ease: "easeOut" }}
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/images/projects/about-us.png')" }}
+          style={{ backgroundImage: "url('/images/about/about-us.png')" }}
         />
         <div className="absolute inset-0 bg-black/45" />
         <div className="p-5">

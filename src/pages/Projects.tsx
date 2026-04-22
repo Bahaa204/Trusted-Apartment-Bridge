@@ -516,7 +516,7 @@ export default function Projects() {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('/images/projects/skyscrapers-city-highrise-business-buildings-in-do-2023-01-21-02-55-59-utc-1.jpg')",
+              "url('/images/projects/projects.jpg')",
           }}
         />
         <div className="absolute inset-0 bg-black/45" />

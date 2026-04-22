@@ -57,15 +57,15 @@ const MODELS = [
   "models/amelinco_office_building.glb",
 ];
 
-const PROJECT_HERO_IMAGE_FILES = [
-  "20240731_ADPIC_Enhanced Construction Contract _Web-0-690-0-0.webp",
-  "6mYmWTRTa9d3292b5PIVkXkd7jgYrXgg0cilZf2F.webp",
-  "ADPIC.jpg",
-  "bbb13181-5a9d-4681-a7f2-431240935dde.jpg",
-  "HgmafnUUlQ.jpeg",
-  "Image-1-Yas-Island-Abu-Dhabi-UAE-Shutterstock_629465048.jpg",
-  "Reeman-Living-PIVOT-1.jpg",
-  "Web-0-690-0-0.webp",
+const PROJECT_HERO_IMAGE_FILES: string[] = [
+  "image1.webp",
+  "image2.webp",
+  "image3.jpg",
+  "image4.jpg",
+  "image5.jpeg",
+  "image6.jpg",
+  "image7.jpg",
+  "image8.webp",
 ];
 
 const PROJECT_HERO_IMAGES = PROJECT_HERO_IMAGE_FILES.map(
