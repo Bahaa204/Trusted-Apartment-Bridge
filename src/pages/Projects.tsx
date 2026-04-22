@@ -1,5 +1,5 @@
 import { useMemo, useState, type MouseEvent, type SubmitEvent } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useBuildings } from "@/hooks/useBuildings";
@@ -284,6 +284,7 @@ export default function Projects() {
     Projects: AllProjects,
     Loading: ProjectsLoading,
     Error: ProjectsError,
+    UpdateProject,
   } = useProjects();
   const {
     Buildings,
@@ -515,8 +516,7 @@ export default function Projects() {
           transition={{ duration: 0.55, ease: "easeOut" }}
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage:
-              "url('/images/projects/projects.jpg')",
+            backgroundImage: "url('/images/projects/projects.jpg')",
           }}
         />
         <div className="absolute inset-0 bg-black/45" />
@@ -636,6 +636,12 @@ export default function Projects() {
                   to={`/projects/${project.id}`}
                   key={project.id}
                   className="group relative text-left bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                  onClick={async () =>
+                    await UpdateProject(
+                      { nb_visits: (project.nb_visits || 0) + 1 },
+                      project.id,
+                    )
+                  }
                 >
                   <button
                     type="button"

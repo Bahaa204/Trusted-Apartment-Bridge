@@ -4,8 +4,6 @@ import { supabaseClient } from "../lib/supabaseClient";
 import type { Data } from "../types/types";
 import type { Building } from "@/types/building";
 
-const LOCAL_STORAGE_KEY = "building";
-
 /**
  * Custom hook to manage buildings data and operations.
  * @returns An object containing the list of buildings, loading state, error message, and functions to manage buildings
@@ -31,21 +29,8 @@ export function useBuildings() {
 
   // Fetching the data from the database + real time listeners to update the data
   useEffect(() => {
-    const start = performance.now();
-    const localBuildings = localStorage.getItem(LOCAL_STORAGE_KEY);
-
     async function fetchBuildings() {
       resetStates();
-
-      if (localBuildings) {
-        console.log("Loading Local Buildings...");
-
-        setBuildings(JSON.parse(localBuildings) as Building[]);
-        setLoading(false);
-        const end = performance.now();
-        console.log(`Loaded buildings in ${end - start} ms`);
-        return;
-      }
 
       const { data, error: FetchError } = (await supabaseClient
         .from("buildings")
@@ -58,12 +43,6 @@ export function useBuildings() {
 
       setBuildings(data || []);
       setLoading(false);
-
-      if (!localBuildings)
-        return localStorage.setItem(
-          LOCAL_STORAGE_KEY,
-          JSON.stringify(data || []),
-        );
     }
 
     fetchBuildings();
