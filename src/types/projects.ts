@@ -99,3 +99,26 @@ export type FavoriteProject = Common & {
   user_id: string;
   project_id: Project["id"];
 };
+
+export type DisplayMode = "projects" | "buildings" | "houses";
+
+export type ProjectsTableProps = {
+  projects: Project[];
+  countries: Country[];
+  RemoveProject: (id: Project["id"]) => Promise<boolean>;
+  EditProject: (
+    updated_project: Project,
+    projectId: Project["id"],
+  ) => Promise<boolean>;
+};
+
+export type ProjectFormValues = { images: FileList | null } & Pick<
+  Project,
+  | "name"
+  | "description"
+  | "location"
+  | "country_id"
+  | "handover_date"
+  | "expected_roi_note"
+  | "map_url"
+>;

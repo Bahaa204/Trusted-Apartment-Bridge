@@ -103,6 +103,7 @@ export default function ProjectsDashBoardForm({
             if (imageObj) project_images.push(imageObj);
           }
           const newProject: Project = {
+            id: Math.floor(Math.random() * 1000),
             name: FormData.project_name,
             description: FormData.project_description,
             location: FormData.project_location,
@@ -132,6 +133,7 @@ export default function ProjectsDashBoardForm({
             if (imageObj) building_images.push(imageObj);
           }
           const newBuilding: Building = {
+            id: Math.floor(Math.random() * 100),
             name: FormData.buildings_name,
             block: FormData.buildings_block,
             images: building_images,
@@ -148,6 +150,7 @@ export default function ProjectsDashBoardForm({
       // Houses
       case 2: {
         const newHouse: House = {
+          id: Math.floor(Math.random() * 100),
           floor: FormData.house_floor,
           nb_bedrooms: FormData.house_nb_bedrooms,
           nb_bathrooms: FormData.house_nb_bathrooms,

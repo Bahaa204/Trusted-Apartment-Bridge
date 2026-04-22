@@ -27,7 +27,6 @@ export default function ProjectForm({
   project_handover_date,
   project_expected_roi_note,
   project_map_url,
-  project_map_embed_url,
   updateFields,
   Options,
 }: ProjectFormProps) {
@@ -155,23 +154,6 @@ export default function ProjectForm({
           value={project_map_url}
           onChange={(event) =>
             updateFields({ project_map_url: event.target.value })
-          }
-          disabled={loading}
-        />
-      </FieldGroup>
-
-      <FieldGroup className="grid gap-1.5">
-        <FieldLabel htmlFor="project-map-embed-url" className="text-slate-700">
-          Map embed URL
-        </FieldLabel>
-        <Input
-          type="url"
-          id="project-map-embed-url"
-          className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400"
-          placeholder="https://www.google.com/maps/embed?..."
-          value={project_map_embed_url}
-          onChange={(event) =>
-            updateFields({ project_map_embed_url: event.target.value })
           }
           disabled={loading}
         />
