@@ -15,10 +15,10 @@ export default function Header() {
   const NAVLINKS: NavLinkType[] = [
     { to: "/", label: "Home" },
     { to: "/about", label: "About Us" },
-    { to: "/contact", label: "Contact Us" },
     { to: "/projects", label: "Projects" },
     { to: "/support", label: "Support" },
     { to: "/favorites", label: "Favorites", requiresAuth: true },
+    { to: "/contact", label: "Contact Us" },
     { to: "/staff", label: "Staff", requiresStaff: true },
   ];
 
