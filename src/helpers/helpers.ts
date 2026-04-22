@@ -71,3 +71,52 @@ export function sanitizeMapEmbedUrl(url?: string | null): string {
 
   return "";
 }
+
+export function getFlagUrl(code: string) {
+  return `https://flagcdn.com/w80/${code}.png`;
+}
+
+// Found on google
+function shuffle<T>(array: T[]): T[] {
+  let currentIndex = array.length;
+  let randomIndex: number;
+
+  // While there remain elements to shuffle...
+  while (currentIndex !== 0) {
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
+  }
+
+  return array;
+}
+
+export function RandomizeSplitArray<T>(array: T[], index: number) {
+  const shuffled = shuffle(array);
+
+  return shuffled.slice(0, index);
+}
+
+export function flagElement(d: any): HTMLElement {
+  const element = document.createElement("div");
+  element.style.width = "36px";
+  element.style.height = "26px";
+  element.style.borderRadius = "4px";
+  element.style.overflow = "hidden";
+  element.style.boxShadow = "0 2px 8px rgba(0,0,0,0.5)";
+  element.style.border = "2px solid white";
+  element.style.cursor = "pointer";
+  const img = document.createElement("img");
+  img.src = getFlagUrl(d.flagCode);
+  img.style.width = "100%";
+  img.style.height = "100%";
+  img.style.objectFit = "cover";
+  element.appendChild(img);
+  return element;
+}

@@ -1,16 +1,16 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import Globe from "react-globe.gl";
 import { motion, AnimatePresence } from "framer-motion";
-import { supabaseClient } from "../lib/supabaseClient";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import type { FAQItem, SummaryLabel } from "@/types/types";
+import type { CountryInfo, CountryDisplay } from "@/types/country";
+import { useCountries } from "@/hooks/useCountries";
+import { useProjects } from "@/hooks/useProjects";
+import { RandomizeSplitArray } from "@/helpers/helpers";
+import { GlobeHeroSection } from "@/components/GlobeHeroSection";
 
-const countryInfo: Record<
-  string,
-  { flagCode: string; lat: number; lng: number }
-> = {
+const countryInfo: CountryInfo = {
   "United Arab Emirates": { flagCode: "ae", lat: 24.4539, lng: 54.3773 },
   Egypt: { flagCode: "eg", lat: 26.8206, lng: 30.8025 },
   "United Kingdom": { flagCode: "gb", lat: 55.3781, lng: -3.436 },
@@ -24,25 +24,6 @@ const countryInfo: Record<
   Jordan: { flagCode: "jo", lat: 30.5852, lng: 36.2384 },
   Lebanon: { flagCode: "lb", lat: 33.8547, lng: 35.8623 },
   Morocco: { flagCode: "ma", lat: 31.7917, lng: -7.0926 },
-};
-
-function getFlagUrl(code: string) {
-  return `https://flagcdn.com/w80/${code}.png`;
-}
-
-type Project = {
-  id: number;
-  name: string;
-  description: string;
-  location: string;
-  countries: { name: string } | null;
-};
-
-type DBCountry = { id: number; name: string };
-type CountryDisplay = DBCountry & {
-  flagCode: string;
-  lat: number;
-  lng: number;
 };
 
 const faqItems: FAQItem[] = [
@@ -106,12 +87,17 @@ export default function About() {
   const location = useLocation();
   const globeRef2 = useRef<HTMLDivElement>(null);
 
+  const { Countries } = useCountries();
+  const { Projects } = useProjects();
+
+  const FeaturedProjects =
+    RandomizeSplitArray(Projects, 3) || Projects.slice(0, 3);
+
   const [countries, setCountries] = useState<CountryDisplay[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<CountryDisplay | null>(
     null,
   );
   const [showAbout, setShowAbout] = useState(true);
-  const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   useEffect(() => {
@@ -124,27 +110,19 @@ export default function About() {
 
   useEffect(() => {
     async function fetchCountries() {
-      const { data } = await supabaseClient.from("countries").select("*");
-      if (!data) return;
-      const mapped: CountryDisplay[] = data
-        .filter((c: DBCountry) => countryInfo[c.name])
-        .map((c: DBCountry) => ({ ...c, ...countryInfo[c.name] }));
+      // const { data } = await supabaseClient.from("countries").select("*");
+      // if (!data) return;
+      if (!Countries) return;
+      const filteredCountries = Countries.filter((c) => countryInfo[c.name]);
+      const mapped: CountryDisplay[] = filteredCountries.map((c) => ({
+        ...c,
+        ...countryInfo[c.name],
+      }));
       setCountries(mapped);
       if (mapped.length > 0) setSelectedCountry(mapped[0]);
     }
     fetchCountries();
-  }, []);
-
-  useEffect(() => {
-    async function fetchFeatured() {
-      const { data } = await supabaseClient
-        .from("projects")
-        .select("*, countries(name)")
-        .limit(3);
-      if (data) setFeaturedProjects(data);
-    }
-    fetchFeatured();
-  }, []);
+  }, [Countries]);
 
   useEffect(() => {
     if (!globeRef.current || !selectedCountry) return;
@@ -232,31 +210,46 @@ export default function About() {
             A selection of our finest developments
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {featuredProjects.map((project: any) => (
-              <Link
-                key={project.id}
-                to={`/projects/${project.id}`}
-                className="group rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-              >
-                <div className="h-48 bg-linear-to-br from-orange-400 to-orange-600 flex items-center justify-center">
-                  <span className="text-white text-6xl font-bold opacity-20">
-                    {project.name[0]}
-                  </span>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-orange-500 transition">
-                    {project.name}
-                  </h3>
-                  <p className="text-gray-500 text-sm line-clamp-2 mb-3">
-                    {project.description}
-                  </p>
-                  <div className="flex items-center justify-between text-sm text-gray-400">
-                    <span>📍 {project.location}</span>
-                    <span>{project.countries?.name}</span>
+            {FeaturedProjects.map((project) => {
+              const country = Countries.find(
+                (country) => country.id === project.country_id,
+              );
+
+              return (
+                <Link
+                  key={project.id}
+                  to={`/projects/${project.id}`}
+                  className="group rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white"
+                >
+                  <div className="h-48 bg-linear-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+                    {!project.images[0].url && (
+                      <span className="text-white text-6xl font-bold opacity-20">
+                        {project.name[0]}
+                      </span>
+                    )}
+                    {project.images[0].url && (
+                      <img
+                        src={project.images[0].url}
+                        alt={project.name}
+                        className="size-full object-cover bg-center"
+                      />
+                    )}
                   </div>
-                </div>
-              </Link>
-            ))}
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold mb-2 group-hover:text-orange-500 transition">
+                      {project.name}
+                    </h3>
+                    <p className="text-gray-500 text-sm line-clamp-2 mb-3">
+                      {project.description}
+                    </p>
+                    <div className="flex items-center justify-between text-sm text-gray-400">
+                      <span>📍 {project.location}</span>
+                      <span>{country?.name}</span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
           <div className="text-center mt-12">
             <Link
@@ -356,345 +349,5 @@ export default function About() {
         />
       </div>
     </>
-  );
-}
-
-function GlobeHeroSection({
-  globeRef,
-  countries,
-  selectedCountry,
-  setSelectedCountry,
-  showAbout,
-  setShowAbout,
-  handleExplore,
-}: {
-  globeRef: any;
-  countries: CountryDisplay[];
-  selectedCountry: CountryDisplay | null;
-  setSelectedCountry: (country: CountryDisplay) => void;
-  showAbout: boolean;
-  setShowAbout: (show: boolean) => void;
-  handleExplore: () => void;
-}) {
-  const flagElement = useCallback((d: any) => {
-    const el = document.createElement("div");
-    el.style.width = "36px";
-    el.style.height = "26px";
-    el.style.borderRadius = "4px";
-    el.style.overflow = "hidden";
-    el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.5)";
-    el.style.border = "2px solid white";
-    el.style.cursor = "pointer";
-    const img = document.createElement("img");
-    img.src = getFlagUrl(d.flagCode);
-    img.style.width = "100%";
-    img.style.height = "100%";
-    img.style.objectFit = "cover";
-    el.appendChild(img);
-    return el;
-  }, []);
-
-  if (!selectedCountry) {
-    return (
-      <div
-        style={{
-          width: "100%",
-          height: "100vh",
-          backgroundColor: "#000",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "white",
-        }}
-      >
-        Loading...
-      </div>
-    );
-  }
-
-  return (
-    <div
-      style={{
-        width: "100%",
-        height: "100vh",
-        position: "relative",
-        backgroundColor: "#000",
-        overflow: "hidden",
-      }}
-    >
-      {/* Globe - always rendered */}
-      <div
-        style={{
-          filter: showAbout ? "blur(3px)" : "none",
-          transition: "filter 0.5s",
-        }}
-      >
-        <Globe
-          ref={globeRef}
-          globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
-          backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
-          width={window.innerWidth}
-          height={window.innerHeight}
-          backgroundColor="rgba(0,0,0,1)"
-          animateIn={true}
-          htmlElementsData={countries}
-          htmlLat="lat"
-          htmlLng="lng"
-          htmlAltitude={0.05}
-          htmlElement={flagElement}
-        />
-      </div>
-
-      {/* About overlay */}
-      <AnimatePresence>
-        {showAbout && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            onClick={() => setShowAbout(false)}
-            style={{
-              position: "absolute",
-              inset: 0,
-              zIndex: 20,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              background: "rgba(0,0,0,0.2)",
-            }}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 40, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -30, scale: 0.95 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                background: "rgba(255, 255, 255, 0.08)",
-                borderRadius: "32px",
-                padding: "48px",
-                color: "white",
-                maxWidth: "600px",
-                width: "90%",
-                boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
-                backdropFilter: "blur(24px)",
-                WebkitBackdropFilter: "blur(24px)",
-                border: "1px solid rgba(255,255,255,0.2)",
-              }}
-            >
-              <h1
-                style={{
-                  fontSize: "36px",
-                  fontWeight: 800,
-                  marginBottom: "8px",
-                }}
-              >
-                About <span style={{ color: "#ff5c00" }}>TAB</span> Developments
-              </h1>
-              <div
-                style={{
-                  width: "60px",
-                  height: "4px",
-                  backgroundColor: "#ff5c00",
-                  borderRadius: "2px",
-                  marginBottom: "24px",
-                }}
-              />
-              <p
-                style={{
-                  fontSize: "16px",
-                  lineHeight: "1.8",
-                  color: "#c0c0c0",
-                  marginBottom: "16px",
-                }}
-              >
-                TAB Developments is a leading real estate company specializing
-                in premium residential and commercial projects across the Middle
-                East and Europe. With developments spanning Egypt, the United
-                Arab Emirates, and the United Kingdom, we bring world-class
-                living experiences to some of the most professional locations on
-                the globe.
-              </p>
-              <p
-                style={{
-                  fontSize: "16px",
-                  lineHeight: "1.8",
-                  color: "#c0c0c0",
-                  marginBottom: "24px",
-                }}
-              >
-                Our mission is to create innovative, sustainable communities
-                that redefine modern living. From luxurious waterfront villas to
-                iconic high-rise towers, every TAB project is crafted with
-                attention to detail, quality materials, and a vision for the
-                future.
-              </p>
-              <button
-                onClick={() => setShowAbout(false)}
-                style={{
-                  backgroundColor: "#ff5c00",
-                  border: "none",
-                  borderRadius: "14px",
-                  padding: "14px 32px",
-                  color: "white",
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
-              >
-                Explore the Globe
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Country flag buttons - hidden when about overlay is showing */}
-      {!showAbout && (
-        <>
-          <div
-            style={{
-              position: "absolute",
-              bottom: "40px",
-              left: "50%",
-              transform: "translateX(-50%)",
-              display: "flex",
-              gap: "20px",
-              zIndex: 10,
-            }}
-          >
-            {countries.map((country) => (
-              <button
-                key={country.id}
-                onClick={() => setSelectedCountry(country)}
-                style={{
-                  width: "65px",
-                  height: "65px",
-                  borderRadius: "50%",
-                  border:
-                    selectedCountry.id === country.id
-                      ? "3px solid white"
-                      : "2px solid rgba(255,255,255,0.3)",
-                  backgroundColor: "rgba(255,255,255,0.08)",
-                  cursor: "pointer",
-                  transition: "0.3s",
-                  backdropFilter: "blur(10px)",
-                  overflow: "hidden",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: 0,
-                }}
-              >
-                <img
-                  src={getFlagUrl(country.flagCode)}
-                  alt={country.name}
-                  style={{
-                    width: "40px",
-                    height: "30px",
-                    objectFit: "cover",
-                    borderRadius: "4px",
-                  }}
-                />
-              </button>
-            ))}
-          </div>
-
-          {/* Info card */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: "120px",
-              left: "50%",
-              transform: "translateX(-50%)",
-              zIndex: 10,
-              width: "340px",
-            }}
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedCountry.id}
-                initial={{ opacity: 0, y: 40, rotateX: 90 }}
-                animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                exit={{ opacity: 0, y: -40, rotateX: -90 }}
-                transition={{ duration: 0.6 }}
-                style={{
-                  background: "rgba(8, 12, 24, 0.92)",
-                  borderRadius: "24px",
-                  padding: "24px",
-                  color: "white",
-                  boxShadow: "0 10px 40px rgba(0,0,0,0.4)",
-                  backdropFilter: "blur(20px)",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    marginBottom: "12px",
-                  }}
-                >
-                  <img
-                    src={getFlagUrl(selectedCountry.flagCode)}
-                    alt={selectedCountry.name}
-                    style={{
-                      width: "48px",
-                      height: "36px",
-                      objectFit: "cover",
-                      borderRadius: "6px",
-                    }}
-                  />
-                  <h2 style={{ margin: 0, fontSize: "22px", fontWeight: 700 }}>
-                    {selectedCountry.name}
-                  </h2>
-                </div>
-                <button
-                  onClick={handleExplore}
-                  style={{
-                    width: "100%",
-                    marginTop: "16px",
-                    backgroundColor: "#ff5c00",
-                    border: "none",
-                    borderRadius: "14px",
-                    padding: "14px",
-                    color: "white",
-                    fontSize: "16px",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                >
-                  Explore Projects
-                </button>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* Button to re-show about text */}
-          <button
-            onClick={() => setShowAbout(true)}
-            style={{
-              position: "absolute",
-              top: "20px",
-              left: "20px",
-              zIndex: 10,
-              background: "rgba(255,255,255,0.1)",
-              border: "1px solid rgba(255,255,255,0.3)",
-              borderRadius: "12px",
-              padding: "10px 20px",
-              color: "white",
-              fontSize: "14px",
-              fontWeight: 600,
-              cursor: "pointer",
-              backdropFilter: "blur(10px)",
-            }}
-          >
-            About Us
-          </button>
-        </>
-      )}
-    </div>
   );
 }
