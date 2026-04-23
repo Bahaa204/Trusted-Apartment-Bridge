@@ -4,15 +4,15 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import LoadingCard from "@/components/LoadingCard";
+import ErrorCard from "@/components/ErrorCard";
 
 export default function Support() {
   useDocumentTitle("Support");
@@ -22,32 +22,15 @@ export default function Support() {
 
   if (Error) {
     return (
-      <main className="min-h-screen bg-[#e6e0d8] p-4 md:p-8">
-        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl text-[#0f2f4f]">Error</CardTitle>
-            <CardDescription className="text-[#24507f]">
-              We could not load the support chat. Please try again later.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-[#173b67]">{Error}</CardContent>
-          <CardFooter>{new Date().toLocaleString()}</CardFooter>
-        </Card>
-      </main>
+      <ErrorCard
+        message="We could not load the support chat. Please try again later."
+        error={Error}
+      />
     );
   }
 
   if (Loading) {
-    return (
-      <main className="min-h-screen bg-[#e6e0d8] p-4 md:p-8">
-        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
-          <CardContent className="flex items-center justify-center gap-3 py-8 text-center text-[#173b67]">
-            <Spinner className="size-5 text-[#173b67]" />
-            <span>Checking Authentication...</span>
-          </CardContent>
-        </Card>
-      </main>
-    );
+    return <LoadingCard message="Checking Authentication..." />;
   }
 
   if (!Session) {

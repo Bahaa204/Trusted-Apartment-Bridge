@@ -156,6 +156,7 @@ export default function CustomerChatWidget() {
   if (error) {
     return (
       <ErrorCard
+        className="bg-transparent!"
         message="We could not load the support chat. Please try again later."
         error={error}
       />
@@ -165,6 +166,7 @@ export default function CustomerChatWidget() {
   if (loading) {
     return (
       <LoadingCard
+        className="bg-transparent!"
         message={`${AuthLoading ? "Checking Authentication" : "Loading chats"}...`}
       />
     );

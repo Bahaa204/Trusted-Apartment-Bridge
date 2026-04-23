@@ -114,6 +114,7 @@ export default function StaffChatDashboard() {
   if (error) {
     return (
       <ErrorCard
+      className="bg-transparent!"
         message="We could not load the support chat. Please try again later."
         error={error}
       />
@@ -132,6 +133,7 @@ export default function StaffChatDashboard() {
         <CardContent className="p-0">
           {loading ? (
             <LoadingCard
+            className="bg-transparent!"
               message={`${AuthLoading ? "Checking Authentication" : "Loading chats"}...`}
             />
           ) : Conversations.length === 0 ? (
