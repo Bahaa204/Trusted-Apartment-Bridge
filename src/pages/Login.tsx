@@ -238,7 +238,7 @@ export default function Login() {
                 <FieldSeparator className="my-1 **:data-[slot=separator]:bg-linear-to-r **:data-[slot=separator]:from-transparent **:data-[slot=separator]:via-orange-300 **:data-[slot=separator]:to-transparent" />
 
                 {CurrentStepIndex !== 2 && (
-                  <FieldGroup className="flex-row">
+                  <FieldGroup className="flex flex-row flex-wrap">
                     {providers.map((provider) => (
                       <Field key={provider.provider}>
                         <Button

@@ -6,6 +6,13 @@ import Logo from "/images/NavBarLogo.png";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import type { NavLink as NavLinkType } from "@/types/types";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -42,6 +49,10 @@ export default function Header() {
       setTimeout(() => setShowLogoutNotice(false), 2500);
     }
   }
+
+  const DisplayName: string =
+    Session?.user.user_metadata?.display_name?.trim() ||
+    Session?.user.email?.[0];
 
   return (
     <>
@@ -106,14 +117,30 @@ export default function Header() {
                 Login
               </Button>
             ) : (
-              <Button
-                variant="link"
-                className="cursor-pointer text-[14px] text-gray-600 hover:text-orange-500 hover:underline hover:decoration-2"
-                onClick={handleClick}
-                disabled={AuthLoading}
-              >
-                Logout
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="cursor-pointer bg-linear-to-br from-amber-400 to-orange-500 rounded-[50%] border-2 border-white">
+                  <div className="size-12 bg-linear-to-br flex items-center justify-center relative text-center">
+                    <span className="text-white/30 text-3xl font-black text-center">
+                      {DisplayName.toUpperCase()}
+                    </span>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-full">
+                  <DropdownMenuItem>
+                    <p>Logged in as {Session.user.email}</p>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <Button
+                      variant="destructive"
+                      onClick={handleClick}
+                      className="cursor-pointer"
+                    >
+                      LogOut
+                    </Button>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
         </nav>
@@ -125,7 +152,11 @@ export default function Header() {
           <div className="fixed inset-0 z-5000" />
           <DialogPanel className="fixed inset-y-0 right-0 z-5000 w-full overflow-y-auto bg-[#e6e0d8] p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
             <div className="flex items-center justify-between">
-              <Link to="/" className="flex items-center gap-3">
+              <Link
+                to="/"
+                className="flex items-center gap-3"
+                onClick={() => setMobileMenuOpen(false)}
+              >
                 <span className="sr-only">Trusted Apartment Bridge - TAB</span>
                 <img src={Logo} alt="Logo" className="size-18" />
               </Link>
@@ -150,6 +181,7 @@ export default function Header() {
                         key={index}
                         to={link.to}
                         end={link.to === "/"}
+                        onClick={() => setMobileMenuOpen(false)}
                         className={({ isActive }) =>
                           `text-lg font-medium transition ${
                             isActive
@@ -168,20 +200,42 @@ export default function Header() {
                     <Button
                       variant="link"
                       className="cursor-pointer text-lg text-gray-600 hover:text-orange-500 hover:underline hover:decoration-2"
-                      onClick={() => navigate("/login")}
+                      onClick={() => {
+                        navigate("/login");
+                        setMobileMenuOpen(false);
+                      }}
                       disabled={AuthLoading}
                     >
                       Login
                     </Button>
                   ) : (
-                    <Button
-                      variant="link"
-                      className="cursor-pointer text-lg text-gray-600 hover:text-orange-500 hover:underline hover:decoration-2"
-                      onClick={handleClick}
-                      disabled={AuthLoading}
-                    >
-                      Logout
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="cursor-pointer bg-linear-to-br from-amber-400 to-orange-500 rounded-[50%] border-2 border-white z-99999">
+                        <div className="size-12 bg-linear-to-br flex items-center justify-center relative text-center">
+                          <span className="text-white/30 text-3xl font-black text-center">
+                            {DisplayName.toUpperCase()}
+                          </span>
+                        </div>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-full z-99999">
+                        <DropdownMenuItem>
+                          <p>Logged in as {Session.user.email}</p>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>
+                          <Button
+                            variant="destructive"
+                            onClick={(event) => {
+                              handleClick(event);
+                              setMobileMenuOpen(false);
+                            }}
+                            className="cursor-pointer"
+                          >
+                            LogOut
+                          </Button>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   )}
                 </div>
               </div>
