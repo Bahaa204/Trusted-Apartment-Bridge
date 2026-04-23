@@ -101,13 +101,6 @@ export function useMessages(conversationId: string | undefined | null) {
       )
       .subscribe((status) => {
         console.log(`Messages ${conversationId} channel:`, status);
-
-        if (status === "CHANNEL_ERROR") {
-          setError(
-            "Realtime channel error for messages. Check Realtime replication and RLS SELECT policies.",
-          );
-          setLoading(false);
-        }
       });
 
     return () => {
