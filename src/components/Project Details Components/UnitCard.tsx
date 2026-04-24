@@ -35,7 +35,7 @@ export default function UnitCard({
           color: isHovered ? "white" : "#888",
         }}
       >
-         {house.floor >= 9 ? "High Floor" :"Low Floor"}
+        {house.floor >= 9 ? "High Floor" : "Low Floor"}
       </div>
       <div className="p-4">
         <p
@@ -71,9 +71,10 @@ export default function UnitCard({
               isHovered
                 ? "border-white bg-white text-orange-500 hover:bg-white/90"
                 : "border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100"
-            }`}
+            } disabled:cursor-not-allowed`}
+            disabled={house.is_sold}
           >
-            Buy
+            {house.is_sold ? "Unit Already Sold" : "Buy"}
           </button>
           <button
             type="button"
@@ -82,9 +83,10 @@ export default function UnitCard({
               isHovered
                 ? "border-white/70 bg-transparent text-white hover:bg-white/15"
                 : "border-orange-500 bg-orange-500 text-white hover:bg-orange-600"
-            }`}
+            } disabled:cursor-not-allowed`}
+            disabled={house.is_sold}
           >
-            Book a tour
+            {house.is_sold ? "Unit Already Sold" : "Book a tour"}
           </button>
         </div>
       </div>

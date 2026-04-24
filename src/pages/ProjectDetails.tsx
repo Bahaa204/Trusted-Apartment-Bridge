@@ -1,5 +1,14 @@
 import React, { useMemo, useState, useEffect, type SubmitEvent } from "react";
-import { MapPin, Map as MapIcon, CheckCircle2, X, Calendar, Clock, Phone, FileText } from "lucide-react";
+import {
+  MapPin,
+  Map as MapIcon,
+  CheckCircle2,
+  X,
+  Calendar,
+  Clock,
+  Phone,
+  FileText,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
@@ -241,7 +250,8 @@ export default function ProjectDetails() {
   const loading =
     CountriesLoading || ProjectsLoading || BuildingsLoading || HousesLoading;
 
-  const error = CountriesError || ProjectsError || BuildingsError || HousesError;
+  const error =
+    CountriesError || ProjectsError || BuildingsError || HousesError;
 
   const countries = Countries as Country[];
 
@@ -338,7 +348,7 @@ export default function ProjectDetails() {
 
   const projectHeroImage =
     typeof project?.id === "number"
-      ? projectHeroImageById.get(project.id) ?? null
+      ? (projectHeroImageById.get(project.id) ?? null)
       : null;
 
   const modelAssignments = useMemo(() => {
@@ -407,7 +417,10 @@ export default function ProjectDetails() {
           {/* Stats skeleton */}
           <div className="grid grid-cols-3 gap-4 mb-10">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="bg-white rounded-2xl shadow-lg p-6 text-center animate-pulse">
+              <div
+                key={i}
+                className="bg-white rounded-2xl shadow-lg p-6 text-center animate-pulse"
+              >
                 <div className="h-8 w-16 bg-gray-200 rounded-lg mx-auto mb-2" />
                 <div className="h-3 w-12 bg-gray-100 rounded mx-auto" />
               </div>
@@ -430,7 +443,10 @@ export default function ProjectDetails() {
             <div className="h-4 w-64 bg-gray-200 rounded mb-8 animate-pulse" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
               {[0, 1, 2].map((i) => (
-                <div key={i} className="rounded-3xl border border-gray-200 bg-white p-6 animate-pulse">
+                <div
+                  key={i}
+                  className="rounded-3xl border border-gray-200 bg-white p-6 animate-pulse"
+                >
                   <div className="h-5 w-32 bg-gray-200 rounded mb-3" />
                   <div className="h-3 w-20 bg-gray-100 rounded" />
                 </div>
@@ -502,15 +518,19 @@ export default function ProjectDetails() {
   const projectId = project.id;
 
   function openPayment(house: House) {
+    if (house.is_sold) return;
+
     if (!Session) {
-      navigate("/login");
-      return;
+      return navigate("/login");
     }
 
     setPaymentHouse(house);
     setPaymentSuccess(false);
     setPaymentError("");
-    setPaymentForm(InitialValue);
+    setPaymentForm({
+      ...InitialValue,
+      email: Session.user.email || "",
+    });
     setShowPayment(true);
   }
 
@@ -537,9 +557,10 @@ export default function ProjectDetails() {
   }
 
   function openBookTour(house: House) {
+    if (house.is_sold) return;
+
     if (!Session) {
-      navigate("/login");
-      return;
+      return navigate("/login");
     }
 
     setTourHouse(house);
@@ -615,7 +636,9 @@ export default function ProjectDetails() {
             {project.name}
           </h1>
           <div className="flex flex-wrap gap-4 text-gray-300 items-center">
-            <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /> {project.location}</span>
+            <span className="flex items-center gap-1.5">
+              <MapPin className="w-4 h-4" /> {project.location}
+            </span>
             <span>•</span>
             <span>{countryName || "Unknown"}</span>
           </div>
@@ -640,7 +663,8 @@ export default function ProjectDetails() {
               </a>
             )}
             <span className="text-sm text-orange-200">
-              Handover: {project.handover_date
+              Handover:{" "}
+              {project.handover_date
                 ? new Date(project.handover_date).toLocaleDateString()
                 : "To be announced"}
             </span>
@@ -690,15 +714,16 @@ export default function ProjectDetails() {
           </p>
           <div className="mt-6 grid gap-3 rounded-xl border border-orange-100 bg-orange-50 p-4 text-sm text-[#8a3f00]">
             <p>
-              Expected ROI/Yield: {project.expected_roi_note || "Projected stable yield with long-term demand in this district."}
+              Expected ROI/Yield:{" "}
+              {project.expected_roi_note ||
+                "Projected stable yield with long-term demand in this district."}
             </p>
             <p>
-              Sales advisory: Booking a tour allows our team to align units with your timeline and investment target.
+              Sales advisory: Booking a tour allows our team to align units with
+              your timeline and investment target.
             </p>
           </div>
         </div>
-
-
 
         {/* Buildings & Units */}
         {projectBuildings.length > 0 && (
@@ -859,7 +884,9 @@ export default function ProjectDetails() {
                     min="0"
                     step="1000"
                     value={downPaymentInput}
-                    onChange={(event) => setDownPaymentInput(event.target.value)}
+                    onChange={(event) =>
+                      setDownPaymentInput(event.target.value)
+                    }
                     className="w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200"
                   />
                 </div>
@@ -887,7 +914,9 @@ export default function ProjectDetails() {
                     min="1"
                     step="1"
                     value={loanTermYearsInput}
-                    onChange={(event) => setLoanTermYearsInput(event.target.value)}
+                    onChange={(event) =>
+                      setLoanTermYearsInput(event.target.value)
+                    }
                     className="w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200"
                   />
                 </div>
@@ -905,7 +934,16 @@ export default function ProjectDetails() {
                     Monthly payment
                   </p>
                   <p className="mt-2 text-2xl font-bold text-[#10243e]">
-                    ${mortgageSummary ? mortgageSummary.monthlyPayment.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
+                    $
+                    {mortgageSummary
+                      ? mortgageSummary.monthlyPayment.toLocaleString(
+                          undefined,
+                          {
+                            maximumFractionDigits: 2,
+                            minimumFractionDigits: 2,
+                          },
+                        )
+                      : "0.00"}
                   </p>
                 </div>
 
@@ -914,7 +952,13 @@ export default function ProjectDetails() {
                     Loan principal
                   </p>
                   <p className="mt-2 text-xl font-bold text-[#10243e]">
-                    ${mortgageSummary ? mortgageSummary.principal.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
+                    $
+                    {mortgageSummary
+                      ? mortgageSummary.principal.toLocaleString(undefined, {
+                          maximumFractionDigits: 2,
+                          minimumFractionDigits: 2,
+                        })
+                      : "0.00"}
                   </p>
                 </div>
 
@@ -923,7 +967,13 @@ export default function ProjectDetails() {
                     Total payment
                   </p>
                   <p className="mt-2 text-xl font-bold text-[#10243e]">
-                    ${mortgageSummary ? mortgageSummary.totalPaid.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
+                    $
+                    {mortgageSummary
+                      ? mortgageSummary.totalPaid.toLocaleString(undefined, {
+                          maximumFractionDigits: 2,
+                          minimumFractionDigits: 2,
+                        })
+                      : "0.00"}
                   </p>
                 </div>
 
@@ -932,7 +982,16 @@ export default function ProjectDetails() {
                     Total interest
                   </p>
                   <p className="mt-2 text-xl font-bold text-[#10243e]">
-                    ${mortgageSummary ? mortgageSummary.totalInterest.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : "0.00"}
+                    $
+                    {mortgageSummary
+                      ? mortgageSummary.totalInterest.toLocaleString(
+                          undefined,
+                          {
+                            maximumFractionDigits: 2,
+                            minimumFractionDigits: 2,
+                          },
+                        )
+                      : "0.00"}
                   </p>
                 </div>
               </div>
@@ -1091,13 +1150,17 @@ export default function ProjectDetails() {
                             contactPhone: phone,
                           })
                         }
-                        style={{
-                          width: "100%",
-                          "--react-international-phone-border-radius": "0.75rem",
-                          "--react-international-phone-border-color": "#e2e8f0",
-                          "--react-international-phone-height": "48px",
-                          "--react-international-phone-font-size": "0.875rem",
-                        } as React.CSSProperties}
+                        style={
+                          {
+                            width: "100%",
+                            "--react-international-phone-border-radius":
+                              "0.75rem",
+                            "--react-international-phone-border-color":
+                              "#e2e8f0",
+                            "--react-international-phone-height": "48px",
+                            "--react-international-phone-font-size": "0.875rem",
+                          } as React.CSSProperties
+                        }
                       />
                     </div>
 
@@ -1239,18 +1302,20 @@ export default function ProjectDetails() {
                   Contact phone
                 </label>
                 <PhoneInput
-                  defaultCountry="eg" 
+                  defaultCountry="eg"
                   value={tourForm.contactPhone}
                   onChange={(phone) =>
                     setTourForm((prev) => ({ ...prev, contactPhone: phone }))
                   }
-                  style={{
-                    width: "100%",
-                    "--react-international-phone-border-radius": "0.5rem",
-                    "--react-international-phone-border-color": "#e2e8f0",
-                    "--react-international-phone-height": "46px",
-                    "--react-international-phone-font-size": "0.875rem",
-                  } as React.CSSProperties}
+                  style={
+                    {
+                      width: "100%",
+                      "--react-international-phone-border-radius": "0.5rem",
+                      "--react-international-phone-border-color": "#e2e8f0",
+                      "--react-international-phone-height": "46px",
+                      "--react-international-phone-font-size": "0.875rem",
+                    } as React.CSSProperties
+                  }
                 />
               </div>
 
@@ -1262,7 +1327,10 @@ export default function ProjectDetails() {
                 <textarea
                   value={tourForm.notes}
                   onChange={(event) =>
-                    setTourForm((prev) => ({ ...prev, notes: event.target.value }))
+                    setTourForm((prev) => ({
+                      ...prev,
+                      notes: event.target.value,
+                    }))
                   }
                   className="w-full rounded-lg border border-slate-200 p-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
                   rows={3}
@@ -1270,14 +1338,18 @@ export default function ProjectDetails() {
                 />
               </div>
 
-              {bookTourError && <p className="text-sm text-red-500">{bookTourError}</p>}
+              {bookTourError && (
+                <p className="text-sm text-red-500">{bookTourError}</p>
+              )}
 
               <button
                 type="submit"
                 disabled={BookingLoading}
                 className="w-full rounded-lg bg-orange-500 px-4 py-3 text-sm font-semibold text-white hover:bg-orange-600 transition disabled:opacity-60"
               >
-                {BookingLoading ? "Submitting..." : `Confirm Tour${tourHouse ? ` for Unit #${tourHouse.id}` : ""}`}
+                {BookingLoading
+                  ? "Submitting..."
+                  : `Confirm Tour${tourHouse ? ` for Unit #${tourHouse.id}` : ""}`}
               </button>
             </form>
           </div>
