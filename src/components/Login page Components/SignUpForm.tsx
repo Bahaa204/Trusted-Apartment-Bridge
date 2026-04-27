@@ -3,6 +3,7 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
+  FieldLegend,
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ type SignUpFormData = {
 type SignUpFormProps = SignUpFormData & {
   loading: boolean;
   UpdateFields: (fields: Partial<SignUpFormData>) => void;
+  email_sent: boolean
 };
 
 export function SignUpForm({
@@ -25,9 +27,23 @@ export function SignUpForm({
   password,
   loading,
   UpdateFields,
+  email_sent
 }: SignUpFormProps) {
   return (
     <FieldSet className="w-full max-w-md gap-5">
+      <FieldGroup className="gap-4">
+        {email_sent && (
+          <FieldLegend
+            className="rounded-2xl border border-orange-200 bg-orange-50/90 px-4 py-3 text-slate-900 shadow-sm"
+            role="alert"
+          >
+            <p className="font-semibold text-slate-950">Email Sent</p>
+            <p className="text-sm text-slate-700">
+              We've sent a password reset link to your email address.
+            </p>
+          </FieldLegend>
+        )}
+      </FieldGroup>
       <FieldGroup className="gap-4">
         <Field className="gap-2">
           <FieldLabel

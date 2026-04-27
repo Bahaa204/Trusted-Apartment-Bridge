@@ -151,7 +151,7 @@ export default function Login() {
           FormData.display_name,
         );
 
-        if (ok) return navigate("/");
+        if (ok) return UpdateFields({email_sent: true});
 
         break;
       }
