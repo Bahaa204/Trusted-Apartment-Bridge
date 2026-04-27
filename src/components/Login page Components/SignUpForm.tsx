@@ -39,7 +39,7 @@ export function SignUpForm({
           >
             <p className="font-semibold text-slate-950">Email Sent</p>
             <p className="text-sm text-slate-700">
-              We've sent a password reset link to your email address.
+              We've sent a confirmation link to your email address.
             </p>
           </FieldLegend>
         )}
