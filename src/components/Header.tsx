@@ -51,7 +51,7 @@ export default function Header() {
   }
 
   const DisplayName: string =
-    Session?.user.user_metadata?.display_name?.trim() ||
+    Session?.user.user_metadata?.display_name?.trim()[0] ||
     Session?.user.email?.[0];
 
   return (
