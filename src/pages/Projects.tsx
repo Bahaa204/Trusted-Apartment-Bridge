@@ -439,7 +439,7 @@ export default function Projects() {
     setForm((prev) => ({
       ...prev,
       budgetRange: "any",
-      countryId: selectedCountry || prev.countryId || "",
+      countryId: selectedCountry  || "",
       floorPreference: "any",
       priority: "City living",
       bedrooms: "",

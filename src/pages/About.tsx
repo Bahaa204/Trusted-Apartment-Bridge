@@ -3,6 +3,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { useCountAnimation } from "@/hooks/useCountAnimation";
 import type { FAQItem, SummaryLabel } from "@/types/types";
 import type { CountryInfo, CountryDisplay } from "@/types/country";
 import { useCountries } from "@/hooks/useCountries";
@@ -78,6 +79,19 @@ const faqItems: FAQItem[] = [
       "Our sales advisors can guide you through available financing options and connect you with partner institutions where applicable, based on your chosen project and eligibility.",
   },
 ];
+
+function StatCard({ value, label }: { value: number; label: string }) {
+  const { displayValue, elementRef } = useCountAnimation(value, 1000);
+
+  return (
+    <div ref={elementRef}>
+      <p className="text-4xl font-extrabold text-orange-500">
+        {displayValue}+
+      </p>
+      <p className="text-gray-500 mt-1">{label}</p>
+    </div>
+  );
+}
 
 export default function About() {
   useDocumentTitle("About Us");
@@ -190,14 +204,10 @@ export default function About() {
       {/* Stats */}
       <section className="py-16 px-6">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {SummaryLabels.map((stat) => (
-            <div key={stat.label}>
-              <p className="text-4xl font-extrabold text-orange-500">
-                {stat.num}
-              </p>
-              <p className="text-gray-500 mt-1">{stat.label}</p>
-            </div>
-          ))}
+          {SummaryLabels.map((stat) => {
+            const numericValue = parseInt(stat.num.replace("+", ""), 10);
+            return <StatCard key={stat.label} value={numericValue} label={stat.label} />;
+          })}
         </div>
       </section>
       {/* Featured Projects */}
