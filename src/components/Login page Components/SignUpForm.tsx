@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import PasswordInput from "../PasswordInput";
 
 type SignUpFormData = {
   display_name: string;
@@ -18,7 +19,7 @@ type SignUpFormData = {
 type SignUpFormProps = SignUpFormData & {
   loading: boolean;
   UpdateFields: (fields: Partial<SignUpFormData>) => void;
-  email_sent: boolean
+  email_sent: boolean;
 };
 
 export function SignUpForm({
@@ -27,7 +28,7 @@ export function SignUpForm({
   password,
   loading,
   UpdateFields,
-  email_sent
+  email_sent,
 }: SignUpFormProps) {
   return (
     <FieldSet className="w-full max-w-md gap-5">
@@ -94,9 +95,8 @@ export function SignUpForm({
           <FieldDescription className="text-slate-600">
             Must be at least 8 characters long.
           </FieldDescription>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             placeholder="••••••••"
             value={password}
             onChange={(e) => UpdateFields({ password: e.target.value })}
@@ -106,7 +106,12 @@ export function SignUpForm({
         </Field>
       </FieldGroup>
       <FieldGroup>
-        <Button type="submit" variant="default" disabled={loading} className="cursor-pointer">
+        <Button
+          type="submit"
+          variant="default"
+          disabled={loading}
+          className="cursor-pointer"
+        >
           {loading ? "Signing up..." : "Sign up"}
         </Button>
       </FieldGroup>

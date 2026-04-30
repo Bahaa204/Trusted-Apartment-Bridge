@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "../ui/button";
+import PasswordInput from "../PasswordInput";
 
 type LoginFormData = {
   email: string;
@@ -56,9 +57,8 @@ export function LoginForm({
           >
             Password
           </FieldLabel>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             placeholder="••••••••"
             value={password}
             onChange={(e) => UpdateFields({ password: e.target.value })}

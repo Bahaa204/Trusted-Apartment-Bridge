@@ -13,7 +13,7 @@ export default function MainLayout() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-[#e6e0d8]!">
+      <main className="min-h-screen bg-[#e6e0d8]! pt-25!">
         <Outlet />
       </main>
       <Footer />

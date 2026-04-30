@@ -125,7 +125,7 @@ export default function Header() {
                     </span>
                   </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-full">
+                <DropdownMenuContent className="w-full relative top-5!">
                   <DropdownMenuItem>
                     <p>Logged in as {Session.user.email}</p>
                   </DropdownMenuItem>
