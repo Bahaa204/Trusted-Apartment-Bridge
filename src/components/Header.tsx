@@ -61,7 +61,7 @@ export default function Header() {
           Logged out successfully
         </div>
       )}
-      <header className="bg-[#e6e0d8] z-5000">
+      <header className="bg-[#e6e0d8] z-5000 fixed w-full">
         <nav
           aria-label="Global"
           className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
