@@ -3,13 +3,13 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { useCountAnimation } from "@/hooks/useCountAnimation";
 import type { FAQItem, SummaryLabel } from "@/types/types";
 import type { CountryInfo, CountryDisplay } from "@/types/country";
 import { useCountries } from "@/hooks/useCountries";
 import { useProjects } from "@/hooks/useProjects";
 import { RandomizeSplitArray } from "@/helpers/helpers";
 import { GlobeHeroSection } from "@/components/GlobeHeroSection";
+import StatCard from "@/components/StatCard";
 
 const countryInfo: CountryInfo = {
   "United Arab Emirates": { flagCode: "ae", lat: 24.4539, lng: 54.3773 },
@@ -80,18 +80,7 @@ const faqItems: FAQItem[] = [
   },
 ];
 
-function StatCard({ value, label }: { value: number; label: string }) {
-  const { displayValue, elementRef } = useCountAnimation(value, 1000);
 
-  return (
-    <div ref={elementRef}>
-      <p className="text-4xl font-extrabold text-orange-500">
-        {displayValue}+
-      </p>
-      <p className="text-gray-500 mt-1">{label}</p>
-    </div>
-  );
-}
 
 export default function About() {
   useDocumentTitle("About Us");
