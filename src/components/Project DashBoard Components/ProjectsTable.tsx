@@ -140,7 +140,7 @@ export default function ProjectsTable({
             <TableHead className="text-center">Description</TableHead>
             <TableHead className="text-center">Location</TableHead>
             <TableHead className="text-center">Country</TableHead>
-            <TableHead className="text-center">Number of Visits</TableHead>
+            <TableHead className="text-center">{EditId ? "Upload Images":"Number of Visits"}</TableHead>
             <TableHead className="text-center">Handover Date</TableHead>
             <TableHead className="text-center">ROI/Yield Note</TableHead>
             <TableHead className="text-center">Map Url</TableHead>
