@@ -28,7 +28,7 @@ import { SignUpForm } from "@/components/Login page Components/SignUpForm";
 import ResetPasswordForm from "@/components/Login page Components/ResetPasswordForm";
 import type { LoginFormData } from "@/types/form";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import GithubIcon from "@/components/icons/GithubIcon";
+import XIcon from "@/components/icons/XIcon";
 
 export default function Login() {
   const {
@@ -177,8 +177,8 @@ export default function Login() {
       icon: <GoogleIcon />,
     },
     {
-      provider: "github",
-      icon: <GithubIcon />,
+      provider: "x",
+      icon: <XIcon />,
     },
   ];
 
