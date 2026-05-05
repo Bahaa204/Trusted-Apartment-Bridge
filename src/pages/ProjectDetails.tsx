@@ -404,51 +404,51 @@ export default function ProjectDetails() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#e6e0d8]">
+      <main className='min-h-screen bg-[#e6e0d8]'>
         {/* Hero skeleton */}
-        <div className="bg-slate-900 py-20 px-6">
-          <div className="max-w-5xl mx-auto">
-            <div className="h-4 w-32 bg-white/20 rounded-full mb-6 animate-pulse" />
-            <div className="h-10 w-64 bg-white/20 rounded-xl mb-4 animate-pulse" />
-            <div className="h-4 w-48 bg-white/10 rounded-full animate-pulse" />
+        <div className='bg-slate-900 py-20 px-6'>
+          <div className='max-w-5xl mx-auto'>
+            <div className='h-4 w-32 bg-white/20 rounded-full mb-6 animate-pulse' />
+            <div className='h-10 w-64 bg-white/20 rounded-xl mb-4 animate-pulse' />
+            <div className='h-4 w-48 bg-white/10 rounded-full animate-pulse' />
           </div>
         </div>
-        <div className="max-w-5xl mx-auto px-6 -mt-8">
+        <div className='max-w-5xl mx-auto px-6 -mt-8'>
           {/* Stats skeleton */}
-          <div className="grid grid-cols-3 gap-4 mb-10">
+          <div className='grid grid-cols-3 gap-4 mb-10'>
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className="bg-white rounded-2xl shadow-lg p-6 text-center animate-pulse"
+                className='bg-white rounded-2xl shadow-lg p-6 text-center animate-pulse'
               >
-                <div className="h-8 w-16 bg-gray-200 rounded-lg mx-auto mb-2" />
-                <div className="h-3 w-12 bg-gray-100 rounded mx-auto" />
+                <div className='h-8 w-16 bg-gray-200 rounded-lg mx-auto mb-2' />
+                <div className='h-3 w-12 bg-gray-100 rounded mx-auto' />
               </div>
             ))}
           </div>
           {/* Image gallery skeleton */}
-          <div className="h-80 bg-gray-200 rounded-2xl mb-10 animate-pulse" />
+          <div className='h-80 bg-gray-200 rounded-2xl mb-10 animate-pulse' />
           {/* Description skeleton */}
-          <div className="bg-white rounded-2xl shadow-md p-8 mb-10 animate-pulse">
-            <div className="h-6 w-48 bg-gray-200 rounded-lg mb-4" />
-            <div className="space-y-2">
-              <div className="h-4 w-full bg-gray-100 rounded" />
-              <div className="h-4 w-5/6 bg-gray-100 rounded" />
-              <div className="h-4 w-4/6 bg-gray-100 rounded" />
+          <div className='bg-white rounded-2xl shadow-md p-8 mb-10 animate-pulse'>
+            <div className='h-6 w-48 bg-gray-200 rounded-lg mb-4' />
+            <div className='space-y-2'>
+              <div className='h-4 w-full bg-gray-100 rounded' />
+              <div className='h-4 w-5/6 bg-gray-100 rounded' />
+              <div className='h-4 w-4/6 bg-gray-100 rounded' />
             </div>
           </div>
           {/* Buildings skeleton */}
-          <div className="mb-20">
-            <div className="h-7 w-48 bg-gray-300 rounded-lg mb-2 animate-pulse" />
-            <div className="h-4 w-64 bg-gray-200 rounded mb-8 animate-pulse" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          <div className='mb-20'>
+            <div className='h-7 w-48 bg-gray-300 rounded-lg mb-2 animate-pulse' />
+            <div className='h-4 w-64 bg-gray-200 rounded mb-8 animate-pulse' />
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8'>
               {[0, 1, 2].map((i) => (
                 <div
                   key={i}
-                  className="rounded-3xl border border-gray-200 bg-white p-6 animate-pulse"
+                  className='rounded-3xl border border-gray-200 bg-white p-6 animate-pulse'
                 >
-                  <div className="h-5 w-32 bg-gray-200 rounded mb-3" />
-                  <div className="h-3 w-20 bg-gray-100 rounded" />
+                  <div className='h-5 w-32 bg-gray-200 rounded mb-3' />
+                  <div className='h-3 w-20 bg-gray-100 rounded' />
                 </div>
               ))}
             </div>
@@ -461,7 +461,7 @@ export default function ProjectDetails() {
   if (error) {
     return (
       <ErrorCard
-        message="We could not load Project Details. Please try again later."
+        message='We could not load Project Details. Please try again later.'
         error={error}
       />
     );
@@ -469,26 +469,26 @@ export default function ProjectDetails() {
 
   if (!project) {
     return (
-      <main className="min-h-screen p-4 md:p-8">
-        <Breadcrumbs name="Project Details" style="light" />
-        <Card className="mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg">
+      <main className='min-h-screen p-4 md:p-8'>
+        <Breadcrumbs name='Project Details' style='light' />
+        <Card className='mx-auto max-w-3xl border border-[#c8b9a7] bg-white text-[#0f2f4f] shadow-lg'>
           <CardHeader>
             <CardAction>
               <Link
-                to="/projects"
-                className="text-orange-500 hover:underline font-medium"
+                to='/projects'
+                className='text-orange-500 hover:underline font-medium'
               >
                 Back to Projects
               </Link>
             </CardAction>
-            <CardTitle className="text-2xl text-[#0f2f4f]">Error</CardTitle>
-            <CardDescription className="text-[#24507f]">
+            <CardTitle className='text-2xl text-[#0f2f4f]'>Error</CardTitle>
+            <CardDescription className='text-[#24507f]'>
               Project not found. It may have been removed or the URL may be
               incorrect.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-[#173b67]">{error}</CardContent>
-          <CardFooter className="bg-transparent">
+          <CardContent className='text-[#173b67]'>{error}</CardContent>
+          <CardFooter className='bg-transparent'>
             {new Date().toLocaleString()}
           </CardFooter>
         </Card>
@@ -613,40 +613,40 @@ export default function ProjectDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-[#e6e0d8]">
+    <div className='min-h-screen bg-[#e6e0d8]'>
       {/* Hero */}
-      <div className="relative overflow-hidden text-white py-24 md:py-32 px-6">
+      <div className='relative overflow-hidden text-white py-24 md:py-32 px-6'>
         {projectHeroImage ? (
           <motion.div
             key={projectHeroImage}
             initial={{ opacity: 0, scale: 1.04 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.55, ease: "easeOut" }}
-            className="absolute inset-0 bg-cover bg-center"
+            className='absolute inset-0 bg-cover bg-center'
             style={{ backgroundImage: `url(${projectHeroImage})` }}
           />
         ) : (
-          <div className="absolute inset-0 bg-slate-900" />
+          <div className='absolute inset-0 bg-slate-900' />
         )}
-        <div className="absolute inset-0 bg-black/45" />
+        <div className='absolute inset-0 bg-black/45' />
 
-        <div className="relative max-w-5xl mx-auto">
-          <Breadcrumbs name={project.name} style="light" />
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-3">
+        <div className='relative max-w-5xl mx-auto'>
+          <Breadcrumbs name={project.name} style='light' />
+          <h1 className='text-4xl md:text-5xl font-extrabold mb-3'>
             {project.name}
           </h1>
-          <div className="flex flex-wrap gap-4 text-gray-300 items-center">
-            <span className="flex items-center gap-1.5">
-              <MapPin className="w-4 h-4" /> {project.location}
+          <div className='flex flex-wrap gap-4 text-gray-300 items-center'>
+            <span className='flex items-center gap-1.5'>
+              <MapPin className='w-4 h-4' /> {project.location}
             </span>
             <span>•</span>
             <span>{countryName || "Unknown"}</span>
           </div>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
+          <div className='mt-4 flex flex-wrap items-center gap-3'>
             <button
-              type="button"
+              type='button'
               onClick={handleFavoriteToggle}
-              className="rounded-full border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 cursor-pointer"
+              className='rounded-full border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 cursor-pointer'
             >
               {IsFavorited(project.id)
                 ? "Saved in Favorites"
@@ -655,14 +655,14 @@ export default function ProjectDetails() {
             {sanitizedMapLink && (
               <a
                 href={sanitizedMapLink}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-full border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 inline-flex items-center gap-1.5"
+                target='_blank'
+                rel='noreferrer'
+                className='rounded-full border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 inline-flex items-center gap-1.5'
               >
-                <MapIcon className="w-4 h-4" /> View Map
+                <MapIcon className='w-4 h-4' /> View Map
               </a>
             )}
-            <span className="text-sm text-orange-200">
+            <span className='text-sm text-orange-200'>
               Handover:{" "}
               {project.handover_date
                 ? new Date(project.handover_date).toLocaleDateString()
@@ -672,26 +672,26 @@ export default function ProjectDetails() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 mt-8 md:mt-10">
+      <div className='max-w-5xl mx-auto px-6 mt-8 md:mt-10'>
         {/* Stats cards */}
-        <div className="grid grid-cols-3 gap-4 mb-10">
-          <div className="h-28 md:h-32 bg-white rounded-2xl shadow-lg p-6 text-center flex flex-col items-center justify-center">
-            <p className="text-3xl font-extrabold text-orange-500">
+        <div className='grid grid-cols-3 gap-4 mb-10'>
+          <div className='h-28 md:h-32 bg-white rounded-2xl shadow-lg p-6 text-center flex flex-col items-center justify-center'>
+            <p className='text-3xl font-extrabold text-orange-500'>
               {projectBuildings.length}
             </p>
-            <p className="text-gray-500 text-sm mt-1">Buildings</p>
+            <p className='text-gray-500 text-sm mt-1'>Buildings</p>
           </div>
-          <div className="h-28 md:h-32 bg-white rounded-2xl shadow-lg p-6 text-center flex flex-col items-center justify-center">
-            <p className="text-3xl font-extrabold text-orange-500">
+          <div className='h-28 md:h-32 bg-white rounded-2xl shadow-lg p-6 text-center flex flex-col items-center justify-center'>
+            <p className='text-3xl font-extrabold text-orange-500'>
               {totalUnits}
             </p>
-            <p className="text-gray-500 text-sm mt-1">Units</p>
+            <p className='text-gray-500 text-sm mt-1'>Units</p>
           </div>
-          <div className="h-28 md:h-32 bg-white rounded-2xl shadow-lg p-6 text-center flex flex-col items-center justify-center">
-            <p className="text-3xl font-extrabold text-orange-500">
+          <div className='h-28 md:h-32 bg-white rounded-2xl shadow-lg p-6 text-center flex flex-col items-center justify-center'>
+            <p className='text-3xl font-extrabold text-orange-500'>
               {countryName || "—"}
             </p>
-            <p className="text-gray-500 text-sm mt-1">Country</p>
+            <p className='text-gray-500 text-sm mt-1'>Country</p>
           </div>
         </div>
 
@@ -699,20 +699,20 @@ export default function ProjectDetails() {
         {projectImages.length > 0 ? (
           <ImageGallery images={projectImages} />
         ) : (
-          <div className="h-64 bg-slate-300 rounded-2xl shadow-lg mb-10 flex items-center justify-center">
-            <span className="text-white/20 text-9xl font-black">
+          <div className='h-64 bg-slate-300 rounded-2xl shadow-lg mb-10 flex items-center justify-center'>
+            <span className='text-white/20 text-9xl font-black'>
               {project.name[0]}
             </span>
           </div>
         )}
 
         {/* Description */}
-        <div className="bg-white rounded-2xl shadow-md p-8 mb-10">
-          <h2 className="text-xl font-bold mb-4">About this Project</h2>
-          <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+        <div className='bg-white rounded-2xl shadow-md p-8 mb-10'>
+          <h2 className='text-xl font-bold mb-4'>About this Project</h2>
+          <p className='text-gray-600 leading-relaxed whitespace-pre-line'>
             {project.description}
           </p>
-          <div className="mt-6 grid gap-3 rounded-xl border border-orange-100 bg-orange-50 p-4 text-sm text-[#8a3f00]">
+          <div className='mt-6 grid gap-3 rounded-xl border border-orange-100 bg-orange-50 p-4 text-sm text-[#8a3f00]'>
             <p>
               Expected ROI/Yield:{" "}
               {project.expected_roi_note ||
@@ -727,17 +727,17 @@ export default function ProjectDetails() {
 
         {/* Buildings & Units */}
         {projectBuildings.length > 0 && (
-          <div className="mb-20">
-            <h2 className="text-2xl font-bold mb-2">Buildings & Units</h2>
-            <p className="text-gray-400 mb-8 text-sm">
+          <div className='mb-20'>
+            <h2 className='text-2xl font-bold mb-2'>Buildings & Units</h2>
+            <p className='text-gray-400 mb-8 text-sm'>
               Select a building to see its available units.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8'>
               {projectBuildings.map((building) => (
                 <button
                   key={building.id}
-                  type="button"
+                  type='button'
                   onClick={() => {
                     setSelectedBuilding(building.id);
                     setHoveredUnit(null);
@@ -748,10 +748,10 @@ export default function ProjectDetails() {
                       : "border-gray-200 bg-white hover:border-orange-200"
                   }`}
                 >
-                  <p className="text-lg font-semibold text-slate-900">
+                  <p className='text-lg font-semibold text-slate-900'>
                     {building.name}
                   </p>
-                  <p className="text-sm text-gray-500 mt-2">
+                  <p className='text-sm text-gray-500 mt-2'>
                     {building.houses.length} unit
                     {building.houses.length !== 1 ? "s" : ""} available
                   </p>
@@ -760,11 +760,11 @@ export default function ProjectDetails() {
             </div>
 
             {activeBldg && (
-              <div className="bg-white rounded-2xl shadow-md p-8">
-                <div className="flex items-center justify-between mb-6">
+              <div className='bg-white rounded-2xl shadow-md p-8'>
+                <div className='flex items-center justify-between mb-6'>
                   <div>
-                    <h3 className="text-xl font-bold">{activeBldg.name}</h3>
-                    <p className="text-sm text-gray-400">
+                    <h3 className='text-xl font-bold'>{activeBldg.name}</h3>
+                    <p className='text-sm text-gray-400'>
                       {activeBldg.houses.length} unit
                       {activeBldg.houses.length !== 1 ? "s" : ""} available
                     </p>
@@ -772,9 +772,9 @@ export default function ProjectDetails() {
                 </div>
 
                 {activeBldg.houses.length === 0 ? (
-                  <p className="text-gray-400">No units in this building.</p>
+                  <p className='text-gray-400'>No units in this building.</p>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                     {activeBldg.houses
                       .sort((a, b) => b.floor - a.floor)
                       .map((house) => (
@@ -795,8 +795,8 @@ export default function ProjectDetails() {
           </div>
         )}
 
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-20">
-          <h2 className="text-2xl font-bold mb-4">Project 3D Previews</h2>
+        <div className='bg-white rounded-2xl shadow-lg p-8 mb-20'>
+          <h2 className='text-2xl font-bold mb-4'>Project 3D Previews</h2>
           <div
             className={`grid gap-6 ${isSingleBuildingProject ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}
           >
@@ -804,15 +804,15 @@ export default function ProjectDetails() {
               const modelPath =
                 modelAssignments[index] ?? MODELS[index % MODELS.length];
               return (
-                <div key={building.id} className="bg-gray-50 rounded-2xl p-4">
-                  <h3 className="text-lg font-semibold mb-2">
+                <div key={building.id} className='bg-gray-50 rounded-2xl p-4'>
+                  <h3 className='text-lg font-semibold mb-2'>
                     {building.name}
                   </h3>
                   <LazyModelPreview
                     className={`relative overflow-hidden rounded-2xl ${isSingleBuildingProject ? "h-175" : "h-64"}`}
                   >
                     <Canvas camera={{ position: [0, 1.8, 7], fov: 42 }} shadows>
-                      <color attach="background" args={["#f8fbfd"]} />
+                      <color attach='background' args={["#f8fbfd"]} />
                       <ambientLight intensity={0.8} />
                       <spotLight
                         position={[10, 10, 10]}
@@ -823,7 +823,7 @@ export default function ProjectDetails() {
                       />
 
                       <Suspense fallback={<Loader />}>
-                        <Environment preset="city" />
+                        <Environment preset='city' />
                         <Model modelPath={modelPath} />
                         <ContactShadows
                           position={[0, -1, 0]}
@@ -843,97 +843,97 @@ export default function ProjectDetails() {
           </div>
         </div>
 
-        <div className="mb-20 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg">
-          <div className="bg-linear-to-r from-[#10243e] via-[#17365d] to-[#24507f] px-8 py-7 text-white">
-            <h2 className="text-2xl font-bold md:text-3xl">
+        <div className='mb-20 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg'>
+          <div className='bg-linear-to-r from-[#10243e] via-[#17365d] to-[#24507f] px-8 py-7 text-white'>
+            <h2 className='text-2xl font-bold md:text-3xl'>
               Mortgage Calculator
             </h2>
-            <p className="mt-2 max-w-2xl text-sm text-slate-200">
+            <p className='mt-2 max-w-2xl text-sm text-slate-200'>
               Adjust purchase values to estimate monthly installments, total
               paid amount, and lifetime interest.
             </p>
           </div>
 
-          <div className="grid gap-6 p-7 lg:grid-cols-[1.35fr_1fr]">
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+          <div className='grid gap-6 p-7 lg:grid-cols-[1.35fr_1fr]'>
+            <div className='rounded-2xl border border-slate-200 bg-slate-50 p-6'>
+              <p className='text-xs font-semibold uppercase tracking-[0.18em] text-slate-500'>
                 Loan inputs
               </p>
 
-              <div className="mt-5 grid grid-cols-1 gap-5">
+              <div className='mt-5 grid grid-cols-1 gap-5'>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  <label className='mb-2 block text-sm font-semibold text-slate-700'>
                     Home price ($)
                   </label>
                   <input
-                    type="number"
-                    min="0"
-                    step="1000"
+                    type='number'
+                    min='0'
+                    step='1000'
                     value={loanAmountInput}
                     onChange={(event) => setLoanAmountInput(event.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200"
+                    className='w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200'
                   />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  <label className='mb-2 block text-sm font-semibold text-slate-700'>
                     Down payment ($)
                   </label>
                   <input
-                    type="number"
-                    min="0"
-                    step="1000"
+                    type='number'
+                    min='0'
+                    step='1000'
                     value={downPaymentInput}
                     onChange={(event) =>
                       setDownPaymentInput(event.target.value)
                     }
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200"
+                    className='w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200'
                   />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  <label className='mb-2 block text-sm font-semibold text-slate-700'>
                     Interest rate (% / year)
                   </label>
                   <input
-                    type="number"
-                    min="0"
-                    step="0.1"
+                    type='number'
+                    min='0'
+                    step='0.1'
                     value={annualRateInput}
                     onChange={(event) => setAnnualRateInput(event.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200"
+                    className='w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200'
                   />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  <label className='mb-2 block text-sm font-semibold text-slate-700'>
                     Loan term (years)
                   </label>
                   <input
-                    type="number"
-                    min="1"
-                    step="1"
+                    type='number'
+                    min='1'
+                    step='1'
                     value={loanTermYearsInput}
                     onChange={(event) =>
                       setLoanTermYearsInput(event.target.value)
                     }
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200"
+                    className='w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200'
                   />
                 </div>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+            <div className='rounded-2xl border border-slate-200 bg-white p-6 shadow-sm'>
+              <p className='text-xs font-semibold uppercase tracking-[0.18em] text-slate-500'>
                 Summary
               </p>
 
-              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                <div className="rounded-xl border border-orange-200 bg-orange-50 p-4">
-                  <p className="text-xs uppercase tracking-[0.16em] text-orange-600">
+              <div className='mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-1'>
+                <div className='rounded-xl border border-orange-200 bg-orange-50 p-4'>
+                  <p className='text-xs uppercase tracking-[0.16em] text-orange-600'>
                     Monthly payment
                   </p>
-                  <p className="mt-2 text-2xl font-bold text-[#10243e]">
+                  <p className='mt-2 text-2xl font-bold text-[#10243e]'>
                     $
                     {mortgageSummary
                       ? mortgageSummary.monthlyPayment.toLocaleString(
@@ -947,11 +947,11 @@ export default function ProjectDetails() {
                   </p>
                 </div>
 
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+                <div className='rounded-xl border border-slate-200 bg-slate-50 p-4'>
+                  <p className='text-xs uppercase tracking-[0.16em] text-slate-500'>
                     Loan principal
                   </p>
-                  <p className="mt-2 text-xl font-bold text-[#10243e]">
+                  <p className='mt-2 text-xl font-bold text-[#10243e]'>
                     $
                     {mortgageSummary
                       ? mortgageSummary.principal.toLocaleString(undefined, {
@@ -962,11 +962,11 @@ export default function ProjectDetails() {
                   </p>
                 </div>
 
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+                <div className='rounded-xl border border-slate-200 bg-slate-50 p-4'>
+                  <p className='text-xs uppercase tracking-[0.16em] text-slate-500'>
                     Total payment
                   </p>
-                  <p className="mt-2 text-xl font-bold text-[#10243e]">
+                  <p className='mt-2 text-xl font-bold text-[#10243e]'>
                     $
                     {mortgageSummary
                       ? mortgageSummary.totalPaid.toLocaleString(undefined, {
@@ -977,11 +977,11 @@ export default function ProjectDetails() {
                   </p>
                 </div>
 
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+                <div className='rounded-xl border border-slate-200 bg-slate-50 p-4'>
+                  <p className='text-xs uppercase tracking-[0.16em] text-slate-500'>
                     Total interest
                   </p>
-                  <p className="mt-2 text-xl font-bold text-[#10243e]">
+                  <p className='mt-2 text-xl font-bold text-[#10243e]'>
                     $
                     {mortgageSummary
                       ? mortgageSummary.totalInterest.toLocaleString(
@@ -1002,42 +1002,42 @@ export default function ProjectDetails() {
 
       {showPayment && (
         <div
-          className="fixed inset-0 z-9000 overflow-y-auto flex items-center justify-center bg-black/50 p-4"
+          className='fixed inset-0 z-9000 overflow-y-auto flex items-center justify-center bg-black/50 p-4'
           onMouseDown={closePayment}
         >
           <div
-            className="w-full max-w-5xl max-h-[92vh] rounded-[2rem] bg-white shadow-2xl overflow-y-auto no-scrollbar"
+            className='w-full max-w-5xl max-h-[92vh] rounded-[2rem] bg-white shadow-2xl overflow-y-auto no-scrollbar'
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between flex-wrap gap-4 bg-orange-500 px-7 py-6 text-white rounded-t-[2rem]">
+            <div className='flex items-center justify-between flex-wrap gap-4 bg-orange-500 px-7 py-6 text-white rounded-t-[2rem]'>
               <div>
-                <h2 className="text-3xl font-bold">Complete purchase</h2>
-                <p className="mt-2 text-sm text-orange-100">
+                <h2 className='text-3xl font-bold'>Complete purchase</h2>
+                <p className='mt-2 text-sm text-orange-100'>
                   Fill the card details to confirm your purchase.
                 </p>
               </div>
               <button
-                type="button"
+                type='button'
                 onClick={closePayment}
-                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20 cursor-pointer"
+                className='rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20 cursor-pointer'
               >
                 Close
               </button>
             </div>
 
-            <div className="p-7">
-              <div className="grid gap-6 lg:grid-cols-[1.55fr_1fr]">
-                <div className="space-y-6">
-                  <div className="rounded-2xl border border-orange-100 bg-orange-50 p-5 shadow-sm">
-                    <p className="text-sm uppercase tracking-[0.2em] text-orange-500">
+            <div className='p-7'>
+              <div className='grid gap-6 lg:grid-cols-[1.55fr_1fr]'>
+                <div className='space-y-6'>
+                  <div className='rounded-2xl border border-orange-100 bg-orange-50 p-5 shadow-sm'>
+                    <p className='text-sm uppercase tracking-[0.2em] text-orange-500'>
                       Selected unit
                     </p>
-                    <p className="mt-2 text-2xl font-semibold text-slate-900">
+                    <p className='mt-2 text-2xl font-semibold text-slate-900'>
                       {paymentHouse
                         ? `Unit #${paymentHouse.id} - $${paymentHouse.price.toLocaleString()}`
                         : "No unit selected"}
                     </p>
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className='text-sm text-gray-500 mt-2'>
                       {paymentHouse
                         ? `${paymentHouse.nb_bedrooms} bedrooms • ${paymentHouse.nb_bathrooms} bathrooms`
                         : "Select a unit to start."}
@@ -1046,10 +1046,10 @@ export default function ProjectDetails() {
 
                   <form
                     onSubmit={handlePaymentSubmit}
-                    className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5"
+                    className='rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5'
                   >
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      <label className='block text-sm font-semibold text-slate-700 mb-2'>
                         Cardholder name
                       </label>
                       <input
@@ -1060,13 +1060,13 @@ export default function ProjectDetails() {
                             cardName: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm shadow-sm"
-                        placeholder="John Doe"
+                        className='w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm shadow-sm'
+                        placeholder='John Doe'
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      <label className='block text-sm font-semibold text-slate-700 mb-2'>
                         Card number
                       </label>
                       <input
@@ -1077,15 +1077,15 @@ export default function ProjectDetails() {
                             cardNumber: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm shadow-sm"
-                        placeholder="1234 5678 9012 3456"
-                        inputMode="numeric"
+                        className='w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm shadow-sm'
+                        placeholder='1234 5678 9012 3456'
+                        inputMode='numeric'
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className='grid grid-cols-2 gap-4'>
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        <label className='block text-sm font-semibold text-slate-700 mb-2'>
                           Expiry
                         </label>
                         <input
@@ -1096,12 +1096,12 @@ export default function ProjectDetails() {
                               expiry: e.target.value,
                             })
                           }
-                          className="w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm shadow-sm"
-                          placeholder="MM/YY"
+                          className='w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm shadow-sm'
+                          placeholder='MM/YY'
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        <label className='block text-sm font-semibold text-slate-700 mb-2'>
                           CVC
                         </label>
                         <input
@@ -1112,15 +1112,15 @@ export default function ProjectDetails() {
                               cvc: e.target.value,
                             })
                           }
-                          className="w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm shadow-sm"
-                          placeholder="123"
-                          inputMode="numeric"
+                          className='w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm shadow-sm'
+                          placeholder='123'
+                          inputMode='numeric'
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      <label className='block text-sm font-semibold text-slate-700 mb-2'>
                         Email
                       </label>
                       <input
@@ -1131,18 +1131,20 @@ export default function ProjectDetails() {
                             email: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm shadow-sm"
-                        placeholder="you@example.com"
-                        type="email"
+                        className='w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm shadow-sm'
+                        placeholder='you@example.com'
+                        type='email'
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      <label className='block text-sm font-semibold text-slate-700 mb-2'>
                         Phone number
                       </label>
                       <PhoneInput
-                        defaultCountry="eg"
+                        defaultCountry='eg'
+                        className='w-full!'
+                        disableFocusAfterCountrySelect
                         value={paymentForm.contactPhone}
                         onChange={(phone) =>
                           setPaymentForm({
@@ -1150,55 +1152,74 @@ export default function ProjectDetails() {
                             contactPhone: phone,
                           })
                         }
+                        countrySelectorStyleProps={{
+                          buttonStyle: {
+                            height: "50px",
+                            padding: "0 12px",
+                            borderRadius: "0px",
+                          },
+                        }}
+                        inputStyle={{
+                          height: "50px",
+                          width: "100%",
+                          fontSize: "1rem",
+                          lineHeight: "1.5rem",
+                          paddingTop: "12px",
+                          paddingBottom: "12px",
+                          paddingLeft: "16px",
+                          paddingRight: "16px",
+                          borderRadius: "8px",
+                          borderTopLeftRadius: "0px",
+                          borderBottomLeftRadius: "0px",
+                        }}
                         style={
                           {
                             width: "100%",
-                            "--react-international-phone-border-radius":
-                              "0.75rem",
+                            "--react-international-phone-border-radius": "0px",
                             "--react-international-phone-border-color":
-                              "#e2e8f0",
-                            "--react-international-phone-height": "48px",
-                            "--react-international-phone-font-size": "0.875rem",
+                              "#d7e0ea",
+                            "--react-international-phone-height": "50px",
+                            "--react-international-phone-font-size": "1rem",
                           } as React.CSSProperties
                         }
                       />
                     </div>
 
                     {paymentError && (
-                      <p className="text-sm text-red-500">{paymentError}</p>
+                      <p className='text-sm text-red-500'>{paymentError}</p>
                     )}
 
                     <button
-                      type="submit"
-                      className="w-full rounded-xl bg-orange-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition"
+                      type='submit'
+                      className='w-full rounded-xl bg-orange-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition'
                     >
                       Pay now
                     </button>
                   </form>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-slate-900 shadow-sm">
-                  <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
+                <div className='rounded-2xl border border-slate-200 bg-slate-50 p-6 text-slate-900 shadow-sm'>
+                  <p className='text-sm uppercase tracking-[0.2em] text-slate-500'>
                     Payment summary
                   </p>
-                  <div className="mt-4 space-y-4">
-                    <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                      <p className="text-sm text-slate-500">Unit</p>
-                      <p className="mt-2 text-lg font-semibold">
+                  <div className='mt-4 space-y-4'>
+                    <div className='rounded-2xl border border-slate-200 bg-white p-4'>
+                      <p className='text-sm text-slate-500'>Unit</p>
+                      <p className='mt-2 text-lg font-semibold'>
                         {paymentHouse ? `#${paymentHouse.id}` : "-"}
                       </p>
                     </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                      <p className="text-sm text-slate-500">Price</p>
-                      <p className="mt-2 text-lg font-semibold">
+                    <div className='rounded-2xl border border-slate-200 bg-white p-4'>
+                      <p className='text-sm text-slate-500'>Price</p>
+                      <p className='mt-2 text-lg font-semibold'>
                         {paymentHouse
                           ? `$${paymentHouse.price.toLocaleString()}`
                           : "-"}
                       </p>
                     </div>
-                    <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                      <p className="text-sm text-slate-500">Total</p>
-                      <p className="mt-2 text-lg font-semibold">
+                    <div className='rounded-2xl border border-slate-200 bg-white p-4'>
+                      <p className='text-sm text-slate-500'>Total</p>
+                      <p className='mt-2 text-lg font-semibold'>
                         {paymentHouse
                           ? `$${paymentHouse.price.toLocaleString()}`
                           : "-"}
@@ -1207,14 +1228,14 @@ export default function ProjectDetails() {
                   </div>
 
                   {paymentSuccess && (
-                    <div className="mt-6 rounded-3xl bg-emerald-50 p-4 text-emerald-900 shadow-inner">
-                      <p className="text-sm uppercase tracking-[0.2em] text-emerald-600">
+                    <div className='mt-6 rounded-3xl bg-emerald-50 p-4 text-emerald-900 shadow-inner'>
+                      <p className='text-sm uppercase tracking-[0.2em] text-emerald-600'>
                         Success
                       </p>
-                      <p className="mt-2 text-base font-semibold">
+                      <p className='mt-2 text-base font-semibold'>
                         Payment completed successfully.
                       </p>
-                      <p className="mt-2 text-sm text-slate-700">
+                      <p className='mt-2 text-sm text-slate-700'>
                         Your purchase is confirmed. Our team will contact you
                         shortly.
                       </p>
@@ -1229,38 +1250,38 @@ export default function ProjectDetails() {
 
       {showBookTour && (
         <div
-          className="fixed inset-0 z-9000 overflow-y-auto flex items-center justify-center bg-black/50 p-4"
+          className='fixed inset-0 z-9000 overflow-y-auto flex items-center justify-center bg-black/50 p-4'
           onMouseDown={() => setShowBookTour(false)}
         >
           <div
-            className="w-full max-w-xl rounded-[2rem] bg-white shadow-2xl"
+            className='w-full max-w-xl rounded-[2rem] bg-white shadow-2xl'
             onMouseDown={(event) => event.stopPropagation()}
           >
-            <div className="flex items-center justify-between bg-orange-500 px-6 py-5 text-white rounded-t-[2rem]">
+            <div className='flex items-center justify-between bg-orange-500 px-6 py-5 text-white rounded-t-[2rem]'>
               <div>
-                <h2 className="text-2xl font-bold">Book a Tour</h2>
-                <p className="text-sm text-orange-100 mt-1">
+                <h2 className='text-2xl font-bold'>Book a Tour</h2>
+                <p className='text-sm text-orange-100 mt-1'>
                   Reserve your preferred date and our advisor will confirm.
                 </p>
               </div>
               <button
-                type="button"
+                type='button'
                 onClick={() => setShowBookTour(false)}
-                className="rounded-full border border-white/30 bg-white/10 hover:bg-white/20 transition p-2 cursor-pointer"
+                className='rounded-full border border-white/30 bg-white/10 hover:bg-white/20 transition p-2 cursor-pointer'
               >
-                <X className="w-4 h-4" />
+                <X className='w-4 h-4' />
               </button>
             </div>
 
-            <form onSubmit={handleBookTourSubmit} className="space-y-4 p-6">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <form onSubmit={handleBookTourSubmit} className='space-y-4 p-6'>
+              <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                 <div>
-                  <label className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-                    <Calendar className="w-4 h-4 text-orange-500" />
+                  <label className='mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700'>
+                    <Calendar className='w-4 h-4 text-orange-500' />
                     Preferred date
                   </label>
                   <input
-                    type="date"
+                    type='date'
                     value={tourForm.preferredDate}
                     onChange={(event) =>
                       setTourForm((prev) => ({
@@ -1268,14 +1289,14 @@ export default function ProjectDetails() {
                         preferredDate: event.target.value,
                       }))
                     }
-                    className="w-full rounded-lg border border-slate-200 p-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    className='w-full rounded-lg border border-slate-200 p-3 focus:outline-none focus:ring-2 focus:ring-orange-400'
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-                    <Clock className="w-4 h-4 text-orange-500" />
+                  <label className='mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700'>
+                    <Clock className='w-4 h-4 text-orange-500' />
                     Preferred time
                   </label>
                   <select
@@ -1286,42 +1307,64 @@ export default function ProjectDetails() {
                         preferredTime: event.target.value,
                       }))
                     }
-                    className="w-full rounded-lg border border-slate-200 p-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    className='w-full rounded-lg border border-slate-200 p-3 focus:outline-none focus:ring-2 focus:ring-orange-400'
                   >
-                    <option value="10:00">10:00 AM</option>
-                    <option value="12:00">12:00 PM</option>
-                    <option value="14:00">2:00 PM</option>
-                    <option value="16:00">4:00 PM</option>
+                    <option value='10:00'>10:00 AM</option>
+                    <option value='12:00'>12:00 PM</option>
+                    <option value='14:00'>2:00 PM</option>
+                    <option value='16:00'>4:00 PM</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-                  <Phone className="w-4 h-4 text-orange-500" />
+                <label className='mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700'>
+                  <Phone className='w-4 h-4 text-orange-500' />
                   Contact phone
                 </label>
                 <PhoneInput
-                  defaultCountry="eg"
+                  defaultCountry='eg'
+                  className='w-full!'
+                  disableFocusAfterCountrySelect
                   value={tourForm.contactPhone}
                   onChange={(phone) =>
                     setTourForm((prev) => ({ ...prev, contactPhone: phone }))
                   }
+                  countrySelectorStyleProps={{
+                    buttonStyle: {
+                      height: "50px",
+                      padding: "0 12px",
+                      borderRadius: "0px",
+                    },
+                  }}
+                  inputStyle={{
+                    height: "50px",
+                    width: "100%",
+                    fontSize: "1rem",
+                    lineHeight: "1.5rem",
+                    paddingTop: "12px",
+                    paddingBottom: "12px",
+                    paddingLeft: "16px",
+                    paddingRight: "16px",
+                    borderRadius: "8px",
+                    borderTopLeftRadius: "0px",
+                    borderBottomLeftRadius: "0px",
+                  }}
                   style={
                     {
                       width: "100%",
-                      "--react-international-phone-border-radius": "0.5rem",
-                      "--react-international-phone-border-color": "#e2e8f0",
-                      "--react-international-phone-height": "46px",
-                      "--react-international-phone-font-size": "0.875rem",
+                      "--react-international-phone-border-radius": "0px",
+                      "--react-international-phone-border-color": "#d7e0ea",
+                      "--react-international-phone-height": "50px",
+                      "--react-international-phone-font-size": "1rem",
                     } as React.CSSProperties
                   }
                 />
               </div>
 
               <div>
-                <label className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-                  <FileText className="w-4 h-4 text-orange-500" />
+                <label className='mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-700'>
+                  <FileText className='w-4 h-4 text-orange-500' />
                   Notes (optional)
                 </label>
                 <textarea
@@ -1332,20 +1375,20 @@ export default function ProjectDetails() {
                       notes: event.target.value,
                     }))
                   }
-                  className="w-full rounded-lg border border-slate-200 p-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  className='w-full rounded-lg border border-slate-200 p-3 focus:outline-none focus:ring-2 focus:ring-orange-400'
                   rows={3}
-                  placeholder="Preferred meeting point, questions, or unit preference"
+                  placeholder='Preferred meeting point, questions, or unit preference'
                 />
               </div>
 
               {bookTourError && (
-                <p className="text-sm text-red-500">{bookTourError}</p>
+                <p className='text-sm text-red-500'>{bookTourError}</p>
               )}
 
               <button
-                type="submit"
+                type='submit'
                 disabled={BookingLoading}
-                className="w-full rounded-lg bg-orange-500 px-4 py-3 text-sm font-semibold text-white hover:bg-orange-600 transition disabled:opacity-60"
+                className='w-full rounded-lg bg-orange-500 px-4 py-3 text-sm font-semibold text-white hover:bg-orange-600 transition disabled:opacity-60'
               >
                 {BookingLoading
                   ? "Submitting..."
@@ -1358,15 +1401,15 @@ export default function ProjectDetails() {
 
       {/* Toast notification */}
       {showToast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-9999 flex items-center gap-3 bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-xl shadow-emerald-900/30 animate-in slide-in-from-bottom-4 duration-300">
-          <CheckCircle2 className="w-5 h-5 shrink-0" />
-          <p className="text-sm font-semibold">{toastMessage}</p>
+        <div className='fixed bottom-6 left-1/2 -translate-x-1/2 z-9999 flex items-center gap-3 bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-xl shadow-emerald-900/30 animate-in slide-in-from-bottom-4 duration-300'>
+          <CheckCircle2 className='w-5 h-5 shrink-0' />
+          <p className='text-sm font-semibold'>{toastMessage}</p>
           <button
-            type="button"
+            type='button'
             onClick={() => setShowToast(false)}
-            className="ml-2 text-white/70 hover:text-white"
+            className='ml-2 text-white/70 hover:text-white'
           >
-            <X className="w-4 h-4" />
+            <X className='w-4 h-4' />
           </button>
         </div>
       )}
