@@ -138,7 +138,7 @@ export default function Login() {
 
         const ok = await SignInWithPassword(FormData.email, FormData.password);
 
-        if (ok) return navigate("/");
+        if (ok) return navigate(-1);
 
         break;
       }
