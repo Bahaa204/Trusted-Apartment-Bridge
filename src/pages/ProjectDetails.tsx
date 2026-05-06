@@ -209,7 +209,7 @@ export default function ProjectDetails() {
   const [toastMessage, setToastMessage] = useState<string>("");
   const [loanAmountInput, setLoanAmountInput] = useState<string>("350000");
   const [downPaymentInput, setDownPaymentInput] = useState<string>("70000");
-  const [annualRateInput, setAnnualRateInput] = useState<string>("6.5");
+  const [annualRateInput, setAnnualRateInput] = useState<string>("5");
   const [loanTermYearsInput, setLoanTermYearsInput] = useState<string>("25");
 
   useEffect(() => {
@@ -901,7 +901,9 @@ export default function ProjectDetails() {
                     step='0.1'
                     value={annualRateInput}
                     onChange={(event) => setAnnualRateInput(event.target.value)}
-                    className='w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200'
+                    className='w-full rounded-xl border border-slate-200 bg-white px-4 py-4 text-base text-slate-800 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-200 disabled:cursorq
+                    npm add-not-allowed'
+                    disabled
                   />
                 </div>
 
